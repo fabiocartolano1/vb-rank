@@ -94,4 +94,9 @@ export class MatchsComponent implements OnInit {
   isJourneeOpen(journeeNumber: number): boolean {
     return this.openJournees().has(journeeNumber);
   }
+
+  isCresMatch(match: Match): boolean {
+    return match.equipeDomicile.toLowerCase().includes('crès') ||
+           match.equipeExterieur.toLowerCase().includes('crès');
+  }
 }

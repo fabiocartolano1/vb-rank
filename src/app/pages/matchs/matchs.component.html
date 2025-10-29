@@ -20,22 +20,13 @@
 
           <div class="matchs-grid" [class.collapsed]="!isJourneeOpen(journeeData[0])">
             @for (match of journeeData[1]; track match.id) {
-              <div class="match-card" [class.termine]="match.statut === 'termine'" [class.a-venir]="match.statut === 'a_venir'">
-                <!-- Header: Date et Statut -->
+              <div class="match-card" [class.termine]="match.statut === 'termine'" [class.a-venir]="match.statut === 'a_venir'" [class.cres-match]="isCresMatch(match)">
+                <!-- Header: Date et Heure -->
                 <div class="match-header">
-                  <div class="match-date-time">
-                    <span class="date">{{ formatDate(match.date) }}</span>
-                    @if (match.heure) {
-                      <span class="heure">{{ match.heure }}</span>
-                    }
-                  </div>
-                  <div class="match-status">
-                    @if (match.statut === 'termine') {
-                      <span class="badge termine">Terminé</span>
-                    } @else {
-                      <span class="badge a-venir">À venir</span>
-                    }
-                  </div>
+                  <span class="date">{{ formatDate(match.date) }}</span>
+                  @if (match.heure) {
+                    <span class="heure">{{ match.heure }}</span>
+                  }
                 </div>
 
                 <!-- Corps: Équipes et Score -->
@@ -61,8 +52,8 @@
 
                   <!-- Équipe Extérieur -->
                   <div class="team-section exterieur">
-                    <span class="team-name">{{ match.equipeExterieur }}</span>
                     <img [src]="getTeamLogo(match.equipeExterieur)" [alt]="match.equipeExterieur" class="team-logo">
+                    <span class="team-name">{{ match.equipeExterieur }}</span>
                   </div>
                 </div>
 
