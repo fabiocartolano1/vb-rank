@@ -1,0 +1,92 @@
+<div class="classement-container">
+  <h1>Classement - RM2 2025/2026</h1>
+  <p class="subtitle">Régionale 2 Masculine Occitanie Est</p>
+
+  @if (loading()) {
+    <div class="loading">Chargement du classement...</div>
+  }
+
+  @if (error()) {
+    <div class="error">{{ error() }}</div>
+  }
+
+  @if (!loading() && !error()) {
+    <div class="table-container">
+      <table class="classement-table">
+        <thead>
+          <tr>
+            <th class="rank-col">Rang</th>
+            <th class="team-col">Équipe</th>
+            <th class="number-col">Pts</th>
+            <th class="number-col">J</th>
+            <th class="number-col">G</th>
+            <th class="number-col">P</th>
+            <th class="number-col">SP</th>
+            <th class="number-col">SC</th>
+            <th class="number-col">Diff</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (entry of classement(); track entry.id) {
+            <tr [class]="getRankClass(entry.rang)">
+              <td class="rank-cell">
+                <span class="rank-badge" [class]="getRankClass(entry.rang)">
+                  {{ entry.rang }}
+                </span>
+              </td>
+              <td class="team-cell">
+                <strong>{{ entry.equipe }}</strong>
+              </td>
+              <td class="points-cell">
+                <strong>{{ entry.points }}</strong>
+              </td>
+              <td>{{ entry.joues }}</td>
+              <td class="win-cell">{{ entry.gagnes }}</td>
+              <td class="loss-cell">{{ entry.perdus }}</td>
+              <td>{{ entry.setsPour }}</td>
+              <td>{{ entry.setsContre }}</td>
+              <td [class.positive]="getDifference(entry.setsPour, entry.setsContre) > 0"
+                  [class.negative]="getDifference(entry.setsPour, entry.setsContre) < 0">
+                {{ getDifference(entry.setsPour, entry.setsContre) > 0 ? '+' : '' }}{{ getDifference(entry.setsPour, entry.setsContre) }}
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <div class="legend">
+      <h3>Légende</h3>
+      <div class="legend-items">
+        <div class="legend-item">
+          <span class="legend-label">Pts:</span>
+          <span>Points</span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-label">J:</span>
+          <span>Joués</span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-label">G:</span>
+          <span>Gagnés</span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-label">P:</span>
+          <span>Perdus</span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-label">SP:</span>
+          <span>Sets Pour</span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-label">SC:</span>
+          <span>Sets Contre</span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-label">Diff:</span>
+          <span>Différence de sets</span>
+        </div>
+      </div>
+    </div>
+  }
+</div>

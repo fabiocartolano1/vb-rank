@@ -1,0 +1,67 @@
+<div class="matchs-container">
+  <h1>Calendrier des Matchs - RM2 2025/2026</h1>
+
+  @if (loading()) {
+    <div class="loading">Chargement des matchs...</div>
+  }
+
+  @if (error()) {
+    <div class="error">{{ error() }}</div>
+  }
+
+  @if (!loading() && !error()) {
+    <div class="matchs-list">
+      @for (journeeData of getMatchsByJournee(); track journeeData[0]) {
+        <div class="journee-section">
+          <h2 class="journee-title">Journée {{ journeeData[0] }}</h2>
+
+          <div class="matchs-grid">
+            @for (match of journeeData[1]; track match.id) {
+              <div class="match-card" [class.termine]="match.statut === 'termine'" [class.a-venir]="match.statut === 'a_venir'">
+                <div class="match-date">
+                  <span class="date">{{ formatDate(match.date) }}</span>
+                  @if (match.heure) {
+                    <span class="heure">{{ match.heure }}</span>
+                  }
+                </div>
+
+                <div class="match-teams">
+                  <div class="team domicile">
+                    <span class="team-name">{{ match.equipeDomicile }}</span>
+                    @if (match.scoreDomicile !== undefined) {
+                      <span class="score">{{ match.scoreDomicile }}</span>
+                    }
+                  </div>
+
+                  <div class="vs">vs</div>
+
+                  <div class="team exterieur">
+                    @if (match.scoreExterieur !== undefined) {
+                      <span class="score">{{ match.scoreExterieur }}</span>
+                    }
+                    <span class="team-name">{{ match.equipeExterieur }}</span>
+                  </div>
+                </div>
+
+                @if (match.detailSets && match.detailSets.length > 0) {
+                  <div class="sets-detail">
+                    <span class="sets-label">Sets:</span>
+                    <span class="sets-scores">{{ match.detailSets.join(', ') }}</span>
+                  </div>
+                }
+
+                <div class="match-status">
+                  @if (match.statut === 'termine') {
+                    <span class="badge termine">Terminé</span>
+                  } @else {
+                    <span class="badge a-venir">À venir</span>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>
