@@ -4,6 +4,7 @@ import { Firestore, collection, getDocs } from '@angular/fire/firestore';
 import { CommonModule } from '@angular/common';
 import { DataImportService } from './services/data-import.service';
 import { DataService } from './services/data.service';
+import { EquipeFilterService } from './services/equipe-filter.service';
 import { filter } from 'rxjs/operators';
 
 @Component({
@@ -14,7 +15,14 @@ import { filter } from 'rxjs/operators';
 })
 export class App implements OnInit {
   protected readonly title = signal('vb-rank-app');
-  protected readonly subtitle = signal('Championnat RM2 - Occitanie Est 2025/2026');
+  protected readonly selectedEquipe = signal('Régionale 2 M');
+  protected readonly equipes = [
+    'Régionale 2 M',
+    'Régionale 2 F',
+    'Pré-nationale M',
+    'Pré-nationale F',
+    'Nationale 3 F'
+  ];
   protected readonly firebaseStatus = signal('Test de connexion en cours...');
   protected readonly isConnected = signal(false);
   protected readonly importStatus = signal('');
@@ -25,6 +33,7 @@ export class App implements OnInit {
   private dataImportService = inject(DataImportService);
   private router = inject(Router);
   private dataService = inject(DataService);
+  private equipeFilterService = inject(EquipeFilterService);
 
   async ngOnInit() {
     // Charger le logo du Crès
@@ -52,28 +61,11 @@ export class App implements OnInit {
       this.isConnected.set(false);
       console.error('Erreur de connexion Firebase:', error);
     }
-
-    // Mettre à jour le sous-titre selon la route active
-    this.updateSubtitle(this.router.url);
-
-    // Écouter les changements de route
-    this.router.events
-      .pipe(filter(event => event instanceof NavigationEnd))
-      .subscribe((event: any) => {
-        this.updateSubtitle(event.urlAfterRedirects);
-      });
   }
 
-  private updateSubtitle(url: string) {
-    if (url.includes('/classement')) {
-      this.subtitle.set('Classement - Championnat RM2 - Occitanie Est 2025/2026');
-    } else if (url.includes('/matchs-cres')) {
-      this.subtitle.set('Nos Matchs - Championnat RM2 - Occitanie Est 2025/2026');
-    } else if (url.includes('/matchs')) {
-      this.subtitle.set('Tous les Matchs - Championnat RM2 - Occitanie Est 2025/2026');
-    } else {
-      this.subtitle.set('Championnat RM2 - Occitanie Est 2025/2026');
-    }
+  onEquipeChange(equipe: string) {
+    this.selectedEquipe.set(equipe);
+    this.equipeFilterService.setSelectedEquipe(equipe);
   }
 
   async importData() {

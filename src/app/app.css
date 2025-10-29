@@ -47,12 +47,45 @@
     2px 2px 4px rgba(0, 0, 0, 0.3);
 }
 
-.app-subtitle {
-  margin: 0.5rem 0 0 0;
-  font-size: 1rem;
-  opacity: 0.85;
-  font-weight: 400;
-  color: #e0e0e0;
+.equipe-selector {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: center;
+}
+
+.equipe-dropdown {
+  background: rgba(255, 255, 255, 0.95);
+  color: #1a1a1a;
+  border: 2px solid var(--primary-color);
+  border-radius: 8px;
+  padding: 0.625rem 2.5rem 0.625rem 1rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  font-family: 'Poppins', sans-serif;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%23F762A6' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 16px;
+  box-shadow: 0 4px 12px rgba(247, 98, 166, 0.3);
+}
+
+.equipe-dropdown:hover {
+  background: white;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%23F762A6' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 16px;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(247, 98, 166, 0.4);
+}
+
+.equipe-dropdown:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(247, 98, 166, 0.2);
 }
 
 /* Navigation */
@@ -267,9 +300,15 @@
     letter-spacing: -0.25px;
   }
 
-  .app-subtitle {
+  .equipe-selector {
+    margin-top: 0.75rem;
+  }
+
+  .equipe-dropdown {
     font-size: 0.875rem;
-    margin-top: 0.375rem;
+    padding: 0.5rem 2rem 0.5rem 0.875rem;
+    background-size: 14px;
+    background-position: right 0.625rem center;
   }
 
   /* Barre de navigation fixe en bas (style Instagram) */
@@ -377,8 +416,11 @@
     font-size: 1.5rem;
   }
 
-  .app-subtitle {
+  .equipe-dropdown {
     font-size: 0.8125rem;
+    padding: 0.4375rem 1.75rem 0.4375rem 0.75rem;
+    background-size: 12px;
+    background-position: right 0.5rem center;
   }
 
   .nav-link {

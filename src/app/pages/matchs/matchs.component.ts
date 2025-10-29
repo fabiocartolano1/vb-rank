@@ -1,6 +1,7 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DataService } from '../../services/data.service';
+import { EquipeFilterService } from '../../services/equipe-filter.service';
 import { Match } from '../../models/match.model';
 import { Equipe } from '../../models/equipe.model';
 
@@ -13,6 +14,7 @@ import { Equipe } from '../../models/equipe.model';
 })
 export class MatchsComponent implements OnInit {
   private dataService = inject(DataService);
+  private equipeFilterService = inject(EquipeFilterService);
 
   matchs = signal<Match[]>([]);
   equipes = signal<Equipe[]>([]);
@@ -20,7 +22,31 @@ export class MatchsComponent implements OnInit {
   error = signal('');
   openJournees = signal<Set<number>>(new Set());
 
+  constructor() {
+    // Réagir aux changements d'équipe
+    effect(() => {
+      const selectedEquipe = this.equipeFilterService.getSelectedEquipeSignal()();
+      this.loadData();
+    });
+  }
+
   ngOnInit() {
+    this.loadData();
+  }
+
+  private loadData() {
+    this.loading.set(true);
+    this.error.set('');
+    this.openJournees.set(new Set());
+
+    // Vérifier si on doit afficher des données
+    if (!this.equipeFilterService.shouldShowData()) {
+      this.matchs.set([]);
+      this.equipes.set([]);
+      this.loading.set(false);
+      return;
+    }
+
     // Charger les équipes et les matchs
     this.dataService.getEquipes().subscribe({
       next: (data) => {

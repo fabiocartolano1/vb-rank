@@ -3,7 +3,16 @@
   <header class="app-header">
     <div class="header-content">
       <h1 class="app-title">Le Crès VB</h1>
-      <p class="app-subtitle">{{ subtitle() }}</p>
+      <div class="equipe-selector">
+        <select
+          [value]="selectedEquipe()"
+          (change)="onEquipeChange($any($event.target).value)"
+          class="equipe-dropdown">
+          @for (equipe of equipes; track equipe) {
+            <option [value]="equipe">{{ equipe }}</option>
+          }
+        </select>
+      </div>
     </div>
   </header>
 
