@@ -5,13 +5,13 @@ import { Match } from '../../models/match.model';
 import { Equipe } from '../../models/equipe.model';
 
 @Component({
-  selector: 'app-matchs',
+  selector: 'app-matchs-cres',
   standalone: true,
   imports: [CommonModule],
-  templateUrl: './matchs.component.html',
-  styleUrl: './matchs.component.css'
+  templateUrl: './matchs-cres.component.html',
+  styleUrl: './matchs-cres.component.css'
 })
-export class MatchsComponent implements OnInit {
+export class MatchsCresComponent implements OnInit {
   private dataService = inject(DataService);
 
   matchs = signal<Match[]>([]);
@@ -33,11 +33,13 @@ export class MatchsComponent implements OnInit {
 
     this.dataService.getMatchs().subscribe({
       next: (data) => {
-        this.matchs.set(data);
+        // Filtrer uniquement les matchs du Crès
+        const cresMatchs = data.filter(match =>
+          match.equipeDomicile.toLowerCase().includes('crès') ||
+          match.equipeExterieur.toLowerCase().includes('crès')
+        );
+        this.matchs.set(cresMatchs);
         this.loading.set(false);
-
-        // Ouvrir automatiquement la journée de la prochaine rencontre
-        this.openNextJournee();
       },
       error: (err) => {
         this.error.set('Erreur lors du chargement des matchs');
@@ -52,26 +54,13 @@ export class MatchsComponent implements OnInit {
     return equipe?.logoUrl || 'https://ui-avatars.com/api/?name=VB&background=667eea&color=fff&size=128';
   }
 
-  getMatchsByJournee() {
-    const matchsByJournee = new Map<number, Match[]>();
-    this.matchs().forEach(match => {
-      if (!matchsByJournee.has(match.journee)) {
-        matchsByJournee.set(match.journee, []);
-      }
-      matchsByJournee.get(match.journee)?.push(match);
+  getSortedMatchs() {
+    // Trier tous les matchs par date
+    return [...this.matchs()].sort((a, b) => {
+      const dateA = new Date(a.date + (a.heure ? 'T' + a.heure : '')).getTime();
+      const dateB = new Date(b.date + (b.heure ? 'T' + b.heure : '')).getTime();
+      return dateA - dateB;
     });
-
-    // Trier les matchs par date dans chaque journée
-    matchsByJournee.forEach((matchs) => {
-      matchs.sort((a, b) => {
-        const dateA = new Date(a.date + (a.heure ? 'T' + a.heure : '')).getTime();
-        const dateB = new Date(b.date + (b.heure ? 'T' + b.heure : '')).getTime();
-        return dateA - dateB;
-      });
-    });
-
-    // Trier les journées par numéro
-    return Array.from(matchsByJournee.entries()).sort((a, b) => a[0] - b[0]);
   }
 
   formatDate(dateString: string): string {
@@ -101,28 +90,5 @@ export class MatchsComponent implements OnInit {
   isCresMatch(match: Match): boolean {
     return match.equipeDomicile.toLowerCase().includes('crès') ||
            match.equipeExterieur.toLowerCase().includes('crès');
-  }
-
-  private openNextJournee() {
-    // Trouver les matchs à venir (sans score)
-    const matchsAVenir = this.matchs().filter(
-      match => match.scoreDomicile === undefined && match.scoreExterieur === undefined
-    );
-
-    if (matchsAVenir.length === 0) {
-      return; // Aucun match à venir, tout reste fermé
-    }
-
-    // Trier par date pour trouver le prochain match
-    const prochainMatch = matchsAVenir.sort((a, b) => {
-      const dateA = new Date(a.date + (a.heure ? 'T' + a.heure : '')).getTime();
-      const dateB = new Date(b.date + (b.heure ? 'T' + b.heure : '')).getTime();
-      return dateA - dateB;
-    })[0];
-
-    // Ouvrir la journée du prochain match
-    if (prochainMatch) {
-      this.openJournees.set(new Set([prochainMatch.journee]));
-    }
   }
 }

@@ -13,5 +13,9 @@ export const routes: Routes = [
   {
     path: 'matchs',
     loadComponent: () => import('./pages/matchs/matchs.component').then(m => m.MatchsComponent)
+  },
+  {
+    path: 'matchs-cres',
+    loadComponent: () => import('./pages/matchs-cres/matchs-cres.component').then(m => m.MatchsCresComponent)
   }
 ];
