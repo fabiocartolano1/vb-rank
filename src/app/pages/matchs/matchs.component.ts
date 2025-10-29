@@ -18,6 +18,7 @@ export class MatchsComponent implements OnInit {
   equipes = signal<Equipe[]>([]);
   loading = signal(true);
   error = signal('');
+  openJournees = signal<Set<number>>(new Set());
 
   ngOnInit() {
     // Charger les équipes et les matchs
@@ -78,5 +79,19 @@ export class MatchsComponent implements OnInit {
       month: 'short',
       year: 'numeric'
     });
+  }
+
+  toggleJournee(journeeNumber: number) {
+    const currentOpen = new Set(this.openJournees());
+    if (currentOpen.has(journeeNumber)) {
+      currentOpen.delete(journeeNumber);
+    } else {
+      currentOpen.add(journeeNumber);
+    }
+    this.openJournees.set(currentOpen);
+  }
+
+  isJourneeOpen(journeeNumber: number): boolean {
+    return this.openJournees().has(journeeNumber);
   }
 }

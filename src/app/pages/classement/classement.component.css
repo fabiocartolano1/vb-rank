@@ -42,8 +42,9 @@ h1 {
 }
 
 .classement-table thead {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
   color: white;
+  border-bottom: 2px solid var(--primary-color);
 }
 
 .classement-table th {
@@ -92,15 +93,17 @@ h1 {
 }
 
 .rank-badge {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   width: 32px;
   height: 32px;
-  line-height: 32px;
   border-radius: 50%;
   font-weight: bold;
   text-align: center;
-  background: #95a5a6;
+  background: #1a1a1a;
   color: white;
+  border: 2px solid var(--primary-color);
 }
 
 .rank-badge.gold {
@@ -141,7 +144,8 @@ h1 {
 
 .points-cell {
   font-size: 1.1rem;
-  color: #2c3e50;
+  color: var(--primary-color);
+  font-weight: 700;
 }
 
 .win-cell {
@@ -206,7 +210,7 @@ tr.bronze {
 
 .legend-label {
   font-weight: bold;
-  color: #667eea;
+  color: var(--primary-color);
   min-width: 40px;
 }
 
@@ -271,7 +275,6 @@ tr.bronze {
   .rank-badge {
     width: 28px;
     height: 28px;
-    line-height: 28px;
     font-size: 0.875rem;
   }
 
@@ -361,7 +364,6 @@ tr.bronze {
   .rank-badge {
     width: 26px;
     height: 26px;
-    line-height: 26px;
     font-size: 0.8125rem;
   }
 

@@ -1,6 +1,4 @@
 <div class="matchs-container">
-  <h1>Calendrier des Matchs - RM2 2025/2026</h1>
-
   @if (loading()) {
     <div class="loading">Chargement des matchs...</div>
   }
@@ -13,9 +11,14 @@
     <div class="matchs-list">
       @for (journeeData of getMatchsByJournee(); track journeeData[0]) {
         <div class="journee-section">
-          <h2 class="journee-title">Journée {{ journeeData[0] }}</h2>
+          <button class="journee-title" (click)="toggleJournee(journeeData[0])" [class.open]="isJourneeOpen(journeeData[0])">
+            <span>Journée {{ journeeData[0] }}</span>
+            <svg class="chevron-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </button>
 
-          <div class="matchs-grid">
+          <div class="matchs-grid" [class.collapsed]="!isJourneeOpen(journeeData[0])">
             @for (match of journeeData[1]; track match.id) {
               <div class="match-card" [class.termine]="match.statut === 'termine'" [class.a-venir]="match.statut === 'a_venir'">
                 <!-- Header: Date et Statut -->

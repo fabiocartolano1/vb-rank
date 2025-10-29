@@ -1,8 +1,9 @@
 import { Component, signal, inject, OnInit } from '@angular/core';
-import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
+import { RouterOutlet, RouterLink, RouterLinkActive, Router, NavigationEnd } from '@angular/router';
 import { Firestore, collection, getDocs } from '@angular/fire/firestore';
 import { CommonModule } from '@angular/common';
 import { DataImportService } from './services/data-import.service';
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',
@@ -12,6 +13,7 @@ import { DataImportService } from './services/data-import.service';
 })
 export class App implements OnInit {
   protected readonly title = signal('vb-rank-app');
+  protected readonly subtitle = signal('Championnat RM2 - Occitanie Est 2025/2026');
   protected readonly firebaseStatus = signal('Test de connexion en cours...');
   protected readonly isConnected = signal(false);
   protected readonly importStatus = signal('');
@@ -19,6 +21,7 @@ export class App implements OnInit {
 
   private firestore = inject(Firestore);
   private dataImportService = inject(DataImportService);
+  private router = inject(Router);
 
   async ngOnInit() {
     try {
@@ -33,6 +36,26 @@ export class App implements OnInit {
       this.firebaseStatus.set('✗ Erreur de connexion à Firebase');
       this.isConnected.set(false);
       console.error('Erreur de connexion Firebase:', error);
+    }
+
+    // Mettre à jour le sous-titre selon la route active
+    this.updateSubtitle(this.router.url);
+
+    // Écouter les changements de route
+    this.router.events
+      .pipe(filter(event => event instanceof NavigationEnd))
+      .subscribe((event: any) => {
+        this.updateSubtitle(event.urlAfterRedirects);
+      });
+  }
+
+  private updateSubtitle(url: string) {
+    if (url.includes('/classement')) {
+      this.subtitle.set('Classement - Championnat RM2 - Occitanie Est 2025/2026');
+    } else if (url.includes('/matchs')) {
+      this.subtitle.set('Matchs - Championnat RM2 - Occitanie Est 2025/2026');
+    } else {
+      this.subtitle.set('Championnat RM2 - Occitanie Est 2025/2026');
     }
   }
 
