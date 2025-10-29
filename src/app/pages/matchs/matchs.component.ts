@@ -2,6 +2,7 @@ import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DataService } from '../../services/data.service';
 import { Match } from '../../models/match.model';
+import { Equipe } from '../../models/equipe.model';
 
 @Component({
   selector: 'app-matchs',
@@ -14,10 +15,21 @@ export class MatchsComponent implements OnInit {
   private dataService = inject(DataService);
 
   matchs = signal<Match[]>([]);
+  equipes = signal<Equipe[]>([]);
   loading = signal(true);
   error = signal('');
 
   ngOnInit() {
+    // Charger les équipes et les matchs
+    this.dataService.getEquipes().subscribe({
+      next: (data) => {
+        this.equipes.set(data);
+      },
+      error: (err) => {
+        console.error('Erreur lors du chargement des équipes:', err);
+      }
+    });
+
     this.dataService.getMatchs().subscribe({
       next: (data) => {
         this.matchs.set(data);
@@ -29,6 +41,11 @@ export class MatchsComponent implements OnInit {
         console.error(err);
       }
     });
+  }
+
+  getTeamLogo(teamName: string): string {
+    const equipe = this.equipes().find(e => e.nom === teamName);
+    return equipe?.logoUrl || 'https://ui-avatars.com/api/?name=VB&background=667eea&color=fff&size=128';
   }
 
   getMatchsByJournee() {

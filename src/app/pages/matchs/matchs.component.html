@@ -18,45 +18,60 @@
           <div class="matchs-grid">
             @for (match of journeeData[1]; track match.id) {
               <div class="match-card" [class.termine]="match.statut === 'termine'" [class.a-venir]="match.statut === 'a_venir'">
-                <div class="match-date">
-                  <span class="date">{{ formatDate(match.date) }}</span>
-                  @if (match.heure) {
-                    <span class="heure">{{ match.heure }}</span>
-                  }
+                <!-- Header: Date et Statut -->
+                <div class="match-header">
+                  <div class="match-date-time">
+                    <span class="date">{{ formatDate(match.date) }}</span>
+                    @if (match.heure) {
+                      <span class="heure">{{ match.heure }}</span>
+                    }
+                  </div>
+                  <div class="match-status">
+                    @if (match.statut === 'termine') {
+                      <span class="badge termine">Terminé</span>
+                    } @else {
+                      <span class="badge a-venir">À venir</span>
+                    }
+                  </div>
                 </div>
 
-                <div class="match-teams">
-                  <div class="team domicile">
+                <!-- Corps: Équipes et Score -->
+                <div class="match-body">
+                  <!-- Équipe Domicile -->
+                  <div class="team-section domicile">
+                    <img [src]="getTeamLogo(match.equipeDomicile)" [alt]="match.equipeDomicile" class="team-logo">
                     <span class="team-name">{{ match.equipeDomicile }}</span>
-                    @if (match.scoreDomicile !== undefined) {
-                      <span class="score">{{ match.scoreDomicile }}</span>
+                  </div>
+
+                  <!-- Score Central -->
+                  <div class="score-section">
+                    @if (match.scoreDomicile !== undefined && match.scoreExterieur !== undefined) {
+                      <div class="score-display">
+                        <span class="score-value">{{ match.scoreDomicile }}</span>
+                        <span class="score-separator">-</span>
+                        <span class="score-value">{{ match.scoreExterieur }}</span>
+                      </div>
+                    } @else {
+                      <div class="vs-display">VS</div>
                     }
                   </div>
 
-                  <div class="vs">vs</div>
-
-                  <div class="team exterieur">
-                    @if (match.scoreExterieur !== undefined) {
-                      <span class="score">{{ match.scoreExterieur }}</span>
-                    }
+                  <!-- Équipe Extérieur -->
+                  <div class="team-section exterieur">
                     <span class="team-name">{{ match.equipeExterieur }}</span>
+                    <img [src]="getTeamLogo(match.equipeExterieur)" [alt]="match.equipeExterieur" class="team-logo">
                   </div>
                 </div>
 
+                <!-- Footer: Détail des sets -->
                 @if (match.detailSets && match.detailSets.length > 0) {
-                  <div class="sets-detail">
-                    <span class="sets-label">Sets:</span>
-                    <span class="sets-scores">{{ match.detailSets.join(', ') }}</span>
+                  <div class="match-footer">
+                    <div class="sets-detail">
+                      <span class="sets-label">Détail des sets:</span>
+                      <span class="sets-scores">{{ match.detailSets.join(' • ') }}</span>
+                    </div>
                   </div>
                 }
-
-                <div class="match-status">
-                  @if (match.statut === 'termine') {
-                    <span class="badge termine">Terminé</span>
-                  } @else {
-                    <span class="badge a-venir">À venir</span>
-                  }
-                </div>
               </div>
             }
           </div>

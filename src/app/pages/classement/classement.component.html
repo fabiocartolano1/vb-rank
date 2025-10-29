@@ -21,9 +21,9 @@
             <th class="number-col">J</th>
             <th class="number-col">G</th>
             <th class="number-col">P</th>
-            <th class="number-col">SP</th>
-            <th class="number-col">SC</th>
-            <th class="number-col">Diff</th>
+            <th class="number-col hide-mobile">SP</th>
+            <th class="number-col hide-mobile">SC</th>
+            <th class="number-col hide-mobile">Diff</th>
           </tr>
         </thead>
         <tbody>
@@ -35,7 +35,10 @@
                 </span>
               </td>
               <td class="team-cell">
-                <strong>{{ entry.equipe }}</strong>
+                <div class="team-info">
+                  <img [src]="getTeamLogo(entry.equipe)" [alt]="entry.equipe" class="team-logo">
+                  <strong>{{ entry.equipe }}</strong>
+                </div>
               </td>
               <td class="points-cell">
                 <strong>{{ entry.points }}</strong>
@@ -43,9 +46,9 @@
               <td>{{ entry.joues }}</td>
               <td class="win-cell">{{ entry.gagnes }}</td>
               <td class="loss-cell">{{ entry.perdus }}</td>
-              <td>{{ entry.setsPour }}</td>
-              <td>{{ entry.setsContre }}</td>
-              <td [class.positive]="getDifference(entry.setsPour, entry.setsContre) > 0"
+              <td class="hide-mobile">{{ entry.setsPour }}</td>
+              <td class="hide-mobile">{{ entry.setsContre }}</td>
+              <td class="hide-mobile" [class.positive]="getDifference(entry.setsPour, entry.setsContre) > 0"
                   [class.negative]="getDifference(entry.setsPour, entry.setsContre) < 0">
                 {{ getDifference(entry.setsPour, entry.setsContre) > 0 ? '+' : '' }}{{ getDifference(entry.setsPour, entry.setsContre) }}
               </td>
@@ -74,15 +77,15 @@
           <span class="legend-label">P:</span>
           <span>Perdus</span>
         </div>
-        <div class="legend-item">
+        <div class="legend-item hide-mobile">
           <span class="legend-label">SP:</span>
           <span>Sets Pour</span>
         </div>
-        <div class="legend-item">
+        <div class="legend-item hide-mobile">
           <span class="legend-label">SC:</span>
           <span>Sets Contre</span>
         </div>
-        <div class="legend-item">
+        <div class="legend-item hide-mobile">
           <span class="legend-label">Diff:</span>
           <span>Différence de sets</span>
         </div>

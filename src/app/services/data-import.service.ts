@@ -18,18 +18,18 @@ import { Classement } from '../models/classement.model';
 export class DataImportService {
   private firestore = inject(Firestore);
 
-  // Données des équipes
+  // Données des équipes avec logos
   private equipes: Equipe[] = [
-    { nom: 'Narbonne Volley 4' },
-    { nom: 'Le Crès Volley-Ball 2' },
-    { nom: 'Sète Volley-Ball Club 2' },
-    { nom: 'Gazelec Béziers Maraussan V.B' },
-    { nom: 'Claira Salanque Volley-Ball' },
-    { nom: 'VBC Clermontais 2' },
-    { nom: 'Volley Ball St Estève' },
-    { nom: 'Nîmes Volley-Ball 2' },
-    { nom: 'Mende Lozère Volley-Ball 2' },
-    { nom: 'Saint-Gély Volley-Ball 2' },
+    { nom: 'Narbonne Volley 4', logoUrl: 'https://ui-avatars.com/api/?name=NV&background=1e40af&color=fff&size=128&bold=true&font-size=0.5' },
+    { nom: 'Le Crès Volley-Ball 2', logoUrl: 'https://ui-avatars.com/api/?name=LC&background=16a34a&color=fff&size=128&bold=true&font-size=0.5' },
+    { nom: 'Sète Volley-Ball Club 2', logoUrl: 'https://ui-avatars.com/api/?name=SV&background=dc2626&color=fff&size=128&bold=true&font-size=0.5' },
+    { nom: 'Gazelec Béziers Maraussan V.B', logoUrl: 'https://ui-avatars.com/api/?name=GB&background=ea580c&color=fff&size=128&bold=true&font-size=0.5' },
+    { nom: 'Claira Salanque Volley-Ball', logoUrl: 'https://ui-avatars.com/api/?name=CS&background=7c3aed&color=fff&size=128&bold=true&font-size=0.5' },
+    { nom: 'VBC Clermontais 2', logoUrl: 'https://ui-avatars.com/api/?name=VC&background=0891b2&color=fff&size=128&bold=true&font-size=0.5' },
+    { nom: 'Volley Ball St Estève', logoUrl: 'https://ui-avatars.com/api/?name=VE&background=c026d3&color=fff&size=128&bold=true&font-size=0.5' },
+    { nom: 'Nîmes Volley-Ball 2', logoUrl: 'https://ui-avatars.com/api/?name=NM&background=ca8a04&color=fff&size=128&bold=true&font-size=0.5' },
+    { nom: 'Mende Lozère Volley-Ball 2', logoUrl: 'https://ui-avatars.com/api/?name=ML&background=059669&color=fff&size=128&bold=true&font-size=0.5' },
+    { nom: 'Saint-Gély Volley-Ball 2', logoUrl: 'https://ui-avatars.com/api/?name=SG&background=be123c&color=fff&size=128&bold=true&font-size=0.5' },
   ];
 
   // Données du classement
