@@ -4,14 +4,14 @@
     <div class="header-content">
       <h1 class="app-title">Le Crès VB</h1>
       <div class="equipe-selector">
-        <select
-          [value]="selectedEquipe()"
-          (change)="onEquipeChange($any($event.target).value)"
-          class="equipe-dropdown">
-          @for (equipe of equipes; track equipe) {
-            <option [value]="equipe">{{ equipe }}</option>
-          }
-        </select>
+        @for (equipe of equipes; track equipe) {
+          <button
+            class="equipe-pill"
+            [class.active]="selectedEquipe() === equipe"
+            (click)="onEquipeChange(equipe)">
+            {{ getShortName(equipe) }}
+          </button>
+        }
       </div>
     </div>
   </header>

@@ -24,30 +24,30 @@
           </tr>
         </thead>
         <tbody>
-          @for (entry of classement(); track entry.id) {
-            <tr [class]="getRankClass(entry.rang)">
+          @for (equipe of equipes(); track equipe.id) {
+            <tr [class]="getRankClass(equipe.rang)">
               <td class="rank-cell">
-                <span class="rank-badge" [class]="getRankClass(entry.rang)">
-                  {{ entry.rang }}
+                <span class="rank-badge" [class]="getRankClass(equipe.rang)">
+                  {{ equipe.rang }}
                 </span>
               </td>
               <td class="team-cell">
                 <div class="team-info">
-                  <img [src]="getTeamLogo(entry.equipe)" [alt]="entry.equipe" class="team-logo">
-                  <strong>{{ entry.equipe }}</strong>
+                  <img [src]="getTeamLogo(equipe)" [alt]="equipe.nom" class="team-logo">
+                  <strong>{{ equipe.nom }}</strong>
                 </div>
               </td>
               <td class="points-cell">
-                <strong>{{ entry.points }}</strong>
+                <strong>{{ equipe.points }}</strong>
               </td>
-              <td>{{ entry.joues }}</td>
-              <td class="win-cell">{{ entry.gagnes }}</td>
-              <td class="loss-cell">{{ entry.perdus }}</td>
-              <td class="hide-mobile">{{ entry.setsPour }}</td>
-              <td class="hide-mobile">{{ entry.setsContre }}</td>
-              <td class="hide-mobile" [class.positive]="getDifference(entry.setsPour, entry.setsContre) > 0"
-                  [class.negative]="getDifference(entry.setsPour, entry.setsContre) < 0">
-                {{ getDifference(entry.setsPour, entry.setsContre) > 0 ? '+' : '' }}{{ getDifference(entry.setsPour, entry.setsContre) }}
+              <td>{{ equipe.joues }}</td>
+              <td class="win-cell">{{ equipe.gagnes }}</td>
+              <td class="loss-cell">{{ equipe.perdus }}</td>
+              <td class="hide-mobile">{{ equipe.setsPour }}</td>
+              <td class="hide-mobile">{{ equipe.setsContre }}</td>
+              <td class="hide-mobile" [class.positive]="getDifference(equipe.setsPour, equipe.setsContre) > 0"
+                  [class.negative]="getDifference(equipe.setsPour, equipe.setsContre) < 0">
+                {{ getDifference(equipe.setsPour, equipe.setsContre) > 0 ? '+' : '' }}{{ getDifference(equipe.setsPour, equipe.setsContre) }}
               </td>
             </tr>
           }

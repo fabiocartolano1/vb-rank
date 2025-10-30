@@ -48,44 +48,85 @@
 }
 
 .equipe-selector {
-  margin-top: 1rem;
+  margin-top: 1.5rem;
   display: flex;
+  flex-wrap: nowrap;
   justify-content: center;
+  gap: 0.75rem;
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
+  overflow-x: auto;
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
 }
 
-.equipe-dropdown {
-  background: rgba(255, 255, 255, 0.95);
-  color: #1a1a1a;
-  border: 2px solid var(--primary-color);
-  border-radius: 8px;
-  padding: 0.625rem 2.5rem 0.625rem 1rem;
-  font-size: 0.9375rem;
+.equipe-selector::-webkit-scrollbar {
+  display: none;  /* Chrome, Safari and Opera */
+}
+
+.equipe-pill {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  color: rgba(255, 255, 255, 0.85);
+  border: 2px solid rgba(255, 255, 255, 0.25);
+  border-radius: 50px;
+  padding: 0.75rem 1.5rem;
+  font-size: 0.875rem;
   font-weight: 600;
   font-family: 'Poppins', sans-serif;
   cursor: pointer;
-  transition: all 0.3s ease;
-  appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%23F762A6' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 0.75rem center;
-  background-size: 16px;
-  box-shadow: 0 4px 12px rgba(247, 98, 166, 0.3);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  position: relative;
+  overflow: hidden;
+  white-space: nowrap;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
-.equipe-dropdown:hover {
-  background: white;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%23F762A6' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 0.75rem center;
-  background-size: 16px;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(247, 98, 166, 0.4);
+.equipe-pill::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
 }
 
-.equipe-dropdown:focus {
-  outline: none;
-  border-color: var(--primary-color);
-  box-shadow: 0 0 0 3px rgba(247, 98, 166, 0.2);
+.equipe-pill:hover::before {
+  width: 300px;
+  height: 300px;
+}
+
+.equipe-pill:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.4);
+  color: white;
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+}
+
+.equipe-pill.active {
+  background: var(--primary-color);
+  border: 2px solid rgba(198, 49, 133, 1);
+  color: white;
+  font-weight: 700;
+  transform: scale(1.05);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.equipe-pill.active::before {
+  display: none;
+}
+
+.equipe-pill:active {
+  transform: translateY(-1px) scale(0.98);
 }
 
 /* Navigation */
@@ -301,14 +342,18 @@
   }
 
   .equipe-selector {
-    margin-top: 0.75rem;
+    margin-top: 1rem;
+    gap: 0.5rem;
+    padding: 0 1rem;
+    flex-wrap: nowrap;
+    overflow-x: auto;
   }
 
-  .equipe-dropdown {
-    font-size: 0.875rem;
-    padding: 0.5rem 2rem 0.5rem 0.875rem;
-    background-size: 14px;
-    background-position: right 0.625rem center;
+  .equipe-pill {
+    font-size: 0.7rem;
+    padding: 0.625rem 1rem;
+    letter-spacing: 0.3px;
+    flex-shrink: 0;
   }
 
   /* Barre de navigation fixe en bas (style Instagram) */
@@ -416,11 +461,17 @@
     font-size: 1.5rem;
   }
 
-  .equipe-dropdown {
-    font-size: 0.8125rem;
-    padding: 0.4375rem 1.75rem 0.4375rem 0.75rem;
-    background-size: 12px;
-    background-position: right 0.5rem center;
+  .equipe-selector {
+    gap: 0.4rem;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+  }
+
+  .equipe-pill {
+    font-size: 0.65rem;
+    padding: 0.5rem 0.75rem;
+    letter-spacing: 0.2px;
+    flex-shrink: 0;
   }
 
   .nav-link {

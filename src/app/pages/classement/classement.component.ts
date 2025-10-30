@@ -1,8 +1,8 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal, computed, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DataService } from '../../services/data.service';
-import { Classement } from '../../models/classement.model';
 import { Equipe } from '../../models/equipe.model';
+import { EquipeFilterService } from '../../services/equipe-filter.service';
 
 @Component({
   selector: 'app-classement',
@@ -13,26 +13,27 @@ import { Equipe } from '../../models/equipe.model';
 })
 export class ClassementComponent implements OnInit {
   private dataService = inject(DataService);
+  private equipeFilterService = inject(EquipeFilterService);
 
-  classement = signal<Classement[]>([]);
-  equipes = signal<Equipe[]>([]);
+  allEquipes = signal<Equipe[]>([]);
   loading = signal(true);
   error = signal('');
 
+  // Signal pour le championnat sélectionné
+  selectedChampionnatId = this.equipeFilterService.getSelectedChampionnatIdSignal();
+
+  // Computed signal pour filtrer les équipes par championnat
+  equipes = computed(() => {
+    const championnatId = this.selectedChampionnatId();
+    const all = this.allEquipes();
+    return all.filter(equipe => equipe.championnatId === championnatId);
+  });
+
   ngOnInit() {
-    // Charger les équipes et le classement
+    // Charger toutes les équipes (qui contiennent maintenant les données de classement)
     this.dataService.getEquipes().subscribe({
       next: (data) => {
-        this.equipes.set(data);
-      },
-      error: (err) => {
-        console.error('Erreur lors du chargement des équipes:', err);
-      }
-    });
-
-    this.dataService.getClassement().subscribe({
-      next: (data) => {
-        this.classement.set(data);
+        this.allEquipes.set(data);
         this.loading.set(false);
       },
       error: (err) => {
@@ -43,9 +44,8 @@ export class ClassementComponent implements OnInit {
     });
   }
 
-  getTeamLogo(teamName: string): string {
-    const equipe = this.equipes().find(e => e.nom === teamName);
-    return equipe?.logoUrl || 'https://ui-avatars.com/api/?name=VB&background=667eea&color=fff&size=128';
+  getTeamLogo(equipe: Equipe): string {
+    return equipe.logoUrl || 'https://ui-avatars.com/api/?name=VB&background=667eea&color=fff&size=128';
   }
 
   getRankClass(rang: number): string {

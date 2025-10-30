@@ -68,6 +68,17 @@ export class App implements OnInit {
     this.equipeFilterService.setSelectedEquipe(equipe);
   }
 
+  getShortName(equipe: string): string {
+    const mapping: { [key: string]: string } = {
+      'Régionale 2 M': 'R2 M',
+      'Régionale 2 F': 'R2 F',
+      'Pré-nationale M': 'PN M',
+      'Pré-nationale F': 'PN F',
+      'Nationale 3 F': 'N3 F'
+    };
+    return mapping[equipe] || equipe;
+  }
+
   async importData() {
     this.isImporting.set(true);
     this.importStatus.set('Importation en cours...');
@@ -75,7 +86,7 @@ export class App implements OnInit {
     try {
       const result = await this.dataImportService.importAllData();
       this.importStatus.set(
-        `✓ Importation réussie ! ${result.equipes} équipes, ${result.matchs} matchs, ${result.classement} entrées de classement`
+        `✓ Importation réussie ! ${result.equipes} équipes (avec classement), ${result.matchs} matchs`
       );
     } catch (error) {
       this.importStatus.set('✗ Erreur lors de l\'importation');

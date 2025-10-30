@@ -1,9 +1,12 @@
 export interface Match {
   id?: string;
+  championnatId?: string; // ID du championnat associé
   journee: number;
   date: string; // Format ISO
   heure?: string;
+  equipeDomicileId?: string; // ID de l'équipe domicile (référence à la collection equipes)
   equipeDomicile: string; // Nom de l'équipe
+  equipeExterieurId?: string; // ID de l'équipe extérieur (référence à la collection equipes)
   equipeExterieur: string; // Nom de l'équipe
   scoreDomicile?: number; // Sets gagnés
   scoreExterieur?: number; // Sets gagnés

@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal, effect } from '@angular/core';
+import { Component, inject, OnInit, signal, effect, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DataService } from '../../services/data.service';
 import { EquipeFilterService } from '../../services/equipe-filter.service';
@@ -10,23 +10,42 @@ import { Equipe } from '../../models/equipe.model';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './matchs.component.html',
-  styleUrl: './matchs.component.css'
+  styleUrl: './matchs.component.css',
 })
 export class MatchsComponent implements OnInit {
   private dataService = inject(DataService);
   private equipeFilterService = inject(EquipeFilterService);
 
-  matchs = signal<Match[]>([]);
-  equipes = signal<Equipe[]>([]);
+  allMatchs = signal<Match[]>([]);
+  allEquipes = signal<Equipe[]>([]);
   loading = signal(true);
   error = signal('');
   openJournees = signal<Set<number>>(new Set());
 
+  // Signal pour le championnat sélectionné
+  selectedChampionnatId = this.equipeFilterService.getSelectedChampionnatIdSignal();
+
+  // Computed signals pour filtrer par championnat
+  matchs = computed(() => {
+    const championnatId = this.selectedChampionnatId();
+    const all = this.allMatchs();
+    return all.filter((match) => match.championnatId === championnatId);
+  });
+
+  equipes = computed(() => {
+    const championnatId = this.selectedChampionnatId();
+    const all = this.allEquipes();
+    return all.filter((equipe) => equipe.championnatId === championnatId);
+  });
+
   constructor() {
-    // Réagir aux changements d'équipe
+    // Réagir aux changements de championnat
     effect(() => {
-      const selectedEquipe = this.equipeFilterService.getSelectedEquipeSignal()();
-      this.loadData();
+      const championnatId = this.selectedChampionnatId();
+      // Réinitialiser les journées ouvertes quand on change de championnat
+      this.openJournees.set(new Set());
+      // Ouvrir automatiquement la prochaine journée
+      this.openNextJournee();
     });
   }
 
@@ -37,29 +56,21 @@ export class MatchsComponent implements OnInit {
   private loadData() {
     this.loading.set(true);
     this.error.set('');
-    this.openJournees.set(new Set());
 
-    // Vérifier si on doit afficher des données
-    if (!this.equipeFilterService.shouldShowData()) {
-      this.matchs.set([]);
-      this.equipes.set([]);
-      this.loading.set(false);
-      return;
-    }
-
-    // Charger les équipes et les matchs
+    // Charger toutes les équipes
     this.dataService.getEquipes().subscribe({
       next: (data) => {
-        this.equipes.set(data);
+        this.allEquipes.set(data);
       },
       error: (err) => {
         console.error('Erreur lors du chargement des équipes:', err);
-      }
+      },
     });
 
+    // Charger tous les matchs
     this.dataService.getMatchs().subscribe({
       next: (data) => {
-        this.matchs.set(data);
+        this.allMatchs.set(data);
         this.loading.set(false);
 
         // Ouvrir automatiquement la journée de la prochaine rencontre
@@ -69,18 +80,20 @@ export class MatchsComponent implements OnInit {
         this.error.set('Erreur lors du chargement des matchs');
         this.loading.set(false);
         console.error(err);
-      }
+      },
     });
   }
 
   getTeamLogo(teamName: string): string {
-    const equipe = this.equipes().find(e => e.nom === teamName);
-    return equipe?.logoUrl || 'https://ui-avatars.com/api/?name=VB&background=667eea&color=fff&size=128';
+    const equipe = this.equipes().find((e) => e.nom === teamName);
+    return (
+      equipe?.logoUrl || 'https://ui-avatars.com/api/?name=VB&background=667eea&color=fff&size=128'
+    );
   }
 
   getMatchsByJournee() {
     const matchsByJournee = new Map<number, Match[]>();
-    this.matchs().forEach(match => {
+    this.matchs().forEach((match) => {
       if (!matchsByJournee.has(match.journee)) {
         matchsByJournee.set(match.journee, []);
       }
@@ -106,7 +119,7 @@ export class MatchsComponent implements OnInit {
       weekday: 'short',
       day: '2-digit',
       month: 'short',
-      year: 'numeric'
+      year: 'numeric',
     });
   }
 
@@ -125,14 +138,18 @@ export class MatchsComponent implements OnInit {
   }
 
   isCresMatch(match: Match): boolean {
-    return match.equipeDomicile.toLowerCase().includes('crès') ||
-           match.equipeExterieur.toLowerCase().includes('crès');
+    return (
+      match.equipeDomicile.toLowerCase().includes('crès') ||
+      match.equipeExterieur.toLowerCase().includes('crès') ||
+      match.equipeDomicile.toLowerCase().includes('cres') ||
+      match.equipeExterieur.toLowerCase().includes('cres')
+    );
   }
 
   private openNextJournee() {
     // Trouver les matchs à venir (sans score)
     const matchsAVenir = this.matchs().filter(
-      match => match.scoreDomicile === undefined && match.scoreExterieur === undefined
+      (match) => match.scoreDomicile === undefined && match.scoreExterieur === undefined
     );
 
     if (matchsAVenir.length === 0) {
