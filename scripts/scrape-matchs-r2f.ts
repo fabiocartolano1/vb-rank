@@ -114,19 +114,37 @@ async function scrapeMatchs(url: string, equipesMap: Map<string, string>): Promi
     const cells = $row.find('td');
     if (cells.length < 4) return;
 
+    //check si match joué
+    let matchPlayed = false;
+
+    cells.each(function () {
+      if ($(this).is('.lienblanc_pt')) {
+        matchPlayed = true;
+        return false; // Arrête la boucle dès qu'on trouve
+      }
+    });
+
     // Extraire les données
     const dateText = $(cells[1]).text().trim();
     const heureText = $(cells[2]).text().trim();
     const equipeDomicile = $(cells[3]).text().trim();
-    const scoreText = $(cells[2]).text().trim();
     const equipeExterieur = $(cells[5]).text().trim();
-    const scoreDomicile = $(cells[6]).text().trim();
-    const scoreExterieur = $(cells[7]).text().trim();
-    const sets = $(cells[8])
-      .text()
-      .trim()
-      .split(/[,;]/)
-      .map((s) => s.trim().replace(/\s+/g, ':'));
+    let scoreText = '';
+    let scoreDomicile = '';
+    let scoreExterieur = '';
+    let sets: string[] = [];
+    let statut = 'a_venir';
+    if (matchPlayed) {
+      scoreText = $(cells[2]).text().trim();
+      scoreDomicile = $(cells[6]).text().trim();
+      scoreExterieur = $(cells[7]).text().trim();
+      sets = $(cells[8])
+        .text()
+        .trim()
+        .split(/[,;]/)
+        .map((s) => s.trim().replace(/\s+/g, ':'));
+      statut = 'termine';
+    }
 
     // Vérifier que nous avons des noms d'équipes valides
     if (
@@ -147,7 +165,8 @@ async function scrapeMatchs(url: string, equipesMap: Map<string, string>): Promi
     //const dateMatch = dateHeureText.match(/(\d{2})\/(\d{2})\/(\d{4})/);
     //if (!dateMatch) return;
 
-    //const date = `${dateMatch[3]}-${dateMatch[2]}-${dateMatch[1]}`;
+    const dateArray = dateText.split('/');
+    const date = `20${dateArray[2]}-${dateArray[1]}-${dateArray[0]}`;
 
     // Parser l'heure
     //const heureMatch = dateHeureText.match(/(\d{2}):(\d{2})/);
@@ -177,7 +196,7 @@ async function scrapeMatchs(url: string, equipesMap: Map<string, string>): Promi
     const match: any = {
       championnatId: 'regionale-2-f',
       journee: currentJournee,
-      dateText,
+      date,
       heureText,
       equipeDomicile,
       equipeDomicileId,
@@ -185,8 +204,8 @@ async function scrapeMatchs(url: string, equipesMap: Map<string, string>): Promi
       equipeExterieurId,
       scoreDomicile: scoreDomicile != '' ? scoreDomicile : null,
       scoreExterieur: scoreExterieur != '' ? scoreExterieur : null,
-      detailSets: sets != '' ? sets : null,
-      // statut,
+      detailSets: sets,
+      statut,
     };
 
     matchs.push(match);

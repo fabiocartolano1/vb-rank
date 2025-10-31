@@ -1,76 +1,99 @@
 <div class="matchs-container">
   @if (loading()) {
-    <div class="loading">Chargement des matchs...</div>
-  }
+  <div class="loading">Chargement des matchs...</div>
+  } @if (error()) {
+  <div class="error">{{ error() }}</div>
+  } @if (!loading() && !error()) {
+  <div class="matchs-list">
+    @for (journeeData of getMatchsByJournee(); track journeeData[0]) {
+    <div class="journee-section">
+      <button
+        class="journee-title"
+        (click)="toggleJournee(journeeData[0])"
+        [class.open]="isJourneeOpen(journeeData[0])"
+      >
+        <span>Journée {{ journeeData[0] }}</span>
+        <svg
+          class="chevron-icon"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="3"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <polyline points="6 9 12 15 18 9"></polyline>
+        </svg>
+      </button>
 
-  @if (error()) {
-    <div class="error">{{ error() }}</div>
-  }
-
-  @if (!loading() && !error()) {
-    <div class="matchs-list">
-      @for (journeeData of getMatchsByJournee(); track journeeData[0]) {
-        <div class="journee-section">
-          <button class="journee-title" (click)="toggleJournee(journeeData[0])" [class.open]="isJourneeOpen(journeeData[0])">
-            <span>Journée {{ journeeData[0] }}</span>
-            <svg class="chevron-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="6 9 12 15 18 9"></polyline>
-            </svg>
-          </button>
-
-          <div class="matchs-grid" [class.collapsed]="!isJourneeOpen(journeeData[0])">
-            @for (match of journeeData[1]; track match.id) {
-              <div class="match-card" [class.termine]="match.statut === 'termine'" [class.a-venir]="match.statut === 'a_venir'" [class.cres-match]="isCresMatch(match)">
-                <!-- Header: Date et Heure -->
-                <div class="match-header">
-                  <span class="date">{{ formatDate(match.date) }}</span>
-                  @if (match.heure) {
-                    <span class="heure">{{ match.heure }}</span>
-                  }
-                </div>
-
-                <!-- Corps: Équipes et Score -->
-                <div class="match-body">
-                  <!-- Équipe Domicile -->
-                  <div class="team-section domicile">
-                    <img [src]="getTeamLogo(match.equipeDomicile)" [alt]="match.equipeDomicile" class="team-logo">
-                    <span class="team-name">{{ match.equipeDomicile }}</span>
-                  </div>
-
-                  <!-- Score Central -->
-                  <div class="score-section">
-                    @if (match.scoreDomicile !== undefined && match.scoreExterieur !== undefined) {
-                      <div class="score-display">
-                        <span class="score-value">{{ match.scoreDomicile }}</span>
-                        <span class="score-separator">-</span>
-                        <span class="score-value">{{ match.scoreExterieur }}</span>
-                      </div>
-                    } @else {
-                      <div class="vs-display">VS</div>
-                    }
-                  </div>
-
-                  <!-- Équipe Extérieur -->
-                  <div class="team-section exterieur">
-                    <img [src]="getTeamLogo(match.equipeExterieur)" [alt]="match.equipeExterieur" class="team-logo">
-                    <span class="team-name">{{ match.equipeExterieur }}</span>
-                  </div>
-                </div>
-
-                <!-- Footer: Détail des sets -->
-                @if (match.detailSets && match.detailSets.length > 0) {
-                  <div class="match-footer">
-                    <div class="sets-detail">
-                      <span class="sets-label">Détail des sets:</span>
-                      <span class="sets-scores">{{ match.detailSets.join(' • ') }}</span>
-                    </div>
-                  </div>
-                }
-              </div>
+      <div class="matchs-grid" [class.collapsed]="!isJourneeOpen(journeeData[0])">
+        @for (match of journeeData[1]; track match.id) {
+        <div
+          class="match-card"
+          [class.termine]="match.statut === 'termine'"
+          [class.a-venir]="match.statut === 'a_venir'"
+          [class.cres-match]="isCresMatch(match)"
+        >
+          <!-- Header: Date et Heure -->
+          <div class="match-header">
+            <span class="date">{{ formatDate(match.date) }}</span>
+            @if (match.heure) {
+            <span class="heure">{{ match.heure }}</span>
             }
           </div>
+
+          <!-- Corps: Équipes et Score -->
+          <div class="match-body">
+            <!-- Équipe Domicile -->
+            <div class="team-section domicile">
+              <img
+                [src]="getTeamLogo(match.equipeDomicile)"
+                [alt]="match.equipeDomicile"
+                class="team-logo"
+              />
+              <span class="team-name">{{ match.equipeDomicile }}</span>
+            </div>
+
+            <!-- Score Central -->
+            <div class="score-section">
+              @if ((match.scoreDomicile !== undefined && match.scoreExterieur !== undefined) &&
+              (match.scoreDomicile !== null && match.scoreExterieur !== null)) {
+              <div class="score-display">
+                <span class="score-value">{{ match.scoreDomicile }}</span>
+                <span class="score-separator">-</span>
+                <span class="score-value">{{ match.scoreExterieur }}</span>
+              </div>
+              } @else {
+              <div class="vs-display">VS</div>
+              }
+            </div>
+
+            <!-- Équipe Extérieur -->
+            <div class="team-section exterieur">
+              <img
+                [src]="getTeamLogo(match.equipeExterieur)"
+                [alt]="match.equipeExterieur"
+                class="team-logo"
+              />
+              <span class="team-name">{{ match.equipeExterieur }}</span>
+            </div>
+          </div>
+
+          <!-- Footer: Détail des sets -->
+          @if (match.detailSets && match.detailSets.length > 0) {
+          <div class="match-footer">
+            <div class="sets-detail">
+              <span class="sets-label">Détail des sets:</span>
+              <span class="sets-scores">{{ match.detailSets.join(' • ') }}</span>
+            </div>
+          </div>
+          }
         </div>
-      }
+        }
+      </div>
     </div>
+    }
+  </div>
   }
 </div>
