@@ -6,7 +6,9 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "migrate:dev-to-prod": "npx tsx scripts/migrate-dev-to-prod.ts",
+    "sync:dev-to-prod": "npx tsx scripts/sync-dev-to-prod.ts"
   },
   "prettier": {
     "printWidth": 100,

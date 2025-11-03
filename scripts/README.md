@@ -1,6 +1,42 @@
-# Scripts de scraping et initialisation
+# 📜 Scripts de Gestion de la Base de Données
 
-Ce dossier contient les scripts pour gérer le scraping des données et l'initialisation de la base de données.
+Ce dossier contient tous les scripts utilitaires pour gérer les données Firebase : migration, scraping, et initialisation.
+
+## 🔄 Scripts de Migration DEV → PROD
+
+### Migration complète
+```bash
+npm run migrate:dev-to-prod
+```
+
+**Fichier:** `migrate-dev-to-prod.ts`
+
+Copie **toutes** les données de la base de développement vers la production.
+- Écrase les documents existants
+- Utilise des batches optimisés (500 docs à la fois)
+- Affiche des statistiques détaillées
+
+**Utiliser pour:** Initialisation de la base PROD, réinitialisation complète, premier déploiement
+
+### Synchronisation incrémentale
+```bash
+npm run sync:dev-to-prod
+```
+
+**Fichier:** `sync-dev-to-prod.ts`
+
+Synchronise intelligemment les données entre DEV et PROD.
+- Mode incrémental : Ajoute nouveaux + Met à jour modifiés
+- Mode écrasement : Force mise à jour de tous les documents
+- Compare les documents avant d'écrire
+
+**Utiliser pour:** Mises à jour régulières, ajout de nouveaux matchs, synchronisation partielle
+
+📖 **Documentation complète:** [MIGRATION_GUIDE.md](../MIGRATION_GUIDE.md)
+
+---
+
+## 🗄️ Scripts de Scraping et Import
 
 ## Scripts disponibles
 
