@@ -1,0 +1,174 @@
+<div class="agenda-container">
+  <div class="agenda-header">
+    <h2 class="agenda-title">Agenda du Club</h2>
+  </div>
+
+  @if (loading()) {
+    <div class="loading-container">
+      <div class="spinner"></div>
+      <p>Chargement de l'agenda...</p>
+    </div>
+  } @else if (error()) {
+    <div class="error-message">
+      {{ error() }}
+    </div>
+  } @else {
+    <!-- Navigation weekend -->
+    <div class="weekend-navigation">
+      <button
+        class="nav-arrow"
+        (click)="previousWeekend()"
+        [disabled]="!canGoPrevious()">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+      </button>
+
+      <div class="weekend-display">
+        <span class="weekend-label">Weekend du</span>
+        <span class="weekend-dates">
+          {{ formatShortDate(currentWeekend()) }} -
+          {{ formatShortDate(currentSunday()) }}
+        </span>
+      </div>
+
+      <button
+        class="nav-arrow"
+        (click)="nextWeekend()"
+        [disabled]="!canGoNext()">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="9 18 15 12 9 6"></polyline>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Vue Weekend -->
+    <div class="weekend-view">
+      <!-- Samedi -->
+      <div class="day-column">
+        <div class="day-header">
+          <h3 class="day-name">Samedi</h3>
+          <p class="day-date">{{ formatDate(currentWeekend()) }}</p>
+        </div>
+
+        <div class="day-matches">
+          @if (weekendMatchs().saturday.length === 0) {
+            <div class="no-matches">
+              <p>Aucun match</p>
+            </div>
+          } @else {
+            @for (item of weekendMatchs().saturday; track item.match.id) {
+              <div class="match-card"
+                   [class.match-won]="isMatchWon(item.match)"
+                   [class.match-lost]="isMatchLost(item.match)">
+                <div class="match-time">
+                  {{ item.match.heure || '--:--' }}
+                </div>
+
+                <div class="match-championship">
+                  {{ getChampionnatLabel(item.match.championnatId) }}
+                  <span class="match-journee">J{{ item.match.journee }}</span>
+                </div>
+
+                <div class="match-teams">
+                  <div class="team" [class.team-home]="item.isCresHome">
+                    @if (item.equipe?.logoUrl) {
+                      <img [src]="item.equipe?.logoUrl" alt="{{ getChampionnatFullName(item.match.championnatId) }}" class="team-logo">
+                    }
+                    <span class="team-name">{{ getChampionnatFullName(item.match.championnatId) }}</span>
+                  </div>
+
+                  <div class="match-score">
+                    @if (item.match.statut === 'termine') {
+                      <span class="score">{{ item.match.scoreDomicile }} - {{ item.match.scoreExterieur }}</span>
+                    } @else {
+                      <span class="vs">VS</span>
+                    }
+                  </div>
+
+                  <div class="team" [class.team-away]="!item.isCresHome">
+                    @if (item.adversaire?.logoUrl) {
+                      <img [src]="item.adversaire?.logoUrl" alt="{{ item.match.equipeExterieur }}" class="team-logo">
+                    }
+                    <span class="team-name">{{ item.match.equipeExterieur }}</span>
+                  </div>
+                </div>
+
+                @if (item.match.statut === 'termine' && item.match.detailSets && item.match.detailSets.length > 0) {
+                  <div class="match-sets">
+                    @for (set of item.match.detailSets; track $index) {
+                      <span class="set-score">{{ set }}</span>
+                    }
+                  </div>
+                }
+              </div>
+            }
+          }
+        </div>
+      </div>
+
+      <!-- Dimanche -->
+      <div class="day-column">
+        <div class="day-header">
+          <h3 class="day-name">Dimanche</h3>
+          <p class="day-date">{{ formatDate(currentSunday()) }}</p>
+        </div>
+
+        <div class="day-matches">
+          @if (weekendMatchs().sunday.length === 0) {
+            <div class="no-matches">
+              <p>Aucun match</p>
+            </div>
+          } @else {
+            @for (item of weekendMatchs().sunday; track item.match.id) {
+              <div class="match-card"
+                   [class.match-won]="isMatchWon(item.match)"
+                   [class.match-lost]="isMatchLost(item.match)">
+                <div class="match-time">
+                  {{ item.match.heure || '--:--' }}
+                </div>
+
+                <div class="match-championship">
+                  {{ getChampionnatLabel(item.match.championnatId) }}
+                  <span class="match-journee">J{{ item.match.journee }}</span>
+                </div>
+
+                <div class="match-teams">
+                  <div class="team" [class.team-home]="item.isCresHome">
+                    @if (item.equipe?.logoUrl) {
+                      <img [src]="item.equipe?.logoUrl" alt="{{ getChampionnatFullName(item.match.championnatId) }}" class="team-logo">
+                    }
+                    <span class="team-name">{{ getChampionnatFullName(item.match.championnatId) }}</span>
+                  </div>
+
+                  <div class="match-score">
+                    @if (item.match.statut === 'termine') {
+                      <span class="score">{{ item.match.scoreDomicile }} - {{ item.match.scoreExterieur }}</span>
+                    } @else {
+                      <span class="vs">VS</span>
+                    }
+                  </div>
+
+                  <div class="team" [class.team-away]="!item.isCresHome">
+                    @if (item.adversaire?.logoUrl) {
+                      <img [src]="item.adversaire?.logoUrl" alt="{{ item.match.equipeExterieur }}" class="team-logo">
+                    }
+                    <span class="team-name">{{ item.match.equipeExterieur }}</span>
+                  </div>
+                </div>
+
+                @if (item.match.statut === 'termine' && item.match.detailSets && item.match.detailSets.length > 0) {
+                  <div class="match-sets">
+                    @for (set of item.match.detailSets; track $index) {
+                      <span class="set-score">{{ set }}</span>
+                    }
+                  </div>
+                }
+              </div>
+            }
+          }
+        </div>
+      </div>
+    </div>
+  }
+</div>

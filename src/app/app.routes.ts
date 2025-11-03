@@ -17,5 +17,9 @@ export const routes: Routes = [
   {
     path: 'matchs-cres',
     loadComponent: () => import('./pages/matchs-cres/matchs-cres.component').then(m => m.MatchsCresComponent)
+  },
+  {
+    path: 'agenda',
+    loadComponent: () => import('./pages/agenda/agenda.component').then(m => m.AgendaComponent)
   }
 ];

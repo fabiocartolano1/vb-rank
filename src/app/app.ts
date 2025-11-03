@@ -28,6 +28,7 @@ export class App implements OnInit {
   protected readonly importStatus = signal('');
   protected readonly isImporting = signal(false);
   protected readonly cresLogoUrl = signal('');
+  protected readonly isAgendaRoute = signal(false);
 
   private firestore = inject(Firestore);
   private dataImportService = inject(DataImportService);
@@ -36,6 +37,15 @@ export class App implements OnInit {
   private equipeFilterService = inject(EquipeFilterService);
 
   async ngOnInit() {
+    // Suivre les changements de route pour cacher le sélecteur d'équipe sur la page agenda
+    this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd)
+    ).subscribe(() => {
+      this.isAgendaRoute.set(this.router.url === '/agenda');
+    });
+
+    // Vérifier la route initiale
+    this.isAgendaRoute.set(this.router.url === '/agenda');
     // Charger le logo du Crès
     this.dataService.getEquipes().subscribe({
       next: (equipes) => {

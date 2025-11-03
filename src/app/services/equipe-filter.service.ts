@@ -8,8 +8,8 @@ export class EquipeFilterService {
   private championnatMapping: { [key: string]: string } = {
     'Régionale 2 M': 'regionale-2-m',
     'Régionale 2 F': 'regionale-2-f',
-    'Pré-nationale M': 'pre-nationale-m',
-    'Pré-nationale F': 'pre-nationale-f',
+    'Pré-nationale M': 'prenationale-m',
+    'Pré-nationale F': 'prenationale-f',
     'Nationale 3 F': 'nationale-3-f'
   };
 

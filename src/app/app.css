@@ -14,6 +14,11 @@
   position: relative;
   overflow: hidden;
   border-bottom: 3px solid var(--primary-color);
+  transition: padding 0.3s ease;
+}
+
+.app-header.compact {
+  padding: 1rem 1.25rem;
 }
 
 .app-header::before {
@@ -45,6 +50,11 @@
     0 0 20px rgba(247, 98, 166, 0.6),
     0 0 40px rgba(247, 98, 166, 0.4),
     2px 2px 4px rgba(0, 0, 0, 0.3);
+  transition: font-size 0.3s ease;
+}
+
+.app-header.compact .app-title {
+  font-size: 1.75rem;
 }
 
 .equipe-selector {
