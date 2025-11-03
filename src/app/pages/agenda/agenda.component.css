@@ -6,6 +6,7 @@
 
 .agenda-header {
   margin-bottom: 1.5rem;
+  text-align: center;
 }
 
 .agenda-title {
@@ -29,7 +30,7 @@
 }
 
 .nav-arrow {
-  background: #667eea;
+  background: #1a1a1a;
   border: none;
   border-radius: 50%;
   width: 40px;
@@ -43,7 +44,7 @@
 }
 
 .nav-arrow:hover:not(:disabled) {
-  background: #5568d3;
+  background: #2a2a2a;
   transform: scale(1.1);
 }
 
@@ -98,7 +99,7 @@
 }
 
 .day-header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #1a1a1a 0%, #F762A6 100%);
   color: white;
   padding: 1.5rem;
   text-align: center;
@@ -131,7 +132,7 @@
   background: #f7fafc;
   border-radius: 10px;
   padding: 1rem;
-  border-left: 4px solid #667eea;
+  border-left: 4px solid #F762A6;
   transition: all 0.2s;
   cursor: pointer;
 }
@@ -163,7 +164,7 @@
 .match-time {
   font-size: 0.875rem;
   font-weight: 600;
-  color: #667eea;
+  color: #F762A6;
   margin-bottom: 0.5rem;
 }
 
@@ -291,7 +292,7 @@
   width: 48px;
   height: 48px;
   border: 4px solid #e2e8f0;
-  border-top-color: #667eea;
+  border-top-color: #F762A6;
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }

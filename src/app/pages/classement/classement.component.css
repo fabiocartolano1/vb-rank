@@ -4,6 +4,50 @@
   padding: 2rem 1.25rem;
 }
 
+/* Sélecteur d'équipes */
+.equipe-selector {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.equipe-pill {
+  background: transparent;
+  color: #1a1a1a;
+  border: 1px solid rgba(247, 98, 166, 0.4);
+  border-radius: 20px;
+  padding: 0.4rem 1rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  font-family: 'Poppins', sans-serif;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.equipe-pill:hover {
+  background: rgba(247, 98, 166, 0.1);
+  border-color: rgba(247, 98, 166, 0.6);
+  transform: translateY(-1px);
+}
+
+.equipe-pill.active {
+  background: #F762A6;
+  border: 2px solid #F762A6;
+  color: white;
+  font-weight: 700;
+  box-shadow: 0 2px 8px rgba(247, 98, 166, 0.3);
+}
+
+.equipe-pill:active {
+  transform: translateY(0);
+}
+
 h1 {
   color: #2c3e50;
   margin-bottom: 10px;
@@ -66,6 +110,19 @@ h1 {
 
 .classement-table tbody tr:hover {
   background-color: #f8f9fa;
+}
+
+/* Mise en avant ligne du Crès */
+.classement-table tbody tr.cres-team {
+  background: linear-gradient(90deg, rgba(247, 98, 166, 0.15) 0%, rgba(247, 98, 166, 0.06) 100%);
+  border-left: 4px solid #F762A6;
+  border-top: 2px solid rgba(247, 98, 166, 0.4);
+  border-bottom: 2px solid rgba(247, 98, 166, 0.4);
+  box-shadow: inset 0 0 0 1px rgba(247, 98, 166, 0.1);
+}
+
+.classement-table tbody tr.cres-team:hover {
+  background: linear-gradient(90deg, rgba(247, 98, 166, 0.2) 0%, rgba(247, 98, 166, 0.08) 100%);
 }
 
 .classement-table tbody tr:last-child td {

@@ -23,8 +23,18 @@ export class MatchsComponent implements OnInit {
   error = signal('');
   openJournees = signal<Set<number>>(new Set());
 
+  // Liste des championnats disponibles
+  readonly championnats = [
+    { label: 'R2 M', value: 'Régionale 2 M' },
+    { label: 'R2 F', value: 'Régionale 2 F' },
+    { label: 'PN M', value: 'Pré-nationale M' },
+    { label: 'PN F', value: 'Pré-nationale F' },
+    { label: 'N3 F', value: 'Nationale 3 F' }
+  ];
+
   // Signal pour le championnat sélectionné
   selectedChampionnatId = this.equipeFilterService.getSelectedChampionnatIdSignal();
+  selectedEquipe = this.equipeFilterService.getSelectedEquipeSignal();
 
   // Computed signals pour filtrer par championnat
   matchs = computed(() => {
@@ -40,13 +50,13 @@ export class MatchsComponent implements OnInit {
   });
 
   constructor() {
-    // Réagir aux changements de championnat
+    // Réagir aux changements de matchs (qui changent quand le championnat change)
     effect(() => {
-      const championnatId = this.selectedChampionnatId();
-      // Réinitialiser les journées ouvertes quand on change de championnat
-      this.openJournees.set(new Set());
-      // Ouvrir automatiquement la prochaine journée
-      this.openNextJournee();
+      const currentMatchs = this.matchs();
+      // Ouvrir automatiquement la prochaine journée quand les matchs changent
+      if (currentMatchs.length > 0) {
+        this.openNextJournee();
+      }
     });
   }
 
@@ -73,9 +83,6 @@ export class MatchsComponent implements OnInit {
       next: (data) => {
         this.allMatchs.set(data);
         this.loading.set(false);
-
-        // Ouvrir automatiquement la journée de la prochaine rencontre
-        this.openNextJournee();
       },
       error: (err) => {
         this.error.set('Erreur lors du chargement des matchs');
@@ -148,10 +155,13 @@ export class MatchsComponent implements OnInit {
   }
 
   private openNextJournee() {
-    // Trouver les matchs à venir (sans score)
-    const matchsAVenir = this.matchs().filter(
-      (match) => match.scoreDomicile === undefined && match.scoreExterieur === undefined
-    );
+    const now = new Date();
+
+    // Trouver les matchs à venir (date dans le futur)
+    const matchsAVenir = this.matchs().filter((match) => {
+      const matchDate = new Date(match.date + (match.heure ? 'T' + match.heure : ''));
+      return matchDate >= now;
+    });
 
     if (matchsAVenir.length === 0) {
       return; // Aucun match à venir, tout reste fermé
@@ -168,5 +178,9 @@ export class MatchsComponent implements OnInit {
     if (prochainMatch) {
       this.openJournees.set(new Set([prochainMatch.journee]));
     }
+  }
+
+  onChampionnatChange(equipe: string) {
+    this.equipeFilterService.setSelectedEquipe(equipe);
   }
 }

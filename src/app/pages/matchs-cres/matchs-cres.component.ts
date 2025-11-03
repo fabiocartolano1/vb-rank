@@ -23,8 +23,18 @@ export class MatchsCresComponent implements OnInit {
   error = signal('');
   openJournees = signal<Set<number>>(new Set());
 
+  // Liste des championnats disponibles
+  readonly championnats = [
+    { label: 'R2 M', value: 'Régionale 2 M' },
+    { label: 'R2 F', value: 'Régionale 2 F' },
+    { label: 'PN M', value: 'Pré-nationale M' },
+    { label: 'PN F', value: 'Pré-nationale F' },
+    { label: 'N3 F', value: 'Nationale 3 F' }
+  ];
+
   // Signal pour le championnat sélectionné
   selectedChampionnatId = this.equipeFilterService.getSelectedChampionnatIdSignal();
+  selectedEquipe = this.equipeFilterService.getSelectedEquipeSignal();
 
   // Computed signals pour filtrer par championnat ET par équipe du Crès
   matchs = computed(() => {
@@ -132,5 +142,9 @@ export class MatchsCresComponent implements OnInit {
       match.equipeDomicile.toLowerCase().includes('crès') ||
       match.equipeExterieur.toLowerCase().includes('crès')
     );
+  }
+
+  onChampionnatChange(equipe: string) {
+    this.equipeFilterService.setSelectedEquipe(equipe);
   }
 }

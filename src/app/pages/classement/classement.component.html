@@ -1,4 +1,16 @@
 <div class="classement-container">
+  <!-- Sélecteur de championnat -->
+  <div class="equipe-selector">
+    @for (championnat of championnats; track championnat.value) {
+      <button
+        class="equipe-pill"
+        [class.active]="selectedEquipe() === championnat.value"
+        (click)="onChampionnatChange(championnat.value)">
+        {{ championnat.label }}
+      </button>
+    }
+  </div>
+
   @if (loading()) {
     <div class="loading">Chargement du classement...</div>
   }
@@ -25,7 +37,7 @@
         </thead>
         <tbody>
           @for (equipe of equipes(); track equipe.id) {
-            <tr [class]="getRankClass(equipe.rang)">
+            <tr [class]="getRankClass(equipe.rang)" [class.cres-team]="isCresTeam(equipe.nom)">
               <td class="rank-cell">
                 <span class="rank-badge" [class]="getRankClass(equipe.rang)">
                   {{ equipe.rang }}

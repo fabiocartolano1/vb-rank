@@ -35,9 +35,31 @@
 .header-content {
   max-width: 1200px;
   margin: 0 auto;
-  text-align: center;
   position: relative;
   z-index: 1;
+}
+
+.header-title-container {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 1rem;
+}
+
+.header-logo {
+  width: 35px;
+  height: 35px;
+  border-radius: 10px;
+  object-fit: cover;
+  transition: width 0.3s ease, height 0.3s ease;
+  opacity: 0.9;
+  mask-image: radial-gradient(circle, black 60%, transparent 100%);
+  -webkit-mask-image: radial-gradient(circle, black 60%, transparent 100%);
+}
+
+.app-header.compact .header-logo {
+  width: 25px;
+  height: 25px;
 }
 
 .app-title {

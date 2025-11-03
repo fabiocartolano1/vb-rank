@@ -19,8 +19,18 @@ export class ClassementComponent implements OnInit {
   loading = signal(true);
   error = signal('');
 
+  // Liste des championnats disponibles
+  readonly championnats = [
+    { label: 'R2 M', value: 'Régionale 2 M' },
+    { label: 'R2 F', value: 'Régionale 2 F' },
+    { label: 'PN M', value: 'Pré-nationale M' },
+    { label: 'PN F', value: 'Pré-nationale F' },
+    { label: 'N3 F', value: 'Nationale 3 F' }
+  ];
+
   // Signal pour le championnat sélectionné
   selectedChampionnatId = this.equipeFilterService.getSelectedChampionnatIdSignal();
+  selectedEquipe = this.equipeFilterService.getSelectedEquipeSignal();
 
   // Computed signal pour filtrer les équipes par championnat
   equipes = computed(() => {
@@ -57,5 +67,13 @@ export class ClassementComponent implements OnInit {
 
   getDifference(setsPour: number, setsContre: number): number {
     return setsPour - setsContre;
+  }
+
+  isCresTeam(nomEquipe: string): boolean {
+    return nomEquipe.toLowerCase().includes('crès') || nomEquipe.toLowerCase().includes('cres');
+  }
+
+  onChampionnatChange(equipe: string) {
+    this.equipeFilterService.setSelectedEquipe(equipe);
   }
 }
