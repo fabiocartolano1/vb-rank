@@ -8,7 +8,12 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "migrate:dev-to-prod": "npx tsx scripts/migrate-dev-to-prod.ts",
-    "sync:dev-to-prod": "npx tsx scripts/sync-dev-to-prod.ts"
+    "sync:dev-to-prod": "npx tsx scripts/sync-dev-to-prod.ts",
+    "deploy:prod": "ng build --configuration production && firebase use prod && firebase deploy --only hosting",
+    "deploy:dev": "ng build --configuration development && firebase use dev && firebase deploy --only hosting",
+    "check:firebase": "firebase projects:list",
+    "use:dev": "firebase use dev",
+    "use:prod": "firebase use prod"
   },
   "prettier": {
     "printWidth": 100,
@@ -33,6 +38,7 @@
     "@angular/router": "^20.3.0",
     "cheerio": "^1.1.2",
     "firebase": "^11.10.0",
+    "firebase-tools": "^14.23.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.15.0"
