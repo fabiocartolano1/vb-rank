@@ -4,11 +4,12 @@ import { DataService } from '../../services/data.service';
 import { EquipeFilterService } from '../../services/equipe-filter.service';
 import { Match } from '../../models/match.model';
 import { Equipe } from '../../models/equipe.model';
+import { MatchCardComponent } from '../../components/match-card/match-card.component';
 
 @Component({
   selector: 'app-matchs-cres',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, MatchCardComponent],
   templateUrl: './matchs-cres.component.html',
   styleUrl: './matchs-cres.component.css',
 })
