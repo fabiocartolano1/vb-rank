@@ -2,9 +2,9 @@
 
 Ce dossier contient tous les scripts utilitaires pour gérer les données Firebase : migration, scraping, et initialisation.
 
-## 🔄 Scripts de Migration DEV → PROD
+## 🔄 Scripts de Migration
 
-### Migration complète
+### Migration DEV → PROD
 ```bash
 npm run migrate:dev-to-prod
 ```
@@ -17,6 +17,21 @@ Copie **toutes** les données de la base de développement vers la production.
 - Affiche des statistiques détaillées
 
 **Utiliser pour:** Initialisation de la base PROD, réinitialisation complète, premier déploiement
+
+### Migration PROD → DEV (Inverse)
+```bash
+npm run migrate:prod-to-dev
+```
+
+**Fichier:** `migrate-prod-to-dev.ts`
+
+Copie **toutes** les données de la base de production vers le développement.
+- ⚠️ ATTENTION: Supprime toutes les données DEV existantes
+- Utilise des batches optimisés (500 docs à la fois)
+- Affiche des statistiques détaillées
+- Demande confirmation avant d'agir
+
+**Utiliser pour:** Restaurer DEV depuis PROD quand PROD est plus stable, réinitialiser DEV
 
 ### Synchronisation incrémentale
 ```bash
@@ -42,13 +57,50 @@ Synchronise intelligemment les données entre DEV et PROD.
 
 ### init-championnats.ts
 
-Initialise les 5 championnats dans Firebase avec leurs données de base.
+Initialise les 5 championnats seniors dans Firebase avec leurs données de base.
 
 **Utilisation:**
 
 ```bash
 npx tsx scripts/init-championnats.ts
 ```
+
+### add-jeunes-championnats.ts
+
+Ajoute les 6 championnats jeunes dans Firebase.
+
+**Utilisation:**
+
+```bash
+npm run add:jeunes
+```
+
+**Championnats ajoutés:**
+- M18M
+- BFC
+- BMB
+- MFD
+- MMB
+- CFD
+
+### Scripts de scraping jeunes
+
+Scrape les classements et matchs des championnats jeunes :
+
+```bash
+npm run scrape:m18m    # M18 Masculin
+npm run scrape:bfc     # Benjamines Filles Comité
+npm run scrape:bmb     # Benjamins Mixtes Brassage
+npm run scrape:mfd     # Minimes Filles Départemental
+npm run scrape:mmb     # Minimes Mixtes Brassage
+npm run scrape:cfd     # Cadettes Filles Départemental
+```
+
+**Fonctionnement:**
+- Récupère l'URL depuis Firebase
+- Scrape le classement et crée les équipes
+- Scrape les matchs et les lie aux équipes
+- Supprime les matchs existants avant de les recréer
 
 ### link-equipes-ids.ts
 

@@ -6,11 +6,19 @@ import { Injectable, signal } from '@angular/core';
 export class EquipeFilterService {
   // Mapping entre les noms affichés et les IDs des championnats
   private championnatMapping: { [key: string]: string } = {
+    // Adultes
     'Régionale 2 M': 'regionale-2-m',
     'Régionale 2 F': 'regionale-2-f',
     'Pré-nationale M': 'prenationale-m',
     'Pré-nationale F': 'prenationale-f',
-    'Nationale 3 F': 'nationale-3-f'
+    'Nationale 3 F': 'nationale-3-f',
+    // Jeunes (ils sont déjà en format ID)
+    'm18-m': 'm18-m',
+    'bfc': 'bfc',
+    'bmb': 'bmb',
+    'mfd': 'mfd',
+    'mmb': 'mmb',
+    'cfd': 'cfd'
   };
 
   private selectedEquipe = signal('Régionale 2 M');
@@ -23,10 +31,8 @@ export class EquipeFilterService {
   setSelectedEquipe(equipe: string) {
     this.selectedEquipe.set(equipe);
     // Mettre à jour l'ID du championnat correspondant
-    const championnatId = this.championnatMapping[equipe];
-    if (championnatId) {
-      this.selectedChampionnatId.set(championnatId);
-    }
+    const championnatId = this.championnatMapping[equipe] || equipe;
+    this.selectedChampionnatId.set(championnatId);
   }
 
   // Observable pour que les composants puissent réagir aux changements

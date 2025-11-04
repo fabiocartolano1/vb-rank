@@ -23,13 +23,20 @@ export class MatchsComponent implements OnInit {
   error = signal('');
   openJournees = signal<Set<number>>(new Set());
 
-  // Liste des championnats disponibles
   readonly championnats = [
-    { label: 'R2 M', value: 'Régionale 2 M' },
-    { label: 'R2 F', value: 'Régionale 2 F' },
-    { label: 'PN M', value: 'Pré-nationale M' },
-    { label: 'PN F', value: 'Pré-nationale F' },
-    { label: 'N3 F', value: 'Nationale 3 F' }
+    // Adultes
+    { label: 'N3 F', value: 'Nationale 3 F' },
+    { label: 'Prénat M', value: 'Pré-nationale M' },
+    { label: 'Prénat F', value: 'Pré-nationale F' },
+    { label: 'Regio M', value: 'Régionale 2 M' },
+    { label: 'Regio F', value: 'Régionale 2 F' },
+    // Jeunes
+    { label: 'M18 M', value: 'm18-m' },
+    { label: 'Benjamines', value: 'bfc' },
+    { label: 'Benjamins', value: 'bmb' },
+    { label: 'Minimes F', value: 'mfd' },
+    { label: 'Minimes M', value: 'mmb' },
+    { label: 'Cadettes', value: 'cfd' },
   ];
 
   // Signal pour le championnat sélectionné
@@ -102,6 +109,14 @@ export class MatchsComponent implements OnInit {
   getMatchsByJournee() {
     const matchsByJournee = new Map<number, Match[]>();
     this.matchs().forEach((match) => {
+      // Cacher les matchs avec "xxx" (journée sans match)
+      if (
+        match.equipeDomicile.toLowerCase().includes('xxx') ||
+        match.equipeExterieur.toLowerCase().includes('xxx')
+      ) {
+        return;
+      }
+
       if (!matchsByJournee.has(match.journee)) {
         matchsByJournee.set(match.journee, []);
       }

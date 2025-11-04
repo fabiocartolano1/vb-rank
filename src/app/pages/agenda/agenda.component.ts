@@ -140,16 +140,17 @@ export class AgendaComponent implements OnInit {
         // Filtrer uniquement les matchs à domicile du Crès
         return matchDate === dayString && isCresHome;
       })
+      .filter(
+        (match) =>
+          !match.equipeDomicile.toLowerCase().includes('xxx') &&
+          !match.equipeExterieur.toLowerCase().includes('xxx')
+      )
       .map((match) => {
         const isCresHome = true; // Toujours à domicile maintenant
 
-        const cresEquipe = equipes.find(e =>
-          e.id === match.equipeDomicileId
-        );
+        const cresEquipe = equipes.find((e) => e.id === match.equipeDomicileId);
 
-        const adversaire = equipes.find(e =>
-          e.id === match.equipeExterieurId
-        );
+        const adversaire = equipes.find((e) => e.id === match.equipeExterieurId);
 
         return {
           match,
@@ -185,7 +186,7 @@ export class AgendaComponent implements OnInit {
     const now = new Date();
 
     // Trouver le premier weekend >= aujourd'hui
-    const nextIndex = weekends.findIndex(weekend => {
+    const nextIndex = weekends.findIndex((weekend) => {
       const sunday = new Date(weekend);
       sunday.setDate(weekend.getDate() + 1);
       return sunday >= now;
@@ -233,6 +234,12 @@ export class AgendaComponent implements OnInit {
       'prenationale-m': 'Pré-nationale Masculine',
       'prenationale-f': 'Pré-nationale Féminine',
       'nationale-3-f': 'Nationale 3 Féminine',
+      'm18-m': 'M18 Masculins',
+      bfc: 'Benjamines',
+      bmb: 'Benjamins',
+      mfd: 'Minimes Féminine',
+      mmb: 'Minimes Masculins',
+      cfd: 'Cadettes',
     };
     return championnatId ? mapping[championnatId] || championnatId : '';
   }
@@ -247,17 +254,21 @@ export class AgendaComponent implements OnInit {
 
   isMatchWon(match: Match): boolean {
     // Le Crès est toujours à domicile maintenant
-    return match.statut === 'termine' &&
-           match.scoreDomicile !== undefined &&
-           match.scoreExterieur !== undefined &&
-           match.scoreDomicile > match.scoreExterieur;
+    return (
+      match.statut === 'termine' &&
+      match.scoreDomicile !== undefined &&
+      match.scoreExterieur !== undefined &&
+      match.scoreDomicile > match.scoreExterieur
+    );
   }
 
   isMatchLost(match: Match): boolean {
     // Le Crès est toujours à domicile maintenant
-    return match.statut === 'termine' &&
-           match.scoreDomicile !== undefined &&
-           match.scoreExterieur !== undefined &&
-           match.scoreDomicile < match.scoreExterieur;
+    return (
+      match.statut === 'termine' &&
+      match.scoreDomicile !== undefined &&
+      match.scoreExterieur !== undefined &&
+      match.scoreDomicile < match.scoreExterieur
+    );
   }
 }

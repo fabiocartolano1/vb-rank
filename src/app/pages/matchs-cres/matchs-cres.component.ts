@@ -25,11 +25,19 @@ export class MatchsCresComponent implements OnInit {
 
   // Liste des championnats disponibles
   readonly championnats = [
-    { label: 'R2 M', value: 'Régionale 2 M' },
-    { label: 'R2 F', value: 'Régionale 2 F' },
-    { label: 'PN M', value: 'Pré-nationale M' },
-    { label: 'PN F', value: 'Pré-nationale F' },
-    { label: 'N3 F', value: 'Nationale 3 F' }
+    // Adultes
+    { label: 'N3 F', value: 'Nationale 3 F' },
+    { label: 'Prénat M', value: 'Pré-nationale M' },
+    { label: 'Prénat F', value: 'Pré-nationale F' },
+    { label: 'Regio M', value: 'Régionale 2 M' },
+    { label: 'Regio F', value: 'Régionale 2 F' },
+    // Jeunes
+    { label: 'M18 M', value: 'm18-m' },
+    { label: 'Benjamines', value: 'bfc' },
+    { label: 'Benjamins', value: 'bmb' },
+    { label: 'Minimes F', value: 'mfd' },
+    { label: 'Minimes M', value: 'mmb' },
+    { label: 'Cadettes', value: 'cfd' },
   ];
 
   // Signal pour le championnat sélectionné
@@ -105,12 +113,18 @@ export class MatchsCresComponent implements OnInit {
   }
 
   getSortedMatchs() {
-    // Trier tous les matchs par date
-    return [...this.matchs()].sort((a, b) => {
-      const dateA = new Date(a.date + (a.heure ? 'T' + a.heure : '')).getTime();
-      const dateB = new Date(b.date + (b.heure ? 'T' + b.heure : '')).getTime();
-      return dateA - dateB;
-    });
+    // Filtrer les matchs avec "xxx" et trier par date
+    return [...this.matchs()]
+      .filter(
+        (match) =>
+          !match.equipeDomicile.toLowerCase().includes('xxx') &&
+          !match.equipeExterieur.toLowerCase().includes('xxx')
+      )
+      .sort((a, b) => {
+        const dateA = new Date(a.date + (a.heure ? 'T' + a.heure : '')).getTime();
+        const dateB = new Date(b.date + (b.heure ? 'T' + b.heure : '')).getTime();
+        return dateA - dateB;
+      });
   }
 
   formatDate(dateString: string): string {

@@ -1,15 +1,18 @@
 {
   "permissions": {
     "allow": [
-      "WebSearch",
-      "Bash(ng serve:*)",
-      "Bash(npm install:*)",
-      "Bash(npx tsx:*)",
-      "Bash(npm run build:*)",
-      "Bash(curl:*)",
-      "Bash(iconv:*)",
-      "mcp__ide__getDiagnostics",
-      "Bash(firebase:*)"
+      "Bash(for id in m18-m bfc bmb mfd mmb)",
+      "Bash(do cp scrape-cfd.ts scrape-temp-$id.ts)",
+      "Bash(scrape-m18m.ts)",
+      "Bash(scrape-bfc.ts)",
+      "Bash(scrape-bmb.ts)",
+      "Bash(scrape-mfd.ts)",
+      "Bash(scrape-mmb.ts)",
+      "Bash(npm run scrape:m18m:*)",
+      "Bash(npm run scrape:bfc:*)",
+      "Bash(npm run scrape:mfd:*)",
+      "Bash(npm run scrape:mmb:*)",
+      "Bash(npm run sync:logos-r2m:*)"
     ],
     "deny": [],
     "ask": []

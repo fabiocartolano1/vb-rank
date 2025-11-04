@@ -4,13 +4,38 @@
   padding: 2rem 1.25rem;
 }
 
-/* Sélecteur d'équipes */
+/* Sélecteur d'équipes - Carousel horizontal */
 .equipe-selector {
   display: flex;
   flex-wrap: nowrap;
-  justify-content: center;
   gap: 0.5rem;
   margin-bottom: 1.5rem;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0.5rem 1rem;
+  scroll-behavior: smooth;
+  /* Centrer quand il y a de la place */
+  justify-content: flex-start;
+  /* Masquer la scrollbar mais garder le scroll */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(247, 98, 166, 0.3) transparent;
+}
+
+.equipe-selector::-webkit-scrollbar {
+  height: 6px;
+}
+
+.equipe-selector::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.equipe-selector::-webkit-scrollbar-thumb {
+  background: rgba(247, 98, 166, 0.3);
+  border-radius: 3px;
+}
+
+.equipe-selector::-webkit-scrollbar-thumb:hover {
+  background: rgba(247, 98, 166, 0.5);
 }
 
 .equipe-pill {
