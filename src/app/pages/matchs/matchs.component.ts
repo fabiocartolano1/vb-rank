@@ -27,10 +27,10 @@ export class MatchsComponent implements OnInit {
   readonly championnats = [
     // Adultes
     { label: 'Nationale 3 F', value: 'Nationale 3 F' },
-    { label: 'Prénat M', value: 'Pré-nationale M' },
-    { label: 'Prénat F', value: 'Pré-nationale F' },
-    { label: 'Regio M', value: 'Régionale 2 M' },
-    { label: 'Regio F', value: 'Régionale 2 F' },
+    { label: 'Prénationale M', value: 'Pré-nationale M' },
+    { label: 'Prénationale F', value: 'Pré-nationale F' },
+    { label: 'Régionale 2 M', value: 'Régionale 2 M' },
+    { label: 'Régionale 2 F', value: 'Régionale 2 F' },
     // Jeunes
     { label: 'M18 M', value: 'm18-m' },
     { label: 'Benjamines', value: 'bfc' },
@@ -223,7 +223,7 @@ export class MatchsComponent implements OnInit {
 
       window.scrollTo({
         top: offsetPosition,
-        behavior: 'smooth'
+        behavior: 'smooth',
       });
     }
   }
