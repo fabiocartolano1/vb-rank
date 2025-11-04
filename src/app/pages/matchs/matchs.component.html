@@ -13,7 +13,7 @@
   } @if (!loading() && !error()) {
   <div class="matchs-list">
     @for (journeeData of getMatchsByJournee(); track journeeData[0]) {
-    <div class="journee-section">
+    <div class="journee-section" [id]="'journee-' + journeeData[0]">
       <button
         class="journee-title"
         (click)="toggleJournee(journeeData[0])"

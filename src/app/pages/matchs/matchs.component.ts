@@ -66,6 +66,17 @@ export class MatchsComponent implements OnInit {
         this.openNextJournee();
       }
     });
+
+    // Scroller vers la journée ouverte après le rendu
+    effect(() => {
+      const openJournees = this.openJournees();
+      if (openJournees.size > 0) {
+        // Attendre que le DOM soit mis à jour
+        setTimeout(() => {
+          this.scrollToOpenJournee();
+        }, 100);
+      }
+    });
   }
 
   ngOnInit() {
@@ -193,6 +204,27 @@ export class MatchsComponent implements OnInit {
     // Ouvrir la journée du prochain match
     if (prochainMatch) {
       this.openJournees.set(new Set([prochainMatch.journee]));
+    }
+  }
+
+  private scrollToOpenJournee() {
+    const openJournees = this.openJournees();
+    if (openJournees.size === 0) return;
+
+    // Récupérer la première journée ouverte
+    const firstOpenJournee = Array.from(openJournees)[0];
+    const element = document.getElementById(`journee-${firstOpenJournee}`);
+
+    if (element) {
+      // Calculer l'offset pour positionner l'élément en haut avec un peu de marge
+      const offset = 100; // Marge en pixels depuis le haut
+      const elementPosition = element.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.pageYOffset - offset;
+
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: 'smooth'
+      });
     }
   }
 

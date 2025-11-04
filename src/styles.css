@@ -22,6 +22,43 @@
   --border-radius: 12px;
   --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   --transition: all 0.3s ease;
+
+  /* Couleurs spécifiques pour le dark mode */
+  --card-bg: #ffffff;
+  --card-header-bg: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  --card-border: #dee2e6;
+  --table-header-bg: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+  --table-row-hover: #f8f9fa;
+  --scrollbar-track: #f1f1f1;
+  --scrollbar-thumb: var(--primary-color);
+  --scrollbar-thumb-hover: #e5508f;
+}
+
+/* Dark mode variables */
+[data-theme="dark"] {
+  --primary-color: #F762A6;
+  --secondary-color: #e0e0e0;
+  --accent-color: #F762A6;
+  --success-color: #2ecc71;
+  --danger-color: #e74c3c;
+  --warning-color: #f39c12;
+  --info-color: #3498db;
+  --dark-color: #e0e0e0;
+  --light-color: #1a1a1a;
+  --bg-color: #0f0f0f;
+  --text-color: #e0e0e0;
+  --text-light: #a0a0a0;
+  --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+
+  /* Couleurs spécifiques pour le dark mode */
+  --card-bg: #1a1a1a;
+  --card-header-bg: linear-gradient(135deg, #2a2a2a 0%, #1f1f1f 100%);
+  --card-border: #333333;
+  --table-header-bg: linear-gradient(135deg, #2a2a2a 0%, #1f1f1f 100%);
+  --table-row-hover: #252525;
+  --scrollbar-track: #2a2a2a;
+  --scrollbar-thumb: var(--primary-color);
+  --scrollbar-thumb-hover: #ff7bb8;
 }
 
 body {
@@ -48,16 +85,16 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: var(--scrollbar-track);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--primary-color);
+  background: var(--scrollbar-thumb);
   border-radius: 5px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #e5508f;
+  background: var(--scrollbar-thumb-hover);
 }
 
 /* Mobile first - Responsive utilities */

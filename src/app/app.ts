@@ -5,11 +5,12 @@ import { CommonModule } from '@angular/common';
 import { DataImportService } from './services/data-import.service';
 import { DataService } from './services/data.service';
 import { EquipeFilterService } from './services/equipe-filter.service';
+import { ThemeToggleComponent } from './components/theme-toggle/theme-toggle';
 import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, CommonModule],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, CommonModule, ThemeToggleComponent],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })

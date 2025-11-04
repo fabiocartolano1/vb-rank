@@ -19,10 +19,10 @@
   gap: 0.75rem;
   min-width: 200px;
   padding: 0.75rem 1.25rem;
-  background: white;
+  background: var(--card-bg);
   border: 2px solid #F762A6;
   border-radius: 12px;
-  color: #1a1a1a;
+  color: var(--text-color);
   font-size: 0.875rem;
   font-weight: 600;
   font-family: 'Poppins', sans-serif;
@@ -58,7 +58,7 @@
   left: 50%;
   transform: translateX(-50%);
   min-width: 200px;
-  background: white;
+  background: var(--card-bg);
   border: 2px solid #F762A6;
   border-radius: 12px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
@@ -83,7 +83,7 @@
   padding: 0.75rem 1.25rem;
   background: transparent;
   border: none;
-  color: #1a1a1a;
+  color: var(--text-color);
   font-size: 0.875rem;
   font-weight: 500;
   font-family: 'Poppins', sans-serif;
@@ -106,7 +106,7 @@
 
 .equipe-pill {
   background: transparent;
-  color: #1a1a1a;
+  color: var(--text-color);
   border: 1px solid rgba(247, 98, 166, 0.4);
   border-radius: 20px;
   padding: 0.4rem 1rem;
@@ -140,7 +140,7 @@
 }
 
 h1 {
-  color: #2c3e50;
+  color: var(--text-color);
   margin-bottom: 10px;
   text-align: center;
   font-size: 2rem;
@@ -148,7 +148,7 @@ h1 {
 
 .subtitle {
   text-align: center;
-  color: #7f8c8d;
+  color: var(--text-light);
   margin-bottom: 30px;
   font-size: 1.1rem;
 }
@@ -164,7 +164,7 @@ h1 {
 }
 
 .table-container {
-  background: white;
+  background: var(--card-bg);
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   overflow: hidden;
@@ -177,7 +177,7 @@ h1 {
 }
 
 .classement-table thead {
-  background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+  background: var(--table-header-bg);
   color: white;
   border-bottom: 2px solid var(--primary-color);
 }
@@ -192,7 +192,8 @@ h1 {
 
 .classement-table td {
   padding: 15px 10px 15px 20px;
-  border-bottom: 1px solid #ecf0f1;
+  border-bottom: 1px solid var(--card-border);
+  color: var(--text-color);
 }
 
 .classement-table tbody tr {
@@ -200,7 +201,7 @@ h1 {
 }
 
 .classement-table tbody tr:hover {
-  background-color: #f8f9fa;
+  background-color: var(--table-row-hover);
 }
 
 /* Mise en avant ligne du Crès */
@@ -249,8 +250,8 @@ h1 {
   border-radius: 50%;
   font-weight: bold;
   text-align: center;
-  background: #1a1a1a;
-  color: white;
+  background: var(--text-color);
+  color: var(--bg-color);
   border: 2px solid var(--primary-color);
 }
 
@@ -331,7 +332,7 @@ tr.bronze {
 
 /* Légende */
 .legend {
-  background: white;
+  background: var(--card-bg);
   border-radius: 12px;
   padding: 20px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -340,7 +341,7 @@ tr.bronze {
 .legend h3 {
   margin-top: 0;
   margin-bottom: 15px;
-  color: #2c3e50;
+  color: var(--text-color);
   font-size: 1.2rem;
 }
 
