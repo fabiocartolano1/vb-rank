@@ -5,11 +5,12 @@ import { EquipeFilterService } from '../../services/equipe-filter.service';
 import { Match } from '../../models/match.model';
 import { Equipe } from '../../models/equipe.model';
 import { MatchCardComponent } from '../../components/match-card/match-card.component';
+import { ChampionnatDropdownComponent } from '../../components/championnat-dropdown/championnat-dropdown';
 
 @Component({
   selector: 'app-matchs-cres',
   standalone: true,
-  imports: [CommonModule, MatchCardComponent],
+  imports: [CommonModule, MatchCardComponent, ChampionnatDropdownComponent],
   templateUrl: './matchs-cres.component.html',
   styleUrl: './matchs-cres.component.css',
 })
@@ -26,7 +27,7 @@ export class MatchsCresComponent implements OnInit {
   // Liste des championnats disponibles
   readonly championnats = [
     // Adultes
-    { label: 'N3 F', value: 'Nationale 3 F' },
+    { label: 'Nationale 3 F', value: 'Nationale 3 F' },
     { label: 'Prénat M', value: 'Pré-nationale M' },
     { label: 'Prénat F', value: 'Pré-nationale F' },
     { label: 'Regio M', value: 'Régionale 2 M' },

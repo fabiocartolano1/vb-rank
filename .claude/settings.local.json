@@ -12,7 +12,8 @@
       "Bash(npm run scrape:bfc:*)",
       "Bash(npm run scrape:mfd:*)",
       "Bash(npm run scrape:mmb:*)",
-      "Bash(npm run sync:logos-r2m:*)"
+      "Bash(npm run sync:logos-r2m:*)",
+      "Bash(ng generate:*)"
     ],
     "deny": [],
     "ask": []

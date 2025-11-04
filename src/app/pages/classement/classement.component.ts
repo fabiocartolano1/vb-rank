@@ -1,13 +1,14 @@
-import { Component, inject, OnInit, signal, computed, effect } from '@angular/core';
+import { Component, inject, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DataService } from '../../services/data.service';
 import { Equipe } from '../../models/equipe.model';
 import { EquipeFilterService } from '../../services/equipe-filter.service';
+import { ChampionnatDropdownComponent } from '../../components/championnat-dropdown/championnat-dropdown';
 
 @Component({
   selector: 'app-classement',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, ChampionnatDropdownComponent],
   templateUrl: './classement.component.html',
   styleUrl: './classement.component.css',
 })
@@ -22,7 +23,7 @@ export class ClassementComponent implements OnInit {
   // Liste des championnats disponibles
   readonly championnats = [
     // Adultes
-    { label: 'N3 F', value: 'Nationale 3 F' },
+    { label: 'Nationale 3 F', value: 'Nationale 3 F' },
     { label: 'Prénat M', value: 'Pré-nationale M' },
     { label: 'Prénat F', value: 'Pré-nationale F' },
     { label: 'Regio M', value: 'Régionale 2 M' },

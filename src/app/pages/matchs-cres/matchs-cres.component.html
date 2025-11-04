@@ -1,15 +1,10 @@
 <div class="matchs-container">
   <!-- Sélecteur de championnat -->
-  <div class="equipe-selector">
-    @for (championnat of championnats; track championnat.value) {
-      <button
-        class="equipe-pill"
-        [class.active]="selectedEquipe() === championnat.value"
-        (click)="onChampionnatChange(championnat.value)">
-        {{ championnat.label }}
-      </button>
-    }
-  </div>
+  <app-championnat-dropdown
+    [championnats]="championnats"
+    [selectedValue]="selectedEquipe()"
+    (selectionChange)="onChampionnatChange($event)">
+  </app-championnat-dropdown>
 
   @if (loading()) {
   <div class="loading">Chargement des matchs...</div>

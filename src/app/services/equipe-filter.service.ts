@@ -4,6 +4,8 @@ import { Injectable, signal } from '@angular/core';
   providedIn: 'root'
 })
 export class EquipeFilterService {
+  private readonly STORAGE_KEY = 'vb-rank-selected-championnat';
+
   // Mapping entre les noms affichés et les IDs des championnats
   private championnatMapping: { [key: string]: string } = {
     // Adultes
@@ -21,8 +23,29 @@ export class EquipeFilterService {
     'cfd': 'cfd'
   };
 
-  private selectedEquipe = signal('Régionale 2 M');
-  private selectedChampionnatId = signal('regionale-2-m');
+  private selectedEquipe = signal(this.loadFromStorage());
+  private selectedChampionnatId = signal(this.getInitialChampionnatId());
+
+  private loadFromStorage(): string {
+    if (typeof window !== 'undefined' && window.localStorage) {
+      const stored = localStorage.getItem(this.STORAGE_KEY);
+      if (stored) {
+        return stored;
+      }
+    }
+    return 'Régionale 2 M'; // Valeur par défaut
+  }
+
+  private getInitialChampionnatId(): string {
+    const equipe = this.loadFromStorage();
+    return this.championnatMapping[equipe] || equipe;
+  }
+
+  private saveToStorage(equipe: string): void {
+    if (typeof window !== 'undefined' && window.localStorage) {
+      localStorage.setItem(this.STORAGE_KEY, equipe);
+    }
+  }
 
   getSelectedEquipe() {
     return this.selectedEquipe();
@@ -33,6 +56,8 @@ export class EquipeFilterService {
     // Mettre à jour l'ID du championnat correspondant
     const championnatId = this.championnatMapping[equipe] || equipe;
     this.selectedChampionnatId.set(championnatId);
+    // Sauvegarder dans le localStorage
+    this.saveToStorage(equipe);
   }
 
   // Observable pour que les composants puissent réagir aux changements
