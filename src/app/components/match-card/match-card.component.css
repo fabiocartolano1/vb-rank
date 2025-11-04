@@ -1,6 +1,6 @@
 /* === MATCH CARD === */
 .match-card {
-  background: white;
+  background: var(--card-bg);
   border-radius: 16px;
   overflow: hidden;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
@@ -21,9 +21,9 @@
   border-color: var(--text-light);
 }
 
-/* Match du Crès - Fond noir */
+/* Match du Crès - Mode clair : fond blanc pour ressortir */
 .match-card.cres-match {
-  background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+  background: linear-gradient(135deg, #ffffff 0%, #f5f5f5 100%);
   border: 2px solid var(--primary-color);
   box-shadow: 0 6px 20px rgba(247, 98, 166, 0.3);
 }
@@ -33,12 +33,12 @@
 }
 
 .match-card.cres-match .match-header {
-  background: linear-gradient(135deg, #2a2a2a 0%, #3a3a3a 100%);
+  background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
   border-bottom: 1px solid var(--primary-color);
 }
 
 .match-card.cres-match .date {
-  color: #e0e0e0;
+  color: #666666;
 }
 
 .match-card.cres-match .heure {
@@ -46,30 +46,82 @@
 }
 
 .match-card.cres-match .team-name {
-  color: white;
+  color: #1a1a1a;
 }
 
 .match-card.cres-match .score-display {
   background: linear-gradient(135deg, var(--primary-color) 0%, #e5508f 100%);
-  border-color: white;
+  border-color: #1a1a1a;
 }
 
 .match-card.cres-match .vs-display {
-  background: #2a2a2a;
+  background: #f5f5f5;
   border-color: var(--primary-color);
   color: var(--primary-color);
 }
 
 .match-card.cres-match .match-footer {
-  background: linear-gradient(135deg, #2a2a2a 0%, #3a3a3a 100%);
+  background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
   border-top: 1px solid var(--primary-color);
 }
 
 .match-card.cres-match .sets-label {
-  color: #b0b0b0;
+  color: #666666;
 }
 
 .match-card.cres-match .sets-scores {
+  color: var(--primary-color);
+}
+
+/* Match du Crès - Mode sombre : fond noir pour ressortir */
+[data-theme="dark"] .match-card.cres-match {
+  background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+  border: 2px solid var(--primary-color);
+  box-shadow: 0 6px 20px rgba(247, 98, 166, 0.5);
+}
+
+[data-theme="dark"] .match-card.cres-match:hover {
+  box-shadow: 0 10px 30px rgba(247, 98, 166, 0.6);
+}
+
+[data-theme="dark"] .match-card.cres-match .match-header {
+  background: linear-gradient(135deg, #2a2a2a 0%, #3a3a3a 100%);
+  border-bottom: 1px solid var(--primary-color);
+}
+
+[data-theme="dark"] .match-card.cres-match .date {
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] .match-card.cres-match .heure {
+  color: var(--primary-color);
+}
+
+[data-theme="dark"] .match-card.cres-match .team-name {
+  color: white;
+}
+
+[data-theme="dark"] .match-card.cres-match .score-display {
+  background: linear-gradient(135deg, var(--primary-color) 0%, #e5508f 100%);
+  border-color: white;
+}
+
+[data-theme="dark"] .match-card.cres-match .vs-display {
+  background: #2a2a2a;
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+}
+
+[data-theme="dark"] .match-card.cres-match .match-footer {
+  background: linear-gradient(135deg, #2a2a2a 0%, #3a3a3a 100%);
+  border-top: 1px solid var(--primary-color);
+}
+
+[data-theme="dark"] .match-card.cres-match .sets-label {
+  color: #b0b0b0;
+}
+
+[data-theme="dark"] .match-card.cres-match .sets-scores {
   color: var(--primary-color);
 }
 
@@ -80,14 +132,14 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.5rem 0.75rem;
-  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-  border-bottom: 1px solid #dee2e6;
+  background: var(--card-header-bg);
+  border-bottom: 1px solid var(--card-border);
 }
 
 .date {
   font-size: 0.75rem;
   font-weight: 600;
-  color: #495057;
+  color: var(--text-light);
   text-transform: capitalize;
 }
 
@@ -142,7 +194,7 @@
   font-weight: 600;
   font-size: 0.75rem;
   line-height: 1.2;
-  color: #1a1a1a;
+  color: var(--text-color);
   font-family: 'Poppins', sans-serif;
   max-width: 120px;
   text-align: center;
@@ -159,7 +211,7 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+  background: var(--table-header-bg);
   padding: 0.5rem 0.75rem;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
@@ -189,7 +241,7 @@
   color: var(--primary-color);
   letter-spacing: 1.5px;
   padding: 0.5rem 0.875rem;
-  background: #f8f9fa;
+  background: var(--card-header-bg);
   border-radius: 8px;
   border: 2px dashed var(--primary-color);
 }
@@ -197,8 +249,8 @@
 /* === MATCH FOOTER === */
 .match-footer {
   padding: 0.75rem 1rem;
-  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-  border-top: 1px solid #dee2e6;
+  background: var(--card-header-bg);
+  border-top: 1px solid var(--card-border);
 }
 
 .sets-detail {
@@ -212,7 +264,7 @@
 .sets-label {
   font-weight: 700;
   font-size: 0.75rem;
-  color: #495057;
+  color: var(--text-light);
   font-family: 'Poppins', sans-serif;
 }
 

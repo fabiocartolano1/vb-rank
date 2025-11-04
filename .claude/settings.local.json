@@ -1,16 +1,25 @@
 {
   "permissions": {
     "allow": [
-      "WebSearch",
-      "Bash(ng serve:*)",
-      "Bash(npm install:*)",
-      "Bash(npx tsx:*)",
+      "Bash(for id in m18-m bfc bmb mfd mmb)",
+      "Bash(do cp scrape-cfd.ts scrape-temp-$id.ts)",
+      "Bash(scrape-m18m.ts)",
+      "Bash(scrape-bfc.ts)",
+      "Bash(scrape-bmb.ts)",
+      "Bash(scrape-mfd.ts)",
+      "Bash(scrape-mmb.ts)",
+      "Bash(npm run scrape:m18m:*)",
+      "Bash(npm run scrape:bfc:*)",
+      "Bash(npm run scrape:mfd:*)",
+      "Bash(npm run scrape:mmb:*)",
+      "Bash(npm run sync:logos-r2m:*)",
+      "Bash(ng generate:*)",
       "Bash(npm run build:*)",
       "Bash(curl:*)",
       "Bash(iconv:*)",
       "mcp__ide__getDiagnostics",
       "Bash(firebase:*)",
-      "Bash(git merge darkmode --no-ff -m \"$(cat <<''EOF''\nMerge darkmode branch into main\n\nThis merge adds complete dark mode functionality to the application:\n\n✨ Features:\n- Theme toggle button with sun/moon icons\n- Automatic theme persistence via localStorage\n- System preference detection on first load\n- Smooth theme transitions\n\n🎨 Design:\n- All components adapted for dark mode\n- Club pink (#F762A6) preserved in both themes\n- Crès team matches highlighted appropriately\n- Mobile navigation bar theme-aware\n\n🚀 UX Improvements:\n- Auto-scroll to next journée in match list\n- Enhanced contrast in both modes\n\n🤖 Generated with Claude Code\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")"
+      "Bash(git:*)"
     ],
     "deny": [],
     "ask": []

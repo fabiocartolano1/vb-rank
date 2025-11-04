@@ -5,11 +5,12 @@ import { EquipeFilterService } from '../../services/equipe-filter.service';
 import { Match } from '../../models/match.model';
 import { Equipe } from '../../models/equipe.model';
 import { MatchCardComponent } from '../../components/match-card/match-card.component';
+import { ChampionnatDropdownComponent } from '../../components/championnat-dropdown/championnat-dropdown';
 
 @Component({
   selector: 'app-matchs',
   standalone: true,
-  imports: [CommonModule, MatchCardComponent],
+  imports: [CommonModule, MatchCardComponent, ChampionnatDropdownComponent],
   templateUrl: './matchs.component.html',
   styleUrl: './matchs.component.css',
 })
@@ -23,13 +24,20 @@ export class MatchsComponent implements OnInit {
   error = signal('');
   openJournees = signal<Set<number>>(new Set());
 
-  // Liste des championnats disponibles
   readonly championnats = [
-    { label: 'R2 M', value: 'Régionale 2 M' },
-    { label: 'R2 F', value: 'Régionale 2 F' },
-    { label: 'PN M', value: 'Pré-nationale M' },
-    { label: 'PN F', value: 'Pré-nationale F' },
-    { label: 'N3 F', value: 'Nationale 3 F' }
+    // Adultes
+    { label: 'Nationale 3 F', value: 'Nationale 3 F' },
+    { label: 'Prénat M', value: 'Pré-nationale M' },
+    { label: 'Prénat F', value: 'Pré-nationale F' },
+    { label: 'Regio M', value: 'Régionale 2 M' },
+    { label: 'Regio F', value: 'Régionale 2 F' },
+    // Jeunes
+    { label: 'M18 M', value: 'm18-m' },
+    { label: 'Benjamines', value: 'bfc' },
+    { label: 'Benjamins', value: 'bmb' },
+    { label: 'Minimes F', value: 'mfd' },
+    { label: 'Minimes M', value: 'mmb' },
+    { label: 'Cadettes', value: 'cfd' },
   ];
 
   // Signal pour le championnat sélectionné
@@ -56,6 +64,17 @@ export class MatchsComponent implements OnInit {
       // Ouvrir automatiquement la prochaine journée quand les matchs changent
       if (currentMatchs.length > 0) {
         this.openNextJournee();
+      }
+    });
+
+    // Scroller vers la journée ouverte après le rendu
+    effect(() => {
+      const openJournees = this.openJournees();
+      if (openJournees.size > 0) {
+        // Attendre que le DOM soit mis à jour
+        setTimeout(() => {
+          this.scrollToOpenJournee();
+        }, 100);
       }
     });
   }
@@ -102,6 +121,14 @@ export class MatchsComponent implements OnInit {
   getMatchsByJournee() {
     const matchsByJournee = new Map<number, Match[]>();
     this.matchs().forEach((match) => {
+      // Cacher les matchs avec "xxx" (journée sans match)
+      if (
+        match.equipeDomicile.toLowerCase().includes('xxx') ||
+        match.equipeExterieur.toLowerCase().includes('xxx')
+      ) {
+        return;
+      }
+
       if (!matchsByJournee.has(match.journee)) {
         matchsByJournee.set(match.journee, []);
       }
@@ -177,6 +204,27 @@ export class MatchsComponent implements OnInit {
     // Ouvrir la journée du prochain match
     if (prochainMatch) {
       this.openJournees.set(new Set([prochainMatch.journee]));
+    }
+  }
+
+  private scrollToOpenJournee() {
+    const openJournees = this.openJournees();
+    if (openJournees.size === 0) return;
+
+    // Récupérer la première journée ouverte
+    const firstOpenJournee = Array.from(openJournees)[0];
+    const element = document.getElementById(`journee-${firstOpenJournee}`);
+
+    if (element) {
+      // Calculer l'offset pour positionner l'élément en haut avec un peu de marge
+      const offset = 100; // Marge en pixels depuis le haut
+      const elementPosition = element.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.pageYOffset - offset;
+
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: 'smooth'
+      });
     }
   }
 

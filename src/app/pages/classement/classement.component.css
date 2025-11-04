@@ -4,18 +4,109 @@
   padding: 2rem 1.25rem;
 }
 
-/* Sélecteur d'équipes */
-.equipe-selector {
-  display: flex;
-  flex-wrap: nowrap;
-  justify-content: center;
-  gap: 0.5rem;
+/* Dropdown personnalisé */
+.dropdown-wrapper {
+  position: relative;
   margin-bottom: 1.5rem;
+  display: flex;
+  justify-content: center;
+}
+
+.dropdown-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  min-width: 200px;
+  padding: 0.75rem 1.25rem;
+  background: var(--card-bg);
+  border: 2px solid #F762A6;
+  border-radius: 12px;
+  color: var(--text-color);
+  font-size: 0.875rem;
+  font-weight: 600;
+  font-family: 'Poppins', sans-serif;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(247, 98, 166, 0.15);
+}
+
+.dropdown-trigger:hover {
+  background: rgba(247, 98, 166, 0.05);
+  box-shadow: 0 4px 12px rgba(247, 98, 166, 0.25);
+  transform: translateY(-1px);
+}
+
+.dropdown-label {
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.dropdown-icon {
+  color: #F762A6;
+  transition: transform 0.3s ease;
+  flex-shrink: 0;
+}
+
+.dropdown-icon.open {
+  transform: rotate(180deg);
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  left: 50%;
+  transform: translateX(-50%);
+  min-width: 200px;
+  background: var(--card-bg);
+  border: 2px solid #F762A6;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+  z-index: 100;
+  animation: dropdownSlide 0.2s ease-out;
+}
+
+@keyframes dropdownSlide {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+.dropdown-item {
+  width: 100%;
+  padding: 0.75rem 1.25rem;
+  background: transparent;
+  border: none;
+  color: var(--text-color);
+  font-size: 0.875rem;
+  font-weight: 500;
+  font-family: 'Poppins', sans-serif;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.dropdown-item:hover {
+  background: rgba(247, 98, 166, 0.1);
+}
+
+.dropdown-item.active {
+  background: #F762A6;
+  color: white;
+  font-weight: 700;
 }
 
 .equipe-pill {
   background: transparent;
-  color: #1a1a1a;
+  color: var(--text-color);
   border: 1px solid rgba(247, 98, 166, 0.4);
   border-radius: 20px;
   padding: 0.4rem 1rem;
@@ -49,7 +140,7 @@
 }
 
 h1 {
-  color: #2c3e50;
+  color: var(--text-color);
   margin-bottom: 10px;
   text-align: center;
   font-size: 2rem;
@@ -57,7 +148,7 @@ h1 {
 
 .subtitle {
   text-align: center;
-  color: #7f8c8d;
+  color: var(--text-light);
   margin-bottom: 30px;
   font-size: 1.1rem;
 }
@@ -73,7 +164,7 @@ h1 {
 }
 
 .table-container {
-  background: white;
+  background: var(--card-bg);
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   overflow: hidden;
@@ -86,7 +177,7 @@ h1 {
 }
 
 .classement-table thead {
-  background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+  background: var(--table-header-bg);
   color: white;
   border-bottom: 2px solid var(--primary-color);
 }
@@ -101,7 +192,8 @@ h1 {
 
 .classement-table td {
   padding: 15px 10px 15px 20px;
-  border-bottom: 1px solid #ecf0f1;
+  border-bottom: 1px solid var(--card-border);
+  color: var(--text-color);
 }
 
 .classement-table tbody tr {
@@ -109,7 +201,7 @@ h1 {
 }
 
 .classement-table tbody tr:hover {
-  background-color: #f8f9fa;
+  background-color: var(--table-row-hover);
 }
 
 /* Mise en avant ligne du Crès */
@@ -158,8 +250,8 @@ h1 {
   border-radius: 50%;
   font-weight: bold;
   text-align: center;
-  background: #1a1a1a;
-  color: white;
+  background: var(--text-color);
+  color: var(--bg-color);
   border: 2px solid var(--primary-color);
 }
 
@@ -240,7 +332,7 @@ tr.bronze {
 
 /* Légende */
 .legend {
-  background: white;
+  background: var(--card-bg);
   border-radius: 12px;
   padding: 20px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -249,7 +341,7 @@ tr.bronze {
 .legend h3 {
   margin-top: 0;
   margin-bottom: 15px;
-  color: #2c3e50;
+  color: var(--text-color);
   font-size: 1.2rem;
 }
 

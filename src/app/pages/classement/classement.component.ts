@@ -1,15 +1,16 @@
-import { Component, inject, OnInit, signal, computed, effect } from '@angular/core';
+import { Component, inject, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DataService } from '../../services/data.service';
 import { Equipe } from '../../models/equipe.model';
 import { EquipeFilterService } from '../../services/equipe-filter.service';
+import { ChampionnatDropdownComponent } from '../../components/championnat-dropdown/championnat-dropdown';
 
 @Component({
   selector: 'app-classement',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, ChampionnatDropdownComponent],
   templateUrl: './classement.component.html',
-  styleUrl: './classement.component.css'
+  styleUrl: './classement.component.css',
 })
 export class ClassementComponent implements OnInit {
   private dataService = inject(DataService);
@@ -21,11 +22,19 @@ export class ClassementComponent implements OnInit {
 
   // Liste des championnats disponibles
   readonly championnats = [
-    { label: 'R2 M', value: 'Régionale 2 M' },
-    { label: 'R2 F', value: 'Régionale 2 F' },
-    { label: 'PN M', value: 'Pré-nationale M' },
-    { label: 'PN F', value: 'Pré-nationale F' },
-    { label: 'N3 F', value: 'Nationale 3 F' }
+    // Adultes
+    { label: 'Nationale 3 F', value: 'Nationale 3 F' },
+    { label: 'Prénat M', value: 'Pré-nationale M' },
+    { label: 'Prénat F', value: 'Pré-nationale F' },
+    { label: 'Regio M', value: 'Régionale 2 M' },
+    { label: 'Regio F', value: 'Régionale 2 F' },
+    // Jeunes
+    { label: 'M18 M', value: 'm18-m' },
+    { label: 'Benjamines', value: 'bfc' },
+    { label: 'Benjamins', value: 'bmb' },
+    { label: 'Minimes F', value: 'mfd' },
+    { label: 'Minimes M', value: 'mmb' },
+    { label: 'Cadettes', value: 'cfd' },
   ];
 
   // Signal pour le championnat sélectionné
@@ -36,7 +45,7 @@ export class ClassementComponent implements OnInit {
   equipes = computed(() => {
     const championnatId = this.selectedChampionnatId();
     const all = this.allEquipes();
-    return all.filter(equipe => equipe.championnatId === championnatId);
+    return all.filter((equipe) => equipe.championnatId === championnatId);
   });
 
   ngOnInit() {
@@ -50,12 +59,14 @@ export class ClassementComponent implements OnInit {
         this.error.set('Erreur lors du chargement du classement');
         this.loading.set(false);
         console.error(err);
-      }
+      },
     });
   }
 
   getTeamLogo(equipe: Equipe): string {
-    return equipe.logoUrl || 'https://ui-avatars.com/api/?name=VB&background=667eea&color=fff&size=128';
+    return (
+      equipe.logoUrl || 'https://ui-avatars.com/api/?name=VB&background=667eea&color=fff&size=128'
+    );
   }
 
   getRankClass(rang: number): string {
