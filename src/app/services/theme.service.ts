@@ -4,7 +4,7 @@ import { isPlatformBrowser } from '@angular/common';
 export type Theme = 'light' | 'dark';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ThemeService {
   private platformId = inject(PLATFORM_ID);
@@ -32,10 +32,10 @@ export class ThemeService {
       return savedTheme;
     }
 
-    // 2. Vérifier la préférence système
-    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-      return 'dark';
-    }
+    // // 2. Vérifier la préférence système
+    // if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+    //   return 'dark';
+    // }
 
     // 3. Défaut: light
     return 'light';

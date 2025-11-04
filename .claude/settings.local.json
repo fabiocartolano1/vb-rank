@@ -19,7 +19,8 @@
       "Bash(iconv:*)",
       "mcp__ide__getDiagnostics",
       "Bash(firebase:*)",
-      "Bash(git:*)"
+      "Bash(git:*)",
+      "Bash(git push:*)"
     ],
     "deny": [],
     "ask": []
