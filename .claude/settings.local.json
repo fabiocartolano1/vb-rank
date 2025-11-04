@@ -16,7 +16,9 @@
       "Bash(ng generate:*)",
       "Bash(npm run build:*)",
       "Bash(git add:*)",
-      "Bash(git commit -m \"$(cat <<''EOF''\nAdd dark mode with theme toggle\n\nFeatures:\n- Dark mode toggle button in header\n- Theme persistence in localStorage\n- System preference detection\n- Smooth transitions between themes\n- Club identity (pink #F762A6) preserved in both modes\n\nStyling updates:\n- Global CSS variables for light/dark themes\n- Updated all component styles for dark mode compatibility\n- Dropdown/selector components adapt to theme\n- Match cards: white bg in light mode, highlighted in dark mode\n- Navigation menu adapts to theme (mobile bottom bar)\n- Crès team matches stand out in both modes\n\nAdditional features:\n- Auto-scroll to open journée in \"Tous les matchs\"\n- Smooth scroll animation with offset\n\n🤖 Generated with Claude Code\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")"
+      "Bash(git commit -m \"$(cat <<''EOF''\nAdd dark mode with theme toggle\n\nFeatures:\n- Dark mode toggle button in header\n- Theme persistence in localStorage\n- System preference detection\n- Smooth transitions between themes\n- Club identity (pink #F762A6) preserved in both modes\n\nStyling updates:\n- Global CSS variables for light/dark themes\n- Updated all component styles for dark mode compatibility\n- Dropdown/selector components adapt to theme\n- Match cards: white bg in light mode, highlighted in dark mode\n- Navigation menu adapts to theme (mobile bottom bar)\n- Crès team matches stand out in both modes\n\nAdditional features:\n- Auto-scroll to open journée in \"Tous les matchs\"\n- Smooth scroll animation with offset\n\n🤖 Generated with Claude Code\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(git checkout:*)",
+      "Bash(git commit:*)"
     ],
     "deny": [],
     "ask": []
