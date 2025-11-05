@@ -1,6 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Match } from '../../models/match.model';
+import { TeamUtils } from '../../core/utils/team.utils';
 
 @Component({
   selector: 'app-match-card',
@@ -16,11 +17,6 @@ export class MatchCardComponent {
   @Input() highlightCres: boolean = false;
 
   isCresMatch(): boolean {
-    return (
-      this.match.equipeDomicile.toLowerCase().includes('crès') ||
-      this.match.equipeExterieur.toLowerCase().includes('crès') ||
-      this.match.equipeDomicile.toLowerCase().includes('cres') ||
-      this.match.equipeExterieur.toLowerCase().includes('cres')
-    );
+    return TeamUtils.isCresMatch(this.match);
   }
 }

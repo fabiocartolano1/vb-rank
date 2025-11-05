@@ -4,6 +4,9 @@ import { DataService } from '../../services/data.service';
 import { Match } from '../../models/match.model';
 import { Equipe } from '../../models/equipe.model';
 import { ChampionshipService } from '../../core/services/championship.service';
+import { TeamUtils } from '../../core/utils/team.utils';
+import { DateUtils } from '../../core/utils/date.utils';
+import { MatchUtils } from '../../core/utils/match.utils';
 
 interface WeekendMatch {
   match: Match;
@@ -136,17 +139,11 @@ export class AgendaComponent implements OnInit {
     return this.allMatchs()
       .filter((match) => {
         const matchDate = match.date;
-        const isCresHome =
-          match.equipeDomicile.toLowerCase().includes('crès') ||
-          match.equipeDomicile.toLowerCase().includes('cres');
-        // Filtrer uniquement les matchs à domicile du Crès
-        return matchDate === dayString && isCresHome;
+        // Filtrer uniquement les matchs valides à domicile du Crès
+        return matchDate === dayString &&
+               MatchUtils.isValidMatch(match) &&
+               TeamUtils.isCresHome(match);
       })
-      .filter(
-        (match) =>
-          !match.equipeDomicile.toLowerCase().includes('xxx') &&
-          !match.equipeExterieur.toLowerCase().includes('xxx')
-      )
       .map((match) => {
         const isCresHome = true; // Toujours à domicile maintenant
 
@@ -203,19 +200,11 @@ export class AgendaComponent implements OnInit {
   }
 
   formatDate(date: Date): string {
-    return date.toLocaleDateString('fr-FR', {
-      weekday: 'long',
-      day: '2-digit',
-      month: 'long',
-      year: 'numeric',
-    });
+    return DateUtils.formatDate(date, 'long');
   }
 
   formatShortDate(date: Date): string {
-    return date.toLocaleDateString('fr-FR', {
-      day: '2-digit',
-      month: 'short',
-    });
+    return DateUtils.formatDate(date, 'compact');
   }
 
   getChampionnatLabel(championnatId?: string): string {

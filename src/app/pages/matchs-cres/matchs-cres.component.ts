@@ -7,6 +7,9 @@ import { Equipe } from '../../models/equipe.model';
 import { MatchCardComponent } from '../../components/match-card/match-card.component';
 import { ChampionnatDropdownComponent } from '../../components/championnat-dropdown/championnat-dropdown';
 import { ChampionshipService } from '../../core/services/championship.service';
+import { TeamUtils } from '../../core/utils/team.utils';
+import { DateUtils } from '../../core/utils/date.utils';
+import { MatchUtils } from '../../core/utils/match.utils';
 
 @Component({
   selector: 'app-matchs-cres',
@@ -37,11 +40,7 @@ export class MatchsCresComponent implements OnInit {
     const all = this.allMatchs();
     return all.filter(
       (match) =>
-        match.championnatId === championnatId &&
-        (match.equipeDomicile.toLowerCase().includes('crès') ||
-          match.equipeExterieur.toLowerCase().includes('crès') ||
-          match.equipeDomicile.toLowerCase().includes('cres') ||
-          match.equipeExterieur.toLowerCase().includes('cres'))
+        match.championnatId === championnatId && TeamUtils.isCresMatch(match)
     );
   });
 
@@ -93,35 +92,16 @@ export class MatchsCresComponent implements OnInit {
   }
 
   getTeamLogo(teamName: string): string {
-    const equipe = this.equipes().find((e) => e.nom === teamName);
-    return (
-      equipe?.logoUrl || 'https://ui-avatars.com/api/?name=VB&background=667eea&color=fff&size=128'
-    );
+    return TeamUtils.getTeamLogo(teamName, this.equipes());
   }
 
   getSortedMatchs() {
-    // Filtrer les matchs avec "xxx" et trier par date
-    return [...this.matchs()]
-      .filter(
-        (match) =>
-          !match.equipeDomicile.toLowerCase().includes('xxx') &&
-          !match.equipeExterieur.toLowerCase().includes('xxx')
-      )
-      .sort((a, b) => {
-        const dateA = new Date(a.date + (a.heure ? 'T' + a.heure : '')).getTime();
-        const dateB = new Date(b.date + (b.heure ? 'T' + b.heure : '')).getTime();
-        return dateA - dateB;
-      });
+    const validMatches = MatchUtils.filterValidMatches(this.matchs());
+    return DateUtils.sortMatchesByDate(validMatches);
   }
 
   formatDate(dateString: string): string {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('fr-FR', {
-      weekday: 'short',
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric',
-    });
+    return DateUtils.formatDate(dateString, 'short');
   }
 
   toggleJournee(journeeNumber: number) {
@@ -139,10 +119,7 @@ export class MatchsCresComponent implements OnInit {
   }
 
   isCresMatch(match: Match): boolean {
-    return (
-      match.equipeDomicile.toLowerCase().includes('crès') ||
-      match.equipeExterieur.toLowerCase().includes('crès')
-    );
+    return TeamUtils.isCresMatch(match);
   }
 
   onChampionnatChange(championnatId: string) {

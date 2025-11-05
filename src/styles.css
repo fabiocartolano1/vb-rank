@@ -123,3 +123,95 @@ h1, h2, h3, h4, h5, h6 {
     min-width: 44px;
   }
 }
+
+/* ============================================
+   UTILITY CLASSES - Container
+   ============================================ */
+
+.container-standard {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1.25rem;
+}
+
+@media (max-width: 768px) {
+  .container-standard {
+    padding: 1.5rem 1rem;
+  }
+}
+
+/* ============================================
+   UTILITY CLASSES - State Messages
+   ============================================ */
+
+.state-message {
+  text-align: center;
+  padding: 3rem 1.25rem;
+  font-size: 1.125rem;
+  font-weight: 500;
+}
+
+.state-loading {
+  color: var(--text-light);
+}
+
+.state-error {
+  color: var(--danger-color);
+}
+
+@media (max-width: 768px) {
+  .state-message {
+    padding: 2rem 1rem;
+    font-size: 1rem;
+  }
+}
+
+/* ============================================
+   UTILITY CLASSES - Team Logos
+   ============================================ */
+
+.team-logo {
+  border-radius: 6px;
+  object-fit: cover;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  transition: transform 0.3s ease;
+}
+
+.team-logo-sm {
+  width: 32px;
+  height: 32px;
+}
+
+.team-logo-md {
+  width: 48px;
+  height: 48px;
+}
+
+.team-logo-lg {
+  width: 60px;
+  height: 60px;
+}
+
+.team-logo:hover {
+  transform: scale(1.05);
+}
+
+/* ============================================
+   UTILITY CLASSES - Visibility
+   ============================================ */
+
+.hide-mobile {
+  display: initial;
+}
+
+@media (max-width: 768px) {
+  .hide-mobile {
+    display: none !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .hide-small-mobile {
+    display: none !important;
+  }
+}

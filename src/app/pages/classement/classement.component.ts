@@ -5,6 +5,8 @@ import { Equipe } from '../../models/equipe.model';
 import { EquipeFilterService } from '../../services/equipe-filter.service';
 import { ChampionnatDropdownComponent } from '../../components/championnat-dropdown/championnat-dropdown';
 import { ChampionshipService } from '../../core/services/championship.service';
+import { TeamUtils } from '../../core/utils/team.utils';
+import { ASSETS } from '../../core/constants/assets.constants';
 
 @Component({
   selector: 'app-classement',
@@ -51,9 +53,7 @@ export class ClassementComponent implements OnInit {
   }
 
   getTeamLogo(equipe: Equipe): string {
-    return (
-      equipe.logoUrl || 'https://ui-avatars.com/api/?name=VB&background=667eea&color=fff&size=128'
-    );
+    return equipe.logoUrl || ASSETS.DEFAULT_TEAM_LOGO;
   }
 
   getRankClass(rang: number): string {
@@ -68,7 +68,7 @@ export class ClassementComponent implements OnInit {
   }
 
   isCresTeam(nomEquipe: string): boolean {
-    return nomEquipe.toLowerCase().includes('crès') || nomEquipe.toLowerCase().includes('cres');
+    return TeamUtils.isCresTeam(nomEquipe);
   }
 
   onChampionnatChange(championnatId: string) {

@@ -7,6 +7,9 @@ import { Equipe } from '../../models/equipe.model';
 import { MatchCardComponent } from '../../components/match-card/match-card.component';
 import { ChampionnatDropdownComponent } from '../../components/championnat-dropdown/championnat-dropdown';
 import { ChampionshipService } from '../../core/services/championship.service';
+import { TeamUtils } from '../../core/utils/team.utils';
+import { DateUtils } from '../../core/utils/date.utils';
+import { MatchUtils } from '../../core/utils/match.utils';
 
 @Component({
   selector: 'app-matchs',
@@ -99,50 +102,17 @@ export class MatchsComponent implements OnInit {
   }
 
   getTeamLogo(teamName: string): string {
-    const equipe = this.equipes().find((e) => e.nom === teamName);
-    return (
-      equipe?.logoUrl || 'https://ui-avatars.com/api/?name=VB&background=667eea&color=fff&size=128'
-    );
+    return TeamUtils.getTeamLogo(teamName, this.equipes());
   }
 
   getMatchsByJournee() {
-    const matchsByJournee = new Map<number, Match[]>();
-    this.matchs().forEach((match) => {
-      // Cacher les matchs avec "xxx" (journée sans match)
-      if (
-        match.equipeDomicile.toLowerCase().includes('xxx') ||
-        match.equipeExterieur.toLowerCase().includes('xxx')
-      ) {
-        return;
-      }
-
-      if (!matchsByJournee.has(match.journee)) {
-        matchsByJournee.set(match.journee, []);
-      }
-      matchsByJournee.get(match.journee)?.push(match);
-    });
-
-    // Trier les matchs par date dans chaque journée
-    matchsByJournee.forEach((matchs) => {
-      matchs.sort((a, b) => {
-        const dateA = new Date(a.date + (a.heure ? 'T' + a.heure : '')).getTime();
-        const dateB = new Date(b.date + (b.heure ? 'T' + b.heure : '')).getTime();
-        return dateA - dateB;
-      });
-    });
-
-    // Trier les journées par numéro
-    return Array.from(matchsByJournee.entries()).sort((a, b) => a[0] - b[0]);
+    // Filtrer les matchs valides et les grouper par journée
+    const validMatches = MatchUtils.filterValidMatches(this.matchs());
+    return MatchUtils.getJourneesSorted(validMatches);
   }
 
   formatDate(dateString: string): string {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('fr-FR', {
-      weekday: 'short',
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric',
-    });
+    return DateUtils.formatDate(dateString, 'short');
   }
 
   toggleJournee(journeeNumber: number) {
@@ -160,37 +130,13 @@ export class MatchsComponent implements OnInit {
   }
 
   isCresMatch(match: Match): boolean {
-    return (
-      match.equipeDomicile.toLowerCase().includes('crès') ||
-      match.equipeExterieur.toLowerCase().includes('crès') ||
-      match.equipeDomicile.toLowerCase().includes('cres') ||
-      match.equipeExterieur.toLowerCase().includes('cres')
-    );
+    return TeamUtils.isCresMatch(match);
   }
 
   private openNextJournee() {
-    const now = new Date();
-
-    // Trouver les matchs à venir (date dans le futur)
-    const matchsAVenir = this.matchs().filter((match) => {
-      const matchDate = new Date(match.date + (match.heure ? 'T' + match.heure : ''));
-      return matchDate >= now;
-    });
-
-    if (matchsAVenir.length === 0) {
-      return; // Aucun match à venir, tout reste fermé
-    }
-
-    // Trier par date pour trouver le prochain match
-    const prochainMatch = matchsAVenir.sort((a, b) => {
-      const dateA = new Date(a.date + (a.heure ? 'T' + a.heure : '')).getTime();
-      const dateB = new Date(b.date + (b.heure ? 'T' + b.heure : '')).getTime();
-      return dateA - dateB;
-    })[0];
-
-    // Ouvrir la journée du prochain match
-    if (prochainMatch) {
-      this.openJournees.set(new Set([prochainMatch.journee]));
+    const nextJournee = MatchUtils.findNextJournee(this.matchs());
+    if (nextJournee) {
+      this.openJournees.set(new Set([nextJournee]));
     }
   }
 
