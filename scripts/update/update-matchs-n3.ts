@@ -1,7 +1,7 @@
 import { initializeApp } from 'firebase/app';
-import { getFirestore, collection, addDoc, getDocs, query, where } from 'firebase/firestore';
+import { getFirestore, collection, getDocs, query, where, updateDoc, doc } from 'firebase/firestore';
 import * as cheerio from 'cheerio';
-import { firebaseConfig } from '../../config/firebase-config';
+import { firebaseConfig } from '../config/firebase-config';
 
 // Initialiser Firebase
 const app = initializeApp(firebaseConfig);
@@ -23,6 +23,7 @@ interface Match {
 }
 
 async function fetchPage(url: string): Promise<string> {
+  console.log('📥 Récupération de la page des matchs...');
   const response = await fetch(url);
   if (!response.ok) {
     throw new Error(`HTTP error! status: ${response.status}`);
@@ -47,12 +48,7 @@ async function getEquipesMap(): Promise<Map<string, string>> {
     map.set(data.nom, doc.id);
   });
 
-  console.log(`✅ ${map.size} équipes trouvées`);
-  console.log('📋 Équipes en base:');
-  Array.from(map.keys()).forEach((nom) => {
-    console.log(`  - "${nom}" (normalisé: "${normalizeTeamName(nom)}")`);
-  });
-  console.log();
+  console.log(`✅ ${map.size} équipes trouvées\n`);
   return map;
 }
 
@@ -62,7 +58,6 @@ function normalizeTeamName(name: string): string {
 }
 
 async function scrapeMatchs(url: string, equipesMap: Map<string, string>): Promise<Match[]> {
-  console.log('📥 Récupération de la page des matchs...');
   const html = await fetchPage(url);
   const $ = cheerio.load(html);
 
@@ -78,7 +73,7 @@ async function scrapeMatchs(url: string, equipesMap: Map<string, string>): Promi
     const journeeMatch = rowText.match(/Journ[ée]+\s+(\d+)/i);
     if (journeeMatch) {
       currentJournee = parseInt(journeeMatch[1]);
-      console.log(`\n📅 Journée ${currentJournee}`);
+      console.log(`  📅 Journée ${currentJournee}`);
     }
     // Si pas de journée en cours, continuer
     if (currentJournee === 0) return;
@@ -156,21 +151,13 @@ async function scrapeMatchs(url: string, equipesMap: Map<string, string>): Promi
       }
     }
 
-    // Debug: afficher les matchs non linkés
-    if (!equipeDomicileId) {
-      console.log(`  ⚠️  Équipe domicile non trouvée: "${equipeDomicile}" (normalisé: "${nomDomicileNorm}")`);
-    }
-    if (!equipeExterieurId) {
-      console.log(`  ⚠️  Équipe extérieur non trouvée: "${equipeExterieur}" (normalisé: "${nomExterieurNorm}")`);
-    }
-
     const match: any = {
       championnatId: 'nationale-3-f',
       journee: currentJournee,
       date,
       heure: heureText,
-      equipeDomicile: equipeDomicileNom, // Utiliser le nom depuis la base
-      equipeExterieur: equipeExterieurNom, // Utiliser le nom depuis la base
+      equipeDomicile: equipeDomicileNom,
+      equipeExterieur: equipeExterieurNom,
       scoreDomicile: scoreDomicile != '' ? parseInt(scoreDomicile) : null,
       scoreExterieur: scoreExterieur != '' ? parseInt(scoreExterieur) : null,
       detailSets: sets.length > 0 ? sets : null,
@@ -191,24 +178,113 @@ async function scrapeMatchs(url: string, equipesMap: Map<string, string>): Promi
   return matchs;
 }
 
-async function saveMatchsToFirebase(matchs: Match[]): Promise<void> {
-  console.log('\n💾 Sauvegarde des matchs dans Firebase...');
-  let count = 0;
+async function updateMatchsInFirebase(matchs: Match[]): Promise<void> {
+  console.log('\n💾 Mise à jour des matchs dans Firebase...');
+
+  let updated = 0;
+  let notFound = 0;
+  let unchanged = 0;
 
   for (const match of matchs) {
-    await addDoc(collection(db, 'matchs'), match);
-    count++;
-    if (count % 10 === 0) {
-      console.log(`  ${count}/${matchs.length} matchs sauvegardés...`);
+    // Rechercher le match existant
+    const q = query(
+      collection(db, 'matchs'),
+      where('championnatId', '==', match.championnatId),
+      where('journee', '==', match.journee),
+      where('equipeDomicile', '==', match.equipeDomicile),
+      where('equipeExterieur', '==', match.equipeExterieur)
+    );
+    const existingMatchs = await getDocs(q);
+
+    if (!existingMatchs.empty) {
+      const existingDoc = existingMatchs.docs[0];
+      const existingData = existingDoc.data();
+
+      // Vérifier si les données ont changé
+      const hasChanged =
+        existingData.date !== match.date ||
+        existingData.heure !== match.heure ||
+        existingData.scoreDomicile !== match.scoreDomicile ||
+        existingData.scoreExterieur !== match.scoreExterieur ||
+        existingData.statut !== match.statut ||
+        JSON.stringify(existingData.detailSets) !== JSON.stringify(match.detailSets);
+
+      if (hasChanged) {
+        // Préparer les données de mise à jour
+        const updateData: any = {
+          date: match.date,
+          heure: match.heure,
+          statut: match.statut,
+        };
+
+        // Ajouter les scores uniquement s'ils existent
+        if (match.scoreDomicile !== null) {
+          updateData.scoreDomicile = match.scoreDomicile;
+        }
+        if (match.scoreExterieur !== null) {
+          updateData.scoreExterieur = match.scoreExterieur;
+        }
+        if (match.detailSets !== null) {
+          updateData.detailSets = match.detailSets;
+        }
+
+        // Ajouter les IDs d'équipes s'ils existent
+        if (match.equipeDomicileId) {
+          updateData.equipeDomicileId = match.equipeDomicileId;
+        }
+        if (match.equipeExterieurId) {
+          updateData.equipeExterieurId = match.equipeExterieurId;
+        }
+
+        await updateDoc(doc(db, 'matchs', existingDoc.id), updateData);
+
+        const statusChange = existingData.statut !== match.statut ? ` (${existingData.statut} → ${match.statut})` : '';
+        const scoreChange = match.scoreDomicile !== null && match.scoreExterieur !== null
+          ? ` - Score: ${match.scoreDomicile}-${match.scoreExterieur}`
+          : '';
+        console.log(`✅ J${match.journee}: ${match.equipeDomicile} vs ${match.equipeExterieur}${statusChange}${scoreChange}`);
+        updated++;
+      } else {
+        unchanged++;
+      }
+    } else {
+      console.log(`⚠️  J${match.journee}: ${match.equipeDomicile} vs ${match.equipeExterieur} - Match non trouvé dans la base de données`);
+      notFound++;
     }
   }
 
-  console.log(`✅ ${count} matchs sauvegardés`);
+  console.log('\n📊 Résumé de la mise à jour :');
+  console.log(`   ✅ ${updated} match(s) mis à jour`);
+  console.log(`   ⏭️  ${unchanged} match(s) inchangé(s)`);
+  if (notFound > 0) {
+    console.log(`   ⚠️  ${notFound} match(s) non trouvé(s)`);
+  }
+}
+
+async function verifyEnvironment(): Promise<void> {
+  console.log('🔍 Vérification de l\'environnement...');
+
+  const projectId = firebaseConfig.projectId;
+  console.log(`   Projet Firebase: ${projectId}`);
+
+  if (!projectId.includes('vb-rank')) {
+    throw new Error('⚠️  ATTENTION: Le projet Firebase ne semble pas être le bon !');
+  }
+
+  // Vérifier que nous sommes en développement
+  const isDev = process.env.NODE_ENV !== 'production';
+  console.log(`   Environnement: ${isDev ? 'développement' : 'production'}`);
+
+  console.log('✅ Environnement vérifié\n');
 }
 
 async function main() {
   try {
-    console.log('🏐 Scraping des matchs Nationale 3 F\n');
+    console.log('🏐 Mise à jour des Matchs Nationale 3 Féminine\n');
+    console.log('════════════════════════════════════════════════\n');
+
+    // Vérifier l'environnement avant de continuer
+    await verifyEnvironment();
 
     const url =
       'https://www.ffvbbeach.org/ffvbapp/resu/vbspo_calendrier.php?saison=2025%2F2026&codent=ABCCS&poule=3FB&division=&tour=&calend=COMPLET&x=20&y=18';
@@ -218,17 +294,20 @@ async function main() {
 
     // 2. Scraper les matchs
     const matchs = await scrapeMatchs(url, equipesMap);
-    console.log(`\n✅ ${matchs.length} matchs trouvés`);
+    console.log(`\n✅ ${matchs.length} matchs trouvés\n`);
 
-    // 3. Sauvegarder les matchs
-    if (matchs.length > 0) {
-      await saveMatchsToFirebase(matchs);
+    if (matchs.length === 0) {
+      console.log('⚠️  Aucun match trouvé, vérifiez la structure de la page');
+      return;
     }
 
-    console.log('\n🎉 Scraping terminé avec succès !');
-    console.log(`📊 ${matchs.length} matchs importés pour Nationale 3 F`);
+    // 3. Mettre à jour les matchs dans Firebase
+    await updateMatchsInFirebase(matchs);
+
+    console.log('\n🎉 Mise à jour terminée avec succès !');
+    console.log('════════════════════════════════════════════════');
   } catch (error) {
-    console.error('❌ Erreur:', error);
+    console.error('\n❌ Erreur:', error);
     throw error;
   }
 }

@@ -28,7 +28,9 @@
       "Bash(do echo '=== $dir ===')",
       "Bash(ls $dir)",
       "Bash(done)",
-      "Bash(ng serve:*)"
+      "Bash(ng serve:*)",
+      "Bash(npm install:*)",
+      "Bash(npm run update:matchs-n3:*)"
     ],
     "deny": [],
     "ask": []

@@ -2,6 +2,32 @@
 
 Ce dossier contient tous les scripts utilitaires pour gérer les données Firebase : migration, scraping, et initialisation.
 
+## 🔐 Configuration Sécurisée
+
+### Variables d'environnement
+
+Les scripts utilisent des variables d'environnement pour se connecter à Firebase. **Ne jamais commiter les credentials Firebase dans le code !**
+
+1. **Copier le fichier template** :
+   ```bash
+   cp .env.example .env
+   ```
+
+2. **Remplir les valeurs** dans le fichier `.env` avec vos credentials Firebase :
+   ```env
+   FIREBASE_API_KEY=votre_api_key
+   FIREBASE_AUTH_DOMAIN=votre_project.firebaseapp.com
+   FIREBASE_PROJECT_ID=votre_project_id
+   FIREBASE_STORAGE_BUCKET=votre_project.firebasestorage.app
+   FIREBASE_MESSAGING_SENDER_ID=votre_sender_id
+   FIREBASE_APP_ID=votre_app_id
+   FIREBASE_MEASUREMENT_ID=votre_measurement_id
+   ```
+
+3. **Le fichier `.env` est dans le `.gitignore`** et ne sera jamais commité sur GitHub.
+
+⚠️ **IMPORTANT** : Tous les scripts utilisent maintenant `config/firebase-config.ts` qui charge automatiquement les variables d'environnement depuis `.env`. Ne jamais mettre de credentials en dur dans le code !
+
 ## 🔄 Scripts de Migration
 
 ### Migration DEV → PROD

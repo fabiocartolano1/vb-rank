@@ -1,5 +1,3 @@
-Modif logo dark mode trop gros
-remettre au centre le titre en version pc
 page actu club ? -> test embed instagram
 faire les scripts update
 schedule l'update des data

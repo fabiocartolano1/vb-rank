@@ -1,16 +1,6 @@
 import { initializeApp } from 'firebase/app';
 import { getFirestore, collection, getDocs, doc, updateDoc, query, where } from 'firebase/firestore';
-
-// Configuration Firebase
-const firebaseConfig = {
-  apiKey: 'AIzaSyAVyJsXC8G6C-U4zVJY74ipXPBA8xE0hbM',
-  authDomain: 'vb-rank.firebaseapp.com',
-  projectId: 'vb-rank',
-  storageBucket: 'vb-rank.firebasestorage.app',
-  messagingSenderId: '359434513058',
-  appId: '1:359434513058:web:82616930a7644cce0345fb',
-  measurementId: 'G-DGTX5LPX5C',
-};
+import { firebaseConfig } from '../config/firebase-config';
 
 // Initialiser Firebase
 const app = initializeApp(firebaseConfig);
