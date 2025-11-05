@@ -20,7 +20,15 @@
       "mcp__ide__getDiagnostics",
       "Bash(firebase:*)",
       "Bash(git:*)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "Bash(npm run update:classement-n3:*)",
+      "Bash(NUL)",
+      "Bash(tree:*)",
+      "Bash(for dir in */)",
+      "Bash(do echo '=== $dir ===')",
+      "Bash(ls $dir)",
+      "Bash(done)",
+      "Bash(ng serve:*)"
     ],
     "deny": [],
     "ask": []
