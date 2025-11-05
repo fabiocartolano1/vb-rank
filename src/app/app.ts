@@ -6,6 +6,7 @@ import { DataImportService } from './services/data-import.service';
 import { DataService } from './services/data.service';
 import { EquipeFilterService } from './services/equipe-filter.service';
 import { ThemeToggleComponent } from './components/theme-toggle/theme-toggle';
+import { ChampionshipService } from './core/services/championship.service';
 import { filter } from 'rxjs/operators';
 
 @Component({
@@ -16,14 +17,6 @@ import { filter } from 'rxjs/operators';
 })
 export class App implements OnInit {
   protected readonly title = signal('vb-rank-app');
-  protected readonly selectedEquipe = signal('Régionale 2 M');
-  protected readonly equipes = [
-    'Régionale 2 M',
-    'Régionale 2 F',
-    'Pré-nationale M',
-    'Pré-nationale F',
-    'Nationale 3 F'
-  ];
   protected readonly firebaseStatus = signal('Test de connexion en cours...');
   protected readonly isConnected = signal(false);
   protected readonly importStatus = signal('');
@@ -36,6 +29,11 @@ export class App implements OnInit {
   private router = inject(Router);
   private dataService = inject(DataService);
   private equipeFilterService = inject(EquipeFilterService);
+  private championshipService = inject(ChampionshipService);
+
+  // Liste des championnats adultes (utilisé dans la navigation)
+  protected readonly championnats = this.championshipService.getAdultChampionships();
+  protected readonly selectedChampionnatId = this.equipeFilterService.getSelectedChampionnatIdSignal();
 
   async ngOnInit() {
     // Suivre les changements de route pour cacher le sélecteur d'équipe sur la page agenda
@@ -74,20 +72,8 @@ export class App implements OnInit {
     }
   }
 
-  onEquipeChange(equipe: string) {
-    this.selectedEquipe.set(equipe);
-    this.equipeFilterService.setSelectedEquipe(equipe);
-  }
-
-  getShortName(equipe: string): string {
-    const mapping: { [key: string]: string } = {
-      'Régionale 2 M': 'R2 M',
-      'Régionale 2 F': 'R2 F',
-      'Pré-nationale M': 'PN M',
-      'Pré-nationale F': 'PN F',
-      'Nationale 3 F': 'N3 F'
-    };
-    return mapping[equipe] || equipe;
+  onChampionnatChange(championnatId: string) {
+    this.equipeFilterService.setSelectedChampionnatId(championnatId);
   }
 
   async importData() {

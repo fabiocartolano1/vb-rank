@@ -6,6 +6,7 @@ import { Match } from '../../models/match.model';
 import { Equipe } from '../../models/equipe.model';
 import { MatchCardComponent } from '../../components/match-card/match-card.component';
 import { ChampionnatDropdownComponent } from '../../components/championnat-dropdown/championnat-dropdown';
+import { ChampionshipService } from '../../core/services/championship.service';
 
 @Component({
   selector: 'app-matchs-cres',
@@ -17,6 +18,7 @@ import { ChampionnatDropdownComponent } from '../../components/championnat-dropd
 export class MatchsCresComponent implements OnInit {
   private dataService = inject(DataService);
   private equipeFilterService = inject(EquipeFilterService);
+  private championshipService = inject(ChampionshipService);
 
   allMatchs = signal<Match[]>([]);
   allEquipes = signal<Equipe[]>([]);
@@ -24,26 +26,10 @@ export class MatchsCresComponent implements OnInit {
   error = signal('');
   openJournees = signal<Set<number>>(new Set());
 
-  // Liste des championnats disponibles
-  readonly championnats = [
-    // Adultes
-    { label: 'Nationale 3 F', value: 'Nationale 3 F' },
-    { label: 'Prénationale M', value: 'Pré-nationale M' },
-    { label: 'Prénationale F', value: 'Pré-nationale F' },
-    { label: 'Régionale 2 M', value: 'Régionale 2 M' },
-    { label: 'Régionale 2 F', value: 'Régionale 2 F' },
-    // Jeunes
-    { label: 'M18 M', value: 'm18-m' },
-    { label: 'Benjamines', value: 'bfc' },
-    { label: 'Benjamins', value: 'bmb' },
-    { label: 'Minimes F', value: 'mfd' },
-    { label: 'Minimes M', value: 'mmb' },
-    { label: 'Cadettes', value: 'cfd' },
-  ];
+  readonly championnats = this.championshipService.getChampionships();
 
   // Signal pour le championnat sélectionné
   selectedChampionnatId = this.equipeFilterService.getSelectedChampionnatIdSignal();
-  selectedEquipe = this.equipeFilterService.getSelectedEquipeSignal();
 
   // Computed signals pour filtrer par championnat ET par équipe du Crès
   matchs = computed(() => {
@@ -159,7 +145,7 @@ export class MatchsCresComponent implements OnInit {
     );
   }
 
-  onChampionnatChange(equipe: string) {
-    this.equipeFilterService.setSelectedEquipe(equipe);
+  onChampionnatChange(championnatId: string) {
+    this.equipeFilterService.setSelectedChampionnatId(championnatId);
   }
 }

@@ -1,10 +1,6 @@
 import { Component, Input, Output, EventEmitter, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
-export interface ChampionnatOption {
-  label: string;
-  value: string;
-}
+import { Championship } from '../../core/constants/championships.constants';
 
 @Component({
   selector: 'app-championnat-dropdown',
@@ -14,8 +10,8 @@ export interface ChampionnatOption {
   styleUrl: './championnat-dropdown.css',
 })
 export class ChampionnatDropdownComponent {
-  @Input() championnats: ChampionnatOption[] = [];
-  @Input() selectedValue: string = '';
+  @Input() championnats: readonly Championship[] = [];
+  @Input() selectedId: string = '';
   @Output() selectionChange = new EventEmitter<string>();
 
   dropdownOpen = signal(false);
@@ -28,13 +24,13 @@ export class ChampionnatDropdownComponent {
     return this.dropdownOpen();
   }
 
-  getSelectedLabel(): string {
-    const selected = this.championnats.find(c => c.value === this.selectedValue);
-    return selected ? selected.label : this.championnats[0]?.label || '';
+  getSelectedName(): string {
+    const selected = this.championnats.find(c => c.id === this.selectedId);
+    return selected ? selected.name : this.championnats[0]?.name || '';
   }
 
-  onSelectChampionnat(value: string) {
-    this.selectionChange.emit(value);
+  onSelectChampionnat(id: string) {
+    this.selectionChange.emit(id);
     this.dropdownOpen.set(false);
   }
 }

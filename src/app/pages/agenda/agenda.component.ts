@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { DataService } from '../../services/data.service';
 import { Match } from '../../models/match.model';
 import { Equipe } from '../../models/equipe.model';
+import { ChampionshipService } from '../../core/services/championship.service';
 
 interface WeekendMatch {
   match: Match;
@@ -20,6 +21,7 @@ interface WeekendMatch {
 })
 export class AgendaComponent implements OnInit {
   private dataService = inject(DataService);
+  private championshipService = inject(ChampionshipService);
 
   allMatchs = signal<Match[]>([]);
   allEquipes = signal<Equipe[]>([]);
@@ -217,31 +219,13 @@ export class AgendaComponent implements OnInit {
   }
 
   getChampionnatLabel(championnatId?: string): string {
-    const mapping: { [key: string]: string } = {
-      'regionale-2-m': 'R2 M',
-      'regionale-2-f': 'R2 F',
-      'prenationale-m': 'PN M',
-      'prenationale-f': 'PN F',
-      'nationale-3-f': 'N3 F',
-    };
-    return championnatId ? mapping[championnatId] || championnatId : '';
+    if (!championnatId) return '';
+    return this.championshipService.getChampionshipName(championnatId);
   }
 
   getChampionnatFullName(championnatId?: string): string {
-    const mapping: { [key: string]: string } = {
-      'regionale-2-m': 'Régionale 2 Masculine',
-      'regionale-2-f': 'Régionale 2 Féminine',
-      'prenationale-m': 'Pré-nationale Masculine',
-      'prenationale-f': 'Pré-nationale Féminine',
-      'nationale-3-f': 'Nationale 3 Féminine',
-      'm18-m': 'M18 Masculins',
-      bfc: 'Benjamines',
-      bmb: 'Benjamins',
-      mfd: 'Minimes Féminine',
-      mmb: 'Minimes Masculins',
-      cfd: 'Cadettes',
-    };
-    return championnatId ? mapping[championnatId] || championnatId : '';
+    if (!championnatId) return '';
+    return this.championshipService.getChampionshipName(championnatId);
   }
 
   canGoPrevious(): boolean {

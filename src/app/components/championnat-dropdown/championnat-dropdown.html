@@ -1,6 +1,6 @@
 <div class="dropdown-wrapper">
   <button class="dropdown-trigger" (click)="toggleDropdown()">
-    <span class="dropdown-label">{{ getSelectedLabel() }}</span>
+    <span class="dropdown-label">{{ getSelectedName() }}</span>
     <svg
       class="dropdown-icon"
       [class.open]="isDropdownOpen()"
@@ -15,12 +15,12 @@
 
   @if (isDropdownOpen()) {
     <div class="dropdown-menu">
-      @for (championnat of championnats; track championnat.value) {
+      @for (championnat of championnats; track championnat.id) {
         <button
           class="dropdown-item"
-          [class.active]="selectedValue === championnat.value"
-          (click)="onSelectChampionnat(championnat.value)">
-          {{ championnat.label }}
+          [class.active]="selectedId === championnat.id"
+          (click)="onSelectChampionnat(championnat.id)">
+          {{ championnat.name }}
         </button>
       }
     </div>

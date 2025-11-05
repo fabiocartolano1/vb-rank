@@ -2,7 +2,7 @@
   <!-- Sélecteur de championnat -->
   <app-championnat-dropdown
     [championnats]="championnats"
-    [selectedValue]="selectedEquipe()"
+    [selectedId]="selectedChampionnatId()"
     (selectionChange)="onChampionnatChange($event)">
   </app-championnat-dropdown>
 

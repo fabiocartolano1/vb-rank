@@ -4,6 +4,7 @@ import { DataService } from '../../services/data.service';
 import { Equipe } from '../../models/equipe.model';
 import { EquipeFilterService } from '../../services/equipe-filter.service';
 import { ChampionnatDropdownComponent } from '../../components/championnat-dropdown/championnat-dropdown';
+import { ChampionshipService } from '../../core/services/championship.service';
 
 @Component({
   selector: 'app-classement',
@@ -15,31 +16,17 @@ import { ChampionnatDropdownComponent } from '../../components/championnat-dropd
 export class ClassementComponent implements OnInit {
   private dataService = inject(DataService);
   private equipeFilterService = inject(EquipeFilterService);
+  private championshipService = inject(ChampionshipService);
 
   allEquipes = signal<Equipe[]>([]);
   loading = signal(true);
   error = signal('');
 
   // Liste des championnats disponibles
-  readonly championnats = [
-    // Adultes
-    { label: 'Nationale 3 F', value: 'Nationale 3 F' },
-    { label: 'Prénationale M', value: 'Pré-nationale M' },
-    { label: 'Prénationale F', value: 'Pré-nationale F' },
-    { label: 'Régionale 2 M', value: 'Régionale 2 M' },
-    { label: 'Régionale 2 F', value: 'Régionale 2 F' },
-    // Jeunes
-    { label: 'M18 M', value: 'm18-m' },
-    { label: 'Benjamines', value: 'bfc' },
-    { label: 'Benjamins', value: 'bmb' },
-    { label: 'Minimes F', value: 'mfd' },
-    { label: 'Minimes M', value: 'mmb' },
-    { label: 'Cadettes', value: 'cfd' },
-  ];
+  readonly championnats = this.championshipService.getChampionships();
 
   // Signal pour le championnat sélectionné
   selectedChampionnatId = this.equipeFilterService.getSelectedChampionnatIdSignal();
-  selectedEquipe = this.equipeFilterService.getSelectedEquipeSignal();
 
   // Computed signal pour filtrer les équipes par championnat
   equipes = computed(() => {
@@ -84,7 +71,7 @@ export class ClassementComponent implements OnInit {
     return nomEquipe.toLowerCase().includes('crès') || nomEquipe.toLowerCase().includes('cres');
   }
 
-  onChampionnatChange(equipe: string) {
-    this.equipeFilterService.setSelectedEquipe(equipe);
+  onChampionnatChange(championnatId: string) {
+    this.equipeFilterService.setSelectedChampionnatId(championnatId);
   }
 }
