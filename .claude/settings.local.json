@@ -30,7 +30,8 @@
       "Bash(done)",
       "Bash(ng serve:*)",
       "Bash(npm install:*)",
-      "Bash(npm run update:matchs-n3:*)"
+      "Bash(npm run update:matchs-n3:*)",
+      "Bash(ls:*)"
     ],
     "deny": [],
     "ask": []

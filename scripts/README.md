@@ -77,6 +77,75 @@ Synchronise intelligemment les données entre DEV et PROD.
 
 ---
 
+## 🔄 Scripts de Mise à Jour des Données
+
+Ces scripts mettent à jour les données existantes dans Firebase sans créer de doublons. Ils comparent les données scrapées avec celles en base et ne mettent à jour que ce qui a changé.
+
+### Mise à jour des classements
+
+Met à jour les statistiques des équipes : rang, points, matchs joués, victoires, défaites, sets pour/contre.
+
+#### Championnats Adultes
+
+```bash
+npm run update:classement-n3    # Nationale 3 Féminine
+npm run update:classement-pnf   # Pré-Nationale Féminine
+npm run update:classement-pnm   # Pré-Nationale Masculine
+npm run update:classement-r2f   # Régionale 2 Féminine
+```
+
+#### Championnats Jeunes
+
+```bash
+npm run update:classement-m18m  # M18 Masculin
+npm run update:classement-bfc   # Benjamines Filles Comité
+npm run update:classement-bmb   # Benjamins Mixtes Brassage
+npm run update:classement-cfd   # Cadettes Filles Départemental
+npm run update:classement-mfd   # Minimes Filles Départemental
+npm run update:classement-mmb   # Minimes Mixtes Brassage
+```
+
+**Ce que font ces scripts :**
+- Scrapent le classement depuis le site FFV
+- Comparent avec les données existantes dans Firebase
+- Mettent à jour uniquement les équipes qui ont changé
+- Affichent un résumé détaillé (mis à jour / inchangés / non trouvés)
+
+### Mise à jour des matchs
+
+Met à jour les informations des matchs : dates, heures, scores, détails des sets, statut (à venir / terminé).
+
+#### Championnats Adultes
+
+```bash
+npm run update:matchs-n3        # Nationale 3 Féminine
+npm run update:matchs-pnf       # Pré-Nationale Féminine
+npm run update:matchs-pnm       # Pré-Nationale Masculine
+npm run update:matchs-r2f       # Régionale 2 Féminine
+```
+
+#### Championnats Jeunes
+
+```bash
+npm run update:matchs-m18m      # M18 Masculin
+npm run update:matchs-bfc       # Benjamines Filles Comité
+npm run update:matchs-bmb       # Benjamins Mixtes Brassage
+npm run update:matchs-cfd       # Cadettes Filles Départemental
+npm run update:matchs-mfd       # Minimes Filles Départemental
+npm run update:matchs-mmb       # Minimes Mixtes Brassage
+```
+
+**Ce que font ces scripts :**
+- Scrapent tous les matchs depuis le site FFV
+- Récupèrent les IDs des équipes depuis Firebase
+- Comparent avec les matchs existants
+- Mettent à jour les matchs qui ont changé (nouveaux scores, changement de statut)
+- Affichent un résumé détaillé
+
+**💡 Utilisation recommandée :** Exécuter ces scripts régulièrement (quotidien ou hebdomadaire) pour maintenir les données à jour automatiquement.
+
+---
+
 ## 🗄️ Scripts de Scraping et Import
 
 ## Scripts disponibles

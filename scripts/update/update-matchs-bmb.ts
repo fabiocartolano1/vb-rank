@@ -1,0 +1,323 @@
+import { initializeApp } from 'firebase/app';
+import { getFirestore, collection, getDocs, query, where, updateDoc, doc } from 'firebase/firestore';
+import * as cheerio from 'cheerio';
+import { firebaseConfig } from '../config/firebase-config';
+
+// Initialiser Firebase
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+interface Match {
+  championnatId: string;
+  journee: number;
+  date: string;
+  heure?: string;
+  equipeDomicile: string;
+  equipeDomicileId?: string;
+  equipeExterieur: string;
+  equipeExterieurId?: string;
+  scoreDomicile?: number;
+  scoreExterieur?: number;
+  detailSets?: string[];
+  statut: 'termine' | 'a_venir';
+}
+
+async function getChampionnatUrl(championnatId: string): Promise<string> {
+  console.log(`📡 Récupération de l'URL du championnat ${championnatId}...`);
+  const championnatDoc = await getDocs(
+    query(collection(db, 'championnats'), where('__name__', '==', championnatId))
+  );
+
+  if (championnatDoc.empty) {
+    throw new Error(`❌ Championnat ${championnatId} non trouvé dans Firebase`);
+  }
+
+  const url = championnatDoc.docs[0].data().url;
+  if (!url) {
+    throw new Error(`❌ URL non renseignée pour ${championnatId} dans Firebase`);
+  }
+
+  console.log(`   URL: ${url}\n`);
+  return url;
+}
+
+async function fetchPage(url: string): Promise<string> {
+  console.log('📥 Récupération de la page des matchs...');
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+  // Convertir en latin1 puis en utf8 pour gérer l'encodage
+  const buffer = await response.arrayBuffer();
+  const decoder = new TextDecoder('iso-8859-1');
+  return decoder.decode(buffer);
+}
+
+async function getEquipesMap(): Promise<Map<string, string>> {
+  console.log('📥 Récupération des équipes BMB depuis Firebase...');
+  const equipesQuery = query(
+    collection(db, 'equipes'),
+    where('championnatId', '==', 'bmb')
+  );
+  const equipesSnapshot = await getDocs(equipesQuery);
+
+  const map = new Map<string, string>();
+  equipesSnapshot.forEach((doc) => {
+    const data = doc.data();
+    map.set(data.nom, doc.id);
+  });
+
+  console.log(`✅ ${map.size} équipes trouvées\n`);
+  return map;
+}
+
+function normalizeTeamName(name: string): string {
+  // Normaliser les noms d'équipes pour matcher ceux en base
+  return name.trim().toUpperCase();
+}
+
+const toTitleCase = (str: string): string => {
+  return str
+    .toLowerCase()
+    .split(' ')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+};
+
+async function scrapeMatchs(url: string, equipesMap: Map<string, string>): Promise<Match[]> {
+  const html = await fetchPage(url);
+  const $ = cheerio.load(html);
+
+  const matchs: Match[] = [];
+  let currentJournee = 0;
+
+  $('table').each((_, table) => {
+    $(table)
+      .find('tr')
+      .each((_, row) => {
+        const cells = $(row).find('td');
+        const text = $(row).text();
+
+        if (text.includes('Journée') || text.includes('journée') || text.includes('JOURNEE')) {
+          const journeeMatch = text.match(/\d+/);
+          if (journeeMatch) {
+            currentJournee = parseInt(journeeMatch[0]);
+            console.log(`  📅 Journée ${currentJournee}`);
+          }
+        }
+
+        if (cells.length >= 8 && currentJournee > 0) {
+          const dateTextRaw = $(cells[1]).text().trim();
+          const heureText = $(cells[2]).text().trim();
+          const equipeDomicileRaw = $(cells[3]).text().trim();
+          const equipeExterieurRaw = $(cells[5]).text().trim();
+          const scoreDomText = $(cells[6]).text().trim();
+          const scoreExtText = $(cells[7]).text().trim();
+          const detailSetsText = $(cells[8]).text().trim();
+
+          // Convertir la date du format DD/MM/YY au format YYYY-MM-DD
+          let dateText = dateTextRaw;
+          if (dateTextRaw.match(/^\d{2}\/\d{2}\/\d{2}$/)) {
+            const [day, month, year] = dateTextRaw.split('/');
+            const fullYear = `20${year}`;
+            dateText = `${fullYear}-${month}-${day}`;
+          }
+
+          if (equipeDomicileRaw && equipeExterieurRaw) {
+            const equipeDomicile = toTitleCase(equipeDomicileRaw);
+            const equipeExterieur = toTitleCase(equipeExterieurRaw);
+
+            const equipeDomicileNorm = normalizeTeamName(equipeDomicile);
+            const equipeExterieurNorm = normalizeTeamName(equipeExterieur);
+
+            let equipeDomicileId: string | undefined;
+            let equipeExterieurId: string | undefined;
+            let equipeDomicileNom: string = equipeDomicile;
+            let equipeExterieurNom: string = equipeExterieur;
+
+            for (const [nom, id] of equipesMap.entries()) {
+              if (normalizeTeamName(nom) === equipeDomicileNorm) {
+                equipeDomicileId = id;
+                equipeDomicileNom = nom;
+              }
+              if (normalizeTeamName(nom) === equipeExterieurNorm) {
+                equipeExterieurId = id;
+                equipeExterieurNom = nom;
+              }
+            }
+
+            const hasScore = scoreDomText && scoreExtText;
+
+            const match: any = {
+              championnatId: 'bmb',
+              journee: currentJournee,
+              date: dateText,
+              heure: heureText,
+              equipeDomicile: equipeDomicileNom,
+              equipeExterieur: equipeExterieurNom,
+              scoreDomicile: hasScore ? parseInt(scoreDomText) : null,
+              scoreExterieur: hasScore ? parseInt(scoreExtText) : null,
+              detailSets: hasScore && detailSetsText ? detailSetsText.split(/[,;]/).map(s => s.trim().replace(/\s+/g, ':')) : null,
+              statut: hasScore ? 'termine' : 'a_venir',
+            };
+
+            // N'ajouter les IDs d'équipes que s'ils existent
+            if (equipeDomicileId) {
+              match.equipeDomicileId = equipeDomicileId;
+            }
+            if (equipeExterieurId) {
+              match.equipeExterieurId = equipeExterieurId;
+            }
+
+            matchs.push(match);
+          }
+        }
+      });
+  });
+
+  return matchs;
+}
+
+async function updateMatchsInFirebase(matchs: Match[]): Promise<void> {
+  console.log('\n💾 Mise à jour des matchs dans Firebase...');
+
+  let updated = 0;
+  let notFound = 0;
+  let unchanged = 0;
+
+  for (const match of matchs) {
+    // Rechercher le match existant
+    const q = query(
+      collection(db, 'matchs'),
+      where('championnatId', '==', match.championnatId),
+      where('journee', '==', match.journee),
+      where('equipeDomicile', '==', match.equipeDomicile),
+      where('equipeExterieur', '==', match.equipeExterieur)
+    );
+    const existingMatchs = await getDocs(q);
+
+    if (!existingMatchs.empty) {
+      const existingDoc = existingMatchs.docs[0];
+      const existingData = existingDoc.data();
+
+      // Vérifier si les données ont changé
+      const hasChanged =
+        existingData.date !== match.date ||
+        existingData.heure !== match.heure ||
+        existingData.scoreDomicile !== match.scoreDomicile ||
+        existingData.scoreExterieur !== match.scoreExterieur ||
+        existingData.statut !== match.statut ||
+        JSON.stringify(existingData.detailSets) !== JSON.stringify(match.detailSets);
+
+      if (hasChanged) {
+        // Préparer les données de mise à jour
+        const updateData: any = {
+          date: match.date,
+          heure: match.heure,
+          statut: match.statut,
+        };
+
+        // Ajouter les scores uniquement s'ils existent
+        if (match.scoreDomicile !== null) {
+          updateData.scoreDomicile = match.scoreDomicile;
+        }
+        if (match.scoreExterieur !== null) {
+          updateData.scoreExterieur = match.scoreExterieur;
+        }
+        if (match.detailSets !== null) {
+          updateData.detailSets = match.detailSets;
+        }
+
+        // Ajouter les IDs d'équipes s'ils existent
+        if (match.equipeDomicileId) {
+          updateData.equipeDomicileId = match.equipeDomicileId;
+        }
+        if (match.equipeExterieurId) {
+          updateData.equipeExterieurId = match.equipeExterieurId;
+        }
+
+        await updateDoc(doc(db, 'matchs', existingDoc.id), updateData);
+
+        const statusChange = existingData.statut !== match.statut ? ` (${existingData.statut} → ${match.statut})` : '';
+        const scoreChange = match.scoreDomicile !== null && match.scoreExterieur !== null
+          ? ` - Score: ${match.scoreDomicile}-${match.scoreExterieur}`
+          : '';
+        console.log(`✅ J${match.journee}: ${match.equipeDomicile} vs ${match.equipeExterieur}${statusChange}${scoreChange}`);
+        updated++;
+      } else {
+        unchanged++;
+      }
+    } else {
+      console.log(`⚠️  J${match.journee}: ${match.equipeDomicile} vs ${match.equipeExterieur} - Match non trouvé dans la base de données`);
+      notFound++;
+    }
+  }
+
+  console.log('\n📊 Résumé de la mise à jour :');
+  console.log(`   ✅ ${updated} match(s) mis à jour`);
+  console.log(`   ⏭️  ${unchanged} match(s) inchangé(s)`);
+  if (notFound > 0) {
+    console.log(`   ⚠️  ${notFound} match(s) non trouvé(s)`);
+  }
+}
+
+async function verifyEnvironment(): Promise<void> {
+  console.log('🔍 Vérification de l\'environnement...');
+
+  const projectId = firebaseConfig.projectId;
+  console.log(`   Projet Firebase: ${projectId}`);
+
+  if (!projectId.includes('vb-rank')) {
+    throw new Error('⚠️  ATTENTION: Le projet Firebase ne semble pas être le bon !');
+  }
+
+  // Vérifier que nous sommes en développement
+  const isDev = process.env.NODE_ENV !== 'production';
+  console.log(`   Environnement: ${isDev ? 'développement' : 'production'}`);
+
+  console.log('✅ Environnement vérifié\n');
+}
+
+async function main() {
+  try {
+    console.log('🏐 Mise à jour des Matchs BMB\n');
+    console.log('════════════════════════════════════════════════\n');
+
+    // Vérifier l'environnement avant de continuer
+    await verifyEnvironment();
+
+    // Récupérer l'URL depuis Firebase
+    const url = await getChampionnatUrl('bmb');
+
+    // 1. Récupérer les équipes depuis Firebase
+    const equipesMap = await getEquipesMap();
+
+    // 2. Scraper les matchs
+    const matchs = await scrapeMatchs(url, equipesMap);
+    console.log(`\n✅ ${matchs.length} matchs trouvés\n`);
+
+    if (matchs.length === 0) {
+      console.log('⚠️  Aucun match trouvé, vérifiez la structure de la page');
+      return;
+    }
+
+    // 3. Mettre à jour les matchs dans Firebase
+    await updateMatchsInFirebase(matchs);
+
+    console.log('\n🎉 Mise à jour terminée avec succès !');
+    console.log('════════════════════════════════════════════════');
+  } catch (error) {
+    console.error('\n❌ Erreur:', error);
+    throw error;
+  }
+}
+
+main()
+  .then(() => {
+    console.log('\n✅ Script terminé');
+    process.exit(0);
+  })
+  .catch((error) => {
+    console.error('\n❌ Erreur fatale:', error);
+    process.exit(1);
+  });
