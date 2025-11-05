@@ -348,6 +348,19 @@
   font-weight: 400;
 }
 
+/* Mode PC - Centrer le titre */
+@media (min-width: 769px) {
+  .header-title-container {
+    justify-content: center;
+  }
+
+  .theme-toggle {
+    position: absolute;
+    right: 0;
+    margin-left: 0;
+  }
+}
+
 /* Responsive - Tablette */
 @media (max-width: 1024px) {
   .app-header {

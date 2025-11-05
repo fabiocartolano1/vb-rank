@@ -29,6 +29,11 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
+:host-context([data-theme="dark"]) .weekend-navigation {
+  background: #1a1a1a !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
 .nav-arrow {
   background: #1a1a1a;
   border: none;
@@ -43,8 +48,18 @@
   color: white;
 }
 
+:host-context([data-theme="dark"]) .nav-arrow {
+  background: #F762A6;
+  color: white;
+}
+
 .nav-arrow:hover:not(:disabled) {
   background: #2a2a2a;
+  transform: scale(1.1);
+}
+
+:host-context([data-theme="dark"]) .nav-arrow:hover:not(:disabled) {
+  background: #e5508f;
   transform: scale(1.1);
 }
 
@@ -52,6 +67,11 @@
   background: #cbd5e0;
   cursor: not-allowed;
   opacity: 0.5;
+}
+
+:host-context([data-theme="dark"]) .nav-arrow:disabled {
+  background: #4a4a4a;
+  color: #666666;
 }
 
 .nav-arrow svg {
@@ -78,6 +98,14 @@
   color: #2d3748;
 }
 
+:host-context([data-theme="dark"]) .weekend-dates {
+  color: #e0e0e0;
+}
+
+:host-context([data-theme="dark"]) .weekend-label {
+  color: #a0a0a0;
+}
+
 /* Vue Weekend */
 .weekend-view {
   display: grid;
@@ -96,6 +124,11 @@
   border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+:host-context([data-theme="dark"]) .day-column {
+  background: #1a1a1a !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 .day-header {
@@ -137,10 +170,19 @@
   cursor: pointer;
 }
 
+:host-context([data-theme="dark"]) .match-card {
+  background: #2a2a2a !important;
+}
+
 .match-card:hover {
   background: #edf2f7;
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+:host-context([data-theme="dark"]) .match-card:hover {
+  background: #353535 !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 .match-card.match-won {
@@ -180,11 +222,20 @@
   letter-spacing: 0.5px;
 }
 
+:host-context([data-theme="dark"]) .match-championship {
+  color: #a0a0a0;
+}
+
 .match-journee {
   background: #e2e8f0;
   padding: 0.125rem 0.5rem;
   border-radius: 4px;
   font-size: 0.7rem;
+}
+
+:host-context([data-theme="dark"]) .match-journee {
+  background: #3a3a3a;
+  color: #e0e0e0;
 }
 
 .match-teams {
@@ -224,6 +275,10 @@
   flex: 1;
 }
 
+:host-context([data-theme="dark"]) .team-name {
+  color: #e0e0e0;
+}
+
 .match-score {
   display: flex;
   align-items: flex-start;
@@ -239,10 +294,18 @@
   color: #2d3748;
 }
 
+:host-context([data-theme="dark"]) .score {
+  color: #e0e0e0;
+}
+
 .vs {
   font-size: 0.875rem;
   font-weight: 600;
   color: #a0aec0;
+}
+
+:host-context([data-theme="dark"]) .vs {
+  color: #a0a0a0;
 }
 
 .match-sets {
@@ -255,6 +318,10 @@
   justify-content: center;
 }
 
+:host-context([data-theme="dark"]) .match-sets {
+  border-top-color: #3a3a3a;
+}
+
 .set-score {
   font-size: 0.75rem;
   background: white;
@@ -262,6 +329,11 @@
   border-radius: 4px;
   color: #4a5568;
   font-weight: 500;
+}
+
+:host-context([data-theme="dark"]) .set-score {
+  background: #3a3a3a;
+  color: #e0e0e0;
 }
 
 /* No matches */
