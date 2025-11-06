@@ -23,9 +23,9 @@ const requiredEnvVars = [
 for (const envVar of requiredEnvVars) {
   if (!process.env[envVar]) {
     throw new Error(
-      `❌ Variable d'environnement manquante: ${envVar}\n` +
-      `   Assurez-vous que le fichier .env existe à la racine du projet et contient toutes les variables requises.\n` +
-      `   Vous pouvez copier .env.example vers .env et remplir les valeurs.`
+      'Variable d\'environnement manquante: ' + envVar + '\n' +
+      'Assurez-vous que le fichier .env existe a la racine du projet et contient toutes les variables requises.\n' +
+      'Vous pouvez copier .env.example vers .env et remplir les valeurs.'
     );
   }
 }
