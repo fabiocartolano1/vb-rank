@@ -2,7 +2,7 @@ name: Update Classement PNF
 
 on:
   schedule:
-    - cron: '0 22 * * *'  # 23h Paris time (22h UTC)
+    - cron: '59 22 * * 0,6'  # Samedi et dimanche à 23h59 Paris (22h59 UTC)
   workflow_dispatch:
 
 jobs:
