@@ -5,11 +5,25 @@
   background: var(--bg-color);
 }
 
+/* iOS uniquement - Gérer la safe area pour le notch et la status bar */
+.ios .app-container {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.ios .app-header {
+  padding-top: 3.5rem !important;
+}
+
+.ios .app-header.compact {
+  padding-top: 2.5rem !important;
+}
+
 /* Header */
 .app-header {
   background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
   color: white;
   padding: 2rem 1.25rem;
+  padding-top: calc(env(safe-area-inset-top, 0px) + 2rem);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
   position: relative;
   overflow: hidden;
@@ -19,6 +33,7 @@
 
 .app-header.compact {
   padding: 1rem 1.25rem;
+  padding-top: calc(env(safe-area-inset-top, 0px) + 1rem);
 }
 
 .app-header::before {
@@ -200,8 +215,8 @@
 }
 
 .nav-icon {
-  width: 24px;
-  height: 24px;
+  width: 31px;
+  height: 31px;
   display: none;
 }
 
@@ -224,7 +239,6 @@
 
 .nav-link:hover {
   color: var(--primary-color);
-  background: rgba(247, 98, 166, 0.05);
 }
 
 .nav-link.active {
@@ -425,10 +439,15 @@
     z-index: 1000;
   }
 
+  /* iOS uniquement - padding bottom pour la navigation */
+  .ios .app-nav {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
   .nav-link {
     flex: 1;
     max-width: none;
-    padding: 0.5rem 0.75rem;
+    padding: 0.75rem 0.75rem;
     font-size: 0.625rem;
     letter-spacing: 0;
     flex-direction: column;
@@ -440,20 +459,18 @@
   /* Afficher les icônes sur mobile */
   .nav-icon {
     display: block;
-    width: 22px;
-    height: 22px;
+    width: 29px;
+    height: 29px;
     stroke-width: 1.5;
   }
 
   .nav-logo {
-    width: 22px;
-    height: 22px;
+    width: 29px;
+    height: 29px;
   }
 
   .nav-label {
-    text-transform: none;
-    font-size: 0.625rem;
-    font-weight: 500;
+    display: none;
   }
 
   /* Indicateur actif en haut */
@@ -530,20 +547,20 @@
   }
 
   .nav-link {
-    padding: 0.4rem 0.4rem;
+    padding: 0.65rem 0.4rem;
   }
 
   .nav-icon {
-    width: 20px;
-    height: 20px;
+    width: 26px;
+    height: 26px;
   }
 
   .nav-logo {
-    width: 20px;
-    height: 20px;
+    width: 26px;
+    height: 26px;
   }
 
   .nav-label {
-    font-size: 0.5625rem;
+    display: none;
   }
 }

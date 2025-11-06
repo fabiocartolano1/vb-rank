@@ -31,7 +31,12 @@
       "Bash(ng serve:*)",
       "Bash(npm install:*)",
       "Bash(npm run update:matchs-n3:*)",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "Bash(sudo chown:*)",
+      "Bash(mkdir:*)",
+      "Bash(npx cap init:*)",
+      "Bash(npx cap:*)",
+      "Bash(sips:*)"
     ],
     "deny": [],
     "ask": []
