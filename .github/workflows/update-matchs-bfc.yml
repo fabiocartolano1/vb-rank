@@ -1,4 +1,4 @@
-name: Update Classement N3
+name: Update Matchs BFC
 
 on:
   schedule:
@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  update-classement-n3:
+  update-matchs-bfc:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -27,19 +27,19 @@ jobs:
       - name: Create logs directory
         run: mkdir -p logs
 
-      - name: Update Classement N3
-        run: npm run update:classement-n3
+      - name: Update Matchs BFC
+        run: npm run update:matchs-bfc
 
       - name: Upload logs
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: classement-n3-logs-${{ github.run_id }}
+          name: matchs-bfc-logs-${{ github.run_id }}
           path: logs/*.log
           retention-days: 30
 
       - name: Check for errors
         if: failure()
         run: |
-          echo "::error::❌ La mise à jour du classement n3 a échoué. Consultez les logs dans les artifacts."
+          echo "::error::❌ La mise à jour du matchs bfc a échoué. Consultez les logs dans les artifacts."
           exit 1
