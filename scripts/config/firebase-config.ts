@@ -1,5 +1,10 @@
 import { config } from 'dotenv';
-import { resolve } from 'path';
+import { resolve, dirname } from 'path';
+import { fileURLToPath } from 'url';
+
+// Obtenir le chemin du répertoire courant en mode ESM
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 // Charger les variables d'environnement depuis le fichier .env à la racine du projet
 config({ path: resolve(__dirname, '../../.env') });
