@@ -1,7 +1,16 @@
 import { initializeApp } from 'firebase/app';
-import { getFirestore, collection, getDocs, query, where, updateDoc, doc } from 'firebase/firestore';
+import {
+  getFirestore,
+  collection,
+  getDocs,
+  query,
+  where,
+  updateDoc,
+  doc,
+} from 'firebase/firestore';
 import * as cheerio from 'cheerio';
 import { firebaseConfig } from '../config/firebase-config';
+import { initLogger } from '../utils/logger';
 
 // Initialiser Firebase
 const app = initializeApp(firebaseConfig);
@@ -238,17 +247,23 @@ async function updateMatchsInFirebase(matchs: Match[]): Promise<void> {
 
         await updateDoc(doc(db, 'matchs', existingDoc.id), updateData);
 
-        const statusChange = existingData.statut !== match.statut ? ` (${existingData.statut} → ${match.statut})` : '';
-        const scoreChange = match.scoreDomicile !== null && match.scoreExterieur !== null
-          ? ` - Score: ${match.scoreDomicile}-${match.scoreExterieur}`
-          : '';
-        console.log(`✅ J${match.journee}: ${match.equipeDomicile} vs ${match.equipeExterieur}${statusChange}${scoreChange}`);
+        const statusChange =
+          existingData.statut !== match.statut ? ` (${existingData.statut} → ${match.statut})` : '';
+        const scoreChange =
+          match.scoreDomicile !== null && match.scoreExterieur !== null
+            ? ` - Score: ${match.scoreDomicile}-${match.scoreExterieur}`
+            : '';
+        console.log(
+          `✅ J${match.journee}: ${match.equipeDomicile} vs ${match.equipeExterieur}${statusChange}${scoreChange}`
+        );
         updated++;
       } else {
         unchanged++;
       }
     } else {
-      console.log(`⚠️  J${match.journee}: ${match.equipeDomicile} vs ${match.equipeExterieur} - Match non trouvé dans la base de données`);
+      console.log(
+        `⚠️  J${match.journee}: ${match.equipeDomicile} vs ${match.equipeExterieur} - Match non trouvé dans la base de données`
+      );
       notFound++;
     }
   }
@@ -262,7 +277,7 @@ async function updateMatchsInFirebase(matchs: Match[]): Promise<void> {
 }
 
 async function verifyEnvironment(): Promise<void> {
-  console.log('🔍 Vérification de l\'environnement...');
+  console.log("🔍 Vérification de l'environnement...");
 
   const projectId = firebaseConfig.projectId;
   console.log(`   Projet Firebase: ${projectId}`);
@@ -279,6 +294,10 @@ async function verifyEnvironment(): Promise<void> {
 }
 
 async function main() {
+  // Initialiser le logger
+  const logger = initLogger('update-matchs-pnf');
+  console.log(`📝 Logs enregistrés dans: ${logger.getLogFilePath()}\n`);
+
   try {
     console.log('🏐 Mise à jour des Matchs Pré-Nationale Féminine\n');
     console.log('════════════════════════════════════════════════\n');
@@ -287,7 +306,7 @@ async function main() {
     await verifyEnvironment();
 
     const url =
-      'https://www.ffvbbeach.org/ffvbapp/resu/vbspo_calendrier.php?saison=2025/2026&codent=LILR&poule=PFA';
+      'https://www.ffvbbeach.org/ffvbapp/resu/vbspo_calendrier.php?saison=2025%2F2026&codent=LILR&poule=PFA&division=&tour=&calend=COMPLET&x=14&y=20';
 
     // 1. Récupérer les équipes depuis Firebase
     const equipesMap = await getEquipesMap();

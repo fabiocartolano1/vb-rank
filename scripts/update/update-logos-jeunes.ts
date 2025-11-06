@@ -1,5 +1,6 @@
 import { initializeApp } from 'firebase/app';
 import { getFirestore, collection, getDocs, doc, updateDoc, query, where } from 'firebase/firestore';
+import { initLogger } from '../utils/logger';
 
 // Import environnement DEV
 const devEnv = require('../src/environments/environment.development');
@@ -58,6 +59,10 @@ function findMatchingAdulteEquipe(
 }
 
 async function main() {
+  // Initialiser le logger
+  const logger = initLogger('update-logos-jeunes');
+  console.log(`📝 Logs enregistrés dans: ${logger.getLogFilePath()}\n`);
+
   console.log('\n╔════════════════════════════════════════════════════════════╗');
   console.log('║  🎨 Synchronisation logos adultes → jeunes                ║');
   console.log('╚════════════════════════════════════════════════════════════╝\n');

@@ -3,8 +3,8 @@ import { getFirestore, collection, getDocs, doc, setDoc, writeBatch } from 'fire
 import * as readline from 'readline';
 
 // Importer les environnements
-const devEnv = require('../src/environments/environment.development');
-const prodEnv = require('../src/environments/environment.production');
+const devEnv = require('../../src/environments/environment.development');
+const prodEnv = require('../../src/environments/environment.production');
 
 // Initialiser Firebase pour les deux environnements
 const devApp = initializeApp(devEnv.environment.firebase, 'dev');
@@ -62,7 +62,9 @@ async function displayStats() {
     const devCount = await countDocuments(devDb, collectionName);
     const prodCount = await countDocuments(prodDb, collectionName);
     console.log(
-      `│ ${collectionName.padEnd(15)} │ ${String(devCount).padStart(12)} │ ${String(prodCount).padStart(12)} │`
+      `│ ${collectionName.padEnd(15)} │ ${String(devCount).padStart(12)} │ ${String(
+        prodCount
+      ).padStart(12)} │`
     );
   }
 
@@ -161,7 +163,7 @@ async function migrate() {
   const confirmed = await askConfirmation('\nVoulez-vous continuer ?');
 
   if (!confirmed) {
-    console.log('\n❌ Migration annulée par l\'utilisateur.');
+    console.log("\n❌ Migration annulée par l'utilisateur.");
     process.exit(0);
   }
 
@@ -186,7 +188,9 @@ async function migrate() {
     totalErrors += stats.errors;
 
     const status = stats.errors === 0 ? '✅' : '⚠️';
-    console.log(`${status} ${stats.collection.padEnd(15)} : ${stats.migrated}/${stats.total} migrés`);
+    console.log(
+      `${status} ${stats.collection.padEnd(15)} : ${stats.migrated}/${stats.total} migrés`
+    );
   }
 
   console.log('\n' + '─'.repeat(60));

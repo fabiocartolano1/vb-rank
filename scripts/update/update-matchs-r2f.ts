@@ -2,6 +2,7 @@ import { initializeApp } from 'firebase/app';
 import { getFirestore, collection, getDocs, query, where, updateDoc, doc } from 'firebase/firestore';
 import * as cheerio from 'cheerio';
 import { firebaseConfig } from '../config/firebase-config';
+import { initLogger } from '../utils/logger';
 
 // Initialiser Firebase
 const app = initializeApp(firebaseConfig);
@@ -54,7 +55,12 @@ async function getEquipesMap(): Promise<Map<string, string>> {
 
 function normalizeTeamName(name: string): string {
   // Normaliser les noms d'équipes pour matcher ceux en base
-  return name.trim().toUpperCase();
+  // Supprimer les accents et mettre en majuscules
+  return name
+    .trim()
+    .toUpperCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '');
 }
 
 async function scrapeMatchs(url: string, equipesMap: Map<string, string>): Promise<Match[]> {
@@ -279,6 +285,10 @@ async function verifyEnvironment(): Promise<void> {
 }
 
 async function main() {
+  // Initialiser le logger
+  const logger = initLogger('update-matchs-r2f');
+  console.log(`📝 Logs enregistrés dans: ${logger.getLogFilePath()}\n`);
+
   try {
     console.log('🏐 Mise à jour des Matchs Régionale 2 Féminine\n');
     console.log('════════════════════════════════════════════════\n');

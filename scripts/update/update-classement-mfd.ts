@@ -2,6 +2,7 @@ import { initializeApp } from 'firebase/app';
 import { getFirestore, collection, getDocs, query, where, updateDoc, doc } from 'firebase/firestore';
 import * as cheerio from 'cheerio';
 import { firebaseConfig } from '../config/firebase-config';
+import { initLogger } from '../utils/logger';
 
 // Initialiser Firebase
 const app = initializeApp(firebaseConfig);
@@ -193,6 +194,10 @@ async function verifyEnvironment(): Promise<void> {
 }
 
 async function main() {
+  // Initialiser le logger
+  const logger = initLogger('update-classement-mfd');
+  console.log(`📝 Logs enregistrés dans: ${logger.getLogFilePath()}\n`);
+
   try {
     console.log('🏐 Mise à jour du Classement MFD\n');
     console.log('════════════════════════════════════════════════\n');

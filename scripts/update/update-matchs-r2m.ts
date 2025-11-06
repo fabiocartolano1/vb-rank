@@ -23,25 +23,6 @@ interface Match {
   statut: 'termine' | 'a_venir';
 }
 
-async function getChampionnatUrl(championnatId: string): Promise<string> {
-  console.log(`📡 Récupération de l'URL du championnat ${championnatId}...`);
-  const championnatDoc = await getDocs(
-    query(collection(db, 'championnats'), where('__name__', '==', championnatId))
-  );
-
-  if (championnatDoc.empty) {
-    throw new Error(`❌ Championnat ${championnatId} non trouvé dans Firebase`);
-  }
-
-  const url = championnatDoc.docs[0].data().url;
-  if (!url) {
-    throw new Error(`❌ URL non renseignée pour ${championnatId} dans Firebase`);
-  }
-
-  console.log(`   URL: ${url}\n`);
-  return url;
-}
-
 async function fetchPage(url: string): Promise<string> {
   console.log('📥 Récupération de la page des matchs...');
   const response = await fetch(url);
@@ -55,10 +36,10 @@ async function fetchPage(url: string): Promise<string> {
 }
 
 async function getEquipesMap(): Promise<Map<string, string>> {
-  console.log('📥 Récupération des équipes M18M depuis Firebase...');
+  console.log('📥 Récupération des équipes R2M depuis Firebase...');
   const equipesQuery = query(
     collection(db, 'equipes'),
-    where('championnatId', '==', 'm18-m')
+    where('championnatId', '==', 'regionale-2-m')
   );
   const equipesSnapshot = await getDocs(equipesQuery);
 
@@ -74,7 +55,12 @@ async function getEquipesMap(): Promise<Map<string, string>> {
 
 function normalizeTeamName(name: string): string {
   // Normaliser les noms d'équipes pour matcher ceux en base
-  return name.trim().toUpperCase();
+  // Supprimer les accents et mettre en majuscules
+  return name
+    .trim()
+    .toUpperCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '');
 }
 
 const toTitleCase = (str: string): string => {
@@ -92,88 +78,119 @@ async function scrapeMatchs(url: string, equipesMap: Map<string, string>): Promi
   const matchs: Match[] = [];
   let currentJournee = 0;
 
-  $('table').each((_, table) => {
-    $(table)
-      .find('tr')
-      .each((_, row) => {
-        const cells = $(row).find('td');
-        const text = $(row).text();
+  // Trouver tous les éléments de journée
+  $('tr').each((_, element) => {
+    const $row = $(element);
+    const rowText = $row.text();
 
-        if (text.includes('Journée') || text.includes('journée') || text.includes('JOURNEE')) {
-          const journeeMatch = text.match(/\d+/);
-          if (journeeMatch) {
-            currentJournee = parseInt(journeeMatch[0]);
-            console.log(`  📅 Journée ${currentJournee}`);
-          }
-        }
+    // Détecter une nouvelle journée
+    const journeeMatch = rowText.match(/Journ[ée]+\s+(\d+)/i);
+    if (journeeMatch) {
+      currentJournee = parseInt(journeeMatch[1]);
+      console.log(`  📅 Journée ${currentJournee}`);
+    }
+    // Si pas de journée en cours, continuer
+    if (currentJournee === 0) return;
 
-        if (cells.length >= 8 && currentJournee > 0) {
-          const dateTextRaw = $(cells[1]).text().trim();
-          const heureText = $(cells[2]).text().trim();
-          const equipeDomicileRaw = $(cells[3]).text().trim();
-          const equipeExterieurRaw = $(cells[5]).text().trim();
-          const scoreDomText = $(cells[6]).text().trim();
-          const scoreExtText = $(cells[7]).text().trim();
-          const detailSetsText = $(cells[8]).text().trim();
+    // Chercher les cellules du match
+    const cells = $row.find('td');
+    if (cells.length < 4) return;
 
-          // Convertir la date du format DD/MM/YY au format YYYY-MM-DD
-          let dateText = dateTextRaw;
-          if (dateTextRaw.match(/^\d{2}\/\d{2}\/\d{2}$/)) {
-            const [day, month, year] = dateTextRaw.split('/');
-            const fullYear = `20${year}`;
-            dateText = `${fullYear}-${month}-${day}`;
-          }
+    //check si match joué
+    let matchPlayed = false;
 
-          if (equipeDomicileRaw && equipeExterieurRaw) {
-            const equipeDomicile = toTitleCase(equipeDomicileRaw);
-            const equipeExterieur = toTitleCase(equipeExterieurRaw);
+    cells.each(function () {
+      if ($(this).is('.lienblanc_pt')) {
+        matchPlayed = true;
+        return false; // Arrête la boucle dès qu'on trouve
+      }
+    });
 
-            const equipeDomicileNorm = normalizeTeamName(equipeDomicile);
-            const equipeExterieurNorm = normalizeTeamName(equipeExterieur);
+    // Extraire les données
+    const dateText = $(cells[1]).text().trim();
+    const heureText = $(cells[2]).text().trim();
+    const equipeDomicileRaw = $(cells[3]).text().trim();
+    const equipeExterieurRaw = $(cells[5]).text().trim();
+    let scoreDomicile = '';
+    let scoreExterieur = '';
+    let sets: string[] = [];
+    let statut = 'a_venir';
+    if (matchPlayed) {
+      scoreDomicile = $(cells[6]).text().trim();
+      scoreExterieur = $(cells[7]).text().trim();
+      sets = $(cells[8])
+        .text()
+        .trim()
+        .split(/[,;]/)
+        .map((s) => s.trim().replace(/\s+/g, ':'));
+      statut = 'termine';
+    }
 
-            let equipeDomicileId: string | undefined;
-            let equipeExterieurId: string | undefined;
-            let equipeDomicileNom: string = equipeDomicile;
-            let equipeExterieurNom: string = equipeExterieur;
+    // Vérifier que nous avons des noms d'équipes valides
+    if (
+      !equipeDomicileRaw ||
+      !equipeExterieurRaw ||
+      equipeDomicileRaw.length < 3 ||
+      equipeExterieurRaw.length < 3
+    ) {
+      return;
+    }
 
-            for (const [nom, id] of equipesMap.entries()) {
-              if (normalizeTeamName(nom) === equipeDomicileNorm) {
-                equipeDomicileId = id;
-                equipeDomicileNom = nom;
-              }
-              if (normalizeTeamName(nom) === equipeExterieurNorm) {
-                equipeExterieurId = id;
-                equipeExterieurNom = nom;
-              }
-            }
+    // Vérifier si c'est une ligne de match (pas un en-tête)
+    if (equipeDomicileRaw.includes('Recevoir') || equipeDomicileRaw.includes('Recevant')) {
+      return;
+    }
 
-            const hasScore = scoreDomText && scoreExtText;
+    // Convertir en TitleCase avant de normaliser
+    const equipeDomicile = toTitleCase(equipeDomicileRaw);
+    const equipeExterieur = toTitleCase(equipeExterieurRaw);
 
-            const match: any = {
-              championnatId: 'm18-m',
-              journee: currentJournee,
-              date: dateText,
-              heure: heureText,
-              equipeDomicile: equipeDomicileNom,
-              equipeExterieur: equipeExterieurNom,
-              scoreDomicile: hasScore ? parseInt(scoreDomText) : null,
-              scoreExterieur: hasScore ? parseInt(scoreExtText) : null,
-              detailSets: hasScore && detailSetsText ? detailSetsText.split(/[,;]/).map(s => s.trim().replace(/\s+/g, ':')) : null,
-              statut: hasScore ? 'termine' : 'a_venir',
-            };
+    const dateArray = dateText.split('/');
+    const date = `20${dateArray[2]}-${dateArray[1]}-${dateArray[0]}`;
 
-            // N'ajouter les IDs d'équipes que s'ils existent
-            if (equipeDomicileId) {
-              match.equipeDomicileId = equipeDomicileId;
-            }
-            if (equipeExterieurId) {
-              match.equipeExterieurId = equipeExterieurId;
-            }
+    // Normaliser les noms pour matcher avec la base
+    const nomDomicileNorm = normalizeTeamName(equipeDomicile);
+    const nomExterieurNorm = normalizeTeamName(equipeExterieur);
 
-            matchs.push(match);
-          }
-        }
-      });
+    // Trouver les IDs des équipes et leurs noms exacts depuis la base
+    let equipeDomicileId: string | undefined;
+    let equipeExterieurId: string | undefined;
+    let equipeDomicileNom: string = equipeDomicile;
+    let equipeExterieurNom: string = equipeExterieur;
+
+    for (const [nom, id] of equipesMap.entries()) {
+      if (normalizeTeamName(nom) === nomDomicileNorm) {
+        equipeDomicileId = id;
+        equipeDomicileNom = nom; // Utiliser le nom depuis la base
+      }
+      if (normalizeTeamName(nom) === nomExterieurNorm) {
+        equipeExterieurId = id;
+        equipeExterieurNom = nom; // Utiliser le nom depuis la base
+      }
+    }
+
+    const match: any = {
+      championnatId: 'regionale-2-m',
+      journee: currentJournee,
+      date,
+      heure: heureText,
+      equipeDomicile: equipeDomicileNom,
+      equipeExterieur: equipeExterieurNom,
+      scoreDomicile: scoreDomicile != '' ? parseInt(scoreDomicile) : null,
+      scoreExterieur: scoreExterieur != '' ? parseInt(scoreExterieur) : null,
+      detailSets: sets.length > 0 ? sets : null,
+      statut,
+    };
+
+    // N'ajouter les IDs d'équipes que s'ils existent
+    if (equipeDomicileId) {
+      match.equipeDomicileId = equipeDomicileId;
+    }
+    if (equipeExterieurId) {
+      match.equipeExterieurId = equipeExterieurId;
+    }
+
+    matchs.push(match);
   });
 
   return matchs;
@@ -281,18 +298,18 @@ async function verifyEnvironment(): Promise<void> {
 
 async function main() {
   // Initialiser le logger
-  const logger = initLogger('update-matchs-m18m');
+  const logger = initLogger('update-matchs-r2m');
   console.log(`📝 Logs enregistrés dans: ${logger.getLogFilePath()}\n`);
 
   try {
-    console.log('🏐 Mise à jour des Matchs M18 Masculin\n');
+    console.log('🏐 Mise à jour des Matchs Régionale 2 Masculine\n');
     console.log('════════════════════════════════════════════════\n');
 
     // Vérifier l'environnement avant de continuer
     await verifyEnvironment();
 
-    // Récupérer l'URL depuis Firebase
-    const url = await getChampionnatUrl('m18-m');
+    const url =
+      'https://www.ffvbbeach.org/ffvbapp/resu/vbspo_calendrier.php?saison=2025%2F2026&codent=LILR&poule=RM2&division=&tour=&calend=COMPLET';
 
     // 1. Récupérer les équipes depuis Firebase
     const equipesMap = await getEquipesMap();

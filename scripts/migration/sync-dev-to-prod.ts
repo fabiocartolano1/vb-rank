@@ -11,8 +11,8 @@ import {
 import * as readline from 'readline';
 
 // Importer les environnements
-const devEnv = require('../src/environments/environment.development');
-const prodEnv = require('../src/environments/environment.production');
+const devEnv = require('../../src/environments/environment.development');
+const prodEnv = require('../../src/environments/environment.production');
 
 // Initialiser Firebase pour les deux environnements
 const devApp = initializeApp(devEnv.environment.firebase, 'dev');
@@ -72,7 +72,9 @@ async function displayStats() {
     const devCount = await countDocuments(devDb, collectionName);
     const prodCount = await countDocuments(prodDb, collectionName);
     console.log(
-      `│ ${collectionName.padEnd(15)} │ ${String(devCount).padStart(12)} │ ${String(prodCount).padStart(12)} │`
+      `│ ${collectionName.padEnd(15)} │ ${String(devCount).padStart(12)} │ ${String(
+        prodCount
+      ).padStart(12)} │`
     );
   }
 
@@ -215,15 +217,13 @@ async function sync() {
 
   const overwrite = await askConfirmation('\nUtiliser le mode écrasement ?');
 
-  console.log(
-    `\n🔧 Mode sélectionné: ${overwrite ? 'ÉCRASEMENT' : 'INCRÉMENTAL'}`
-  );
+  console.log(`\n🔧 Mode sélectionné: ${overwrite ? 'ÉCRASEMENT' : 'INCRÉMENTAL'}`);
 
   // Demander confirmation finale
   const confirmed = await askConfirmation('\nVoulez-vous continuer ?');
 
   if (!confirmed) {
-    console.log('\n❌ Synchronisation annulée par l\'utilisateur.');
+    console.log("\n❌ Synchronisation annulée par l'utilisateur.");
     process.exit(0);
   }
 
@@ -259,7 +259,9 @@ async function sync() {
   }
 
   console.log('\n' + '─'.repeat(60));
-  console.log(`📦 Total: ${totalAdded} ajoutés, ${totalUpdated} mis à jour, ${totalSkipped} ignorés`);
+  console.log(
+    `📦 Total: ${totalAdded} ajoutés, ${totalUpdated} mis à jour, ${totalSkipped} ignorés`
+  );
 
   if (totalErrors > 0) {
     console.log(`⚠️  ${totalErrors} erreurs rencontrées`);

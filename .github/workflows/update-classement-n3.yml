@@ -1,0 +1,58 @@
+name: Update Classement N3
+
+# Mise à jour automatique du classement Nationale 3 tous les soirs à 21h (heure de Paris)
+# Note: GitHub Actions utilise l'heure UTC, donc 21h Paris = 20h UTC (hiver) ou 19h UTC (été)
+
+on:
+  # Exécution automatique tous les jours à 20h UTC (21h heure de Paris en hiver)
+  schedule:
+    - cron: '0 20 * * *'
+
+  # Permet aussi de lancer manuellement depuis l'interface GitHub
+  workflow_dispatch:
+
+jobs:
+  update-classement-n3:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Setup Firebase credentials
+        run: |
+          mkdir -p scripts/config
+          echo "${{ secrets.FIREBASE_CONFIG }}" > scripts/config/firebase-config.ts
+
+      - name: Setup environment variables
+        run: |
+          echo "${{ secrets.ENV_FILE }}" > .env
+
+      - name: Create logs directory
+        run: mkdir -p logs
+
+      - name: Update Classement N3
+        run: npm run update:classement-n3
+
+      - name: Upload logs
+        uses: actions/upload-artifact@v4
+        if: always() # Uploader les logs même en cas d'erreur
+        with:
+          name: classement-n3-logs-${{ github.run_id }}
+          path: logs/*.log
+          retention-days: 30
+
+      - name: Check for errors
+        if: failure()
+        run: |
+          echo "::error::❌ La mise à jour du classement N3 a échoué. Consultez les logs dans les artifacts."
+          exit 1

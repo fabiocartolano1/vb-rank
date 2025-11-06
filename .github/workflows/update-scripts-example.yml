@@ -1,0 +1,65 @@
+name: Update Scripts Example
+
+# Exemple de workflow pour exécuter les scripts d'update avec logging
+# Les logs seront sauvegardés en tant qu'artifacts GitHub Actions
+
+on:
+  workflow_dispatch: # Permet de lancer manuellement
+  schedule:
+    # Exemple: tous les jours à 8h UTC
+    - cron: '0 8 * * *'
+
+jobs:
+  update-data:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Setup Firebase credentials
+        run: |
+          echo "${{ secrets.FIREBASE_CONFIG }}" > scripts/config/firebase-config.ts
+          echo "${{ secrets.ENV_FILE }}" > .env
+
+      # Exemple: Mise à jour R2M
+      - name: Update R2M Matchs
+        run: npm run update:matchs-r2m
+        continue-on-error: true
+
+      - name: Update R2M Classement
+        run: npm run update:classement-r2m
+        continue-on-error: true
+
+      # Exemple: Mise à jour R2F
+      - name: Update R2F Matchs
+        run: npm run update:matchs-r2f
+        continue-on-error: true
+
+      - name: Update R2F Classement
+        run: npm run update:classement-r2f
+        continue-on-error: true
+
+      # Sauvegarder les logs en tant qu'artifacts
+      - name: Upload logs
+        uses: actions/upload-artifact@v4
+        if: always() # Toujours uploader les logs, même en cas d'erreur
+        with:
+          name: update-logs-${{ github.run_id }}
+          path: logs/*.log
+          retention-days: 30 # Conserver les logs pendant 30 jours
+
+      # Optionnel: Notification en cas d'erreur
+      - name: Notify on failure
+        if: failure()
+        run: |
+          echo "⚠️ Some update scripts failed. Check the logs artifacts."

@@ -31,7 +31,9 @@
       "Bash(ng serve:*)",
       "Bash(npm install:*)",
       "Bash(npm run update:matchs-n3:*)",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "Bash(find:*)",
+      "Bash(npm run update:matchs-r2m:*)"
     ],
     "deny": [],
     "ask": []

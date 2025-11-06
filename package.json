@@ -27,6 +27,8 @@
     "update:matchs-pnm": "npx tsx scripts/update/update-matchs-pnm.ts",
     "update:classement-r2f": "npx tsx scripts/update/update-classement-r2f.ts",
     "update:matchs-r2f": "npx tsx scripts/update/update-matchs-r2f.ts",
+    "update:classement-r2m": "npx tsx scripts/update/update-classement-r2m.ts",
+    "update:matchs-r2m": "npx tsx scripts/update/update-matchs-r2m.ts",
     "update:classement-m18m": "npx tsx scripts/update/update-classement-m18m.ts",
     "update:matchs-m18m": "npx tsx scripts/update/update-matchs-m18m.ts",
     "update:classement-bfc": "npx tsx scripts/update/update-classement-bfc.ts",

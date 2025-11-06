@@ -10,9 +10,9 @@ import {
 } from 'firebase/firestore';
 import * as readline from 'readline';
 
-// Import des configurations d'environnement
-const prodEnv = require('../src/environments/environment.production');
-const devEnv = require('../src/environments/environment.development');
+// Importer les environnements
+const devEnv = require('../../src/environments/environment.development');
+const prodEnv = require('../../src/environments/environment.production');
 
 // Initialiser les deux apps Firebase
 const prodApp = initializeApp(prodEnv.environment.firebase, 'prod');
@@ -178,7 +178,7 @@ async function main() {
   const confirmed = await askConfirmation();
 
   if (!confirmed) {
-    console.log('\n❌ Migration annulée par l\'utilisateur.\n');
+    console.log("\n❌ Migration annulée par l'utilisateur.\n");
     process.exit(0);
   }
 

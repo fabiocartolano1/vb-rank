@@ -71,3 +71,7 @@ Thumbs.db
 .env
 .env.local
 .env.*.local
+
+# Script logs
+/logs
+logs/*.log

@@ -1,3 +1,5 @@
+erreur script maj classement r2f
+
 page actu club ? -> test embed instagram
 faire les scripts update
 schedule l'update des data
