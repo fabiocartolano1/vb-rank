@@ -26,11 +26,6 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Setup Firebase credentials
-        run: |
-          mkdir -p scripts/config
-          echo "${{ secrets.FIREBASE_CONFIG }}" > scripts/config/firebase-config.ts
-
       - name: Setup environment variables
         run: |
           echo "${{ secrets.ENV_FILE }}" > .env
