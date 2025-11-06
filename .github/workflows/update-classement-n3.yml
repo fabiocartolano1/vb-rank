@@ -15,6 +15,11 @@ jobs:
   update-classement-n3:
     runs-on: ubuntu-latest
 
+    # Définir le répertoire de travail pour toutes les étapes
+    defaults:
+      run:
+        working-directory: classement/vb-rank-app
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -47,7 +52,7 @@ jobs:
         if: always() # Uploader les logs même en cas d'erreur
         with:
           name: classement-n3-logs-${{ github.run_id }}
-          path: logs/*.log
+          path: classement/vb-rank-app/logs/*.log
           retention-days: 30
 
       - name: Check for errors
