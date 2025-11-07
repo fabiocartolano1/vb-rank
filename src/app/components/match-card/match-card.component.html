@@ -2,7 +2,9 @@
   class="match-card"
   [class.termine]="match.statut === 'termine'"
   [class.a-venir]="match.statut === 'a_venir'"
-  [class.cres-match]="highlightCres && isCresMatch()"
+  [class.mise-en-avant]="miseEnAvant"
+  [class.cres-win]="cresWin === true"
+  [class.cres-lose]="cresWin === false"
 >
   <!-- Header: Date et Heure -->
   <div class="match-header">

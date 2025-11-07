@@ -14,7 +14,8 @@ export class MatchCardComponent {
   @Input({ required: true }) match!: Match;
   @Input() getTeamLogo!: (teamName: string) => string;
   @Input() formatDate!: (dateString: string) => string;
-  @Input() highlightCres: boolean = false;
+  @Input() miseEnAvant: boolean = false;
+  @Input() cresWin: boolean | null = null;
 
   isCresMatch(): boolean {
     return TeamUtils.isCresMatch(this.match);

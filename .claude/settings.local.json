@@ -33,7 +33,8 @@
       "Bash(npm run update:matchs-n3:*)",
       "Bash(ls:*)",
       "Bash(find:*)",
-      "Bash(npm run update:matchs-r2m:*)"
+      "Bash(npm run update:matchs-r2m:*)",
+      "Bash(taskkill:*)"
     ],
     "deny": [],
     "ask": []

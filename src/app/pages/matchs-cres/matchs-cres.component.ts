@@ -122,6 +122,33 @@ export class MatchsCresComponent implements OnInit {
     return TeamUtils.isCresMatch(match);
   }
 
+  getCresWin(match: Match): boolean | null {
+    // Si le match n'est pas terminé, retourner null
+    if (match.statut !== 'termine' ||
+        match.scoreDomicile === null ||
+        match.scoreDomicile === undefined ||
+        match.scoreExterieur === null ||
+        match.scoreExterieur === undefined) {
+      return null;
+    }
+
+    const isCresHome = TeamUtils.isCresTeam(match.equipeDomicile);
+    const isCresAway = TeamUtils.isCresTeam(match.equipeExterieur);
+
+    // Si CRES est à domicile
+    if (isCresHome) {
+      return match.scoreDomicile > match.scoreExterieur;
+    }
+
+    // Si CRES est à l'extérieur
+    if (isCresAway) {
+      return match.scoreExterieur > match.scoreDomicile;
+    }
+
+    // Cas où ce n'est pas un match du CRES (ne devrait pas arriver)
+    return null;
+  }
+
   onChampionnatChange(championnatId: string) {
     this.equipeFilterService.setSelectedChampionnatId(championnatId);
   }
