@@ -275,13 +275,15 @@ async function verifyEnvironment(): Promise<void> {
   const projectId = firebaseConfig.projectId;
   console.log(`   Projet Firebase: ${projectId}`);
 
-  if (!projectId.includes('vb-rank')) {
-    throw new Error('⚠️  ATTENTION: Le projet Firebase ne semble pas être le bon !');
+  // Vérifier que c'est un projet Firebase valide (dev ou prod)
+  const validProjects = ['vb-rank', 'le-cres-vb'];
+  if (!validProjects.some(p => projectId.includes(p))) {
+    throw new Error('⚠️  ATTENTION: Le projet Firebase ne semble pas être valide !');
   }
 
-  // Vérifier que nous sommes en développement
-  const isDev = process.env.NODE_ENV !== 'production';
-  console.log(`   Environnement: ${isDev ? 'développement' : 'production'}`);
+  // Déterminer l'environnement
+  const isProd = projectId.includes('le-cres-vb');
+  console.log(`   Environnement: ${isProd ? 'production' : 'développement'}`);
 
   console.log('✅ Environnement vérifié\n');
 }
