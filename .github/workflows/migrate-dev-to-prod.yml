@@ -31,14 +31,10 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Setup environment variables
+      - name: Setup service account files
         run: |
-          echo "FIREBASE_SERVICE_ACCOUNT_DEV<<EOF" >> $GITHUB_ENV
-          echo "${{ secrets.FIREBASE_SERVICE_ACCOUNT_DEV }}" >> $GITHUB_ENV
-          echo "EOF" >> $GITHUB_ENV
-          echo "FIREBASE_SERVICE_ACCOUNT_PROD<<EOF" >> $GITHUB_ENV
-          echo "${{ secrets.FIREBASE_SERVICE_ACCOUNT_PROD }}" >> $GITHUB_ENV
-          echo "EOF" >> $GITHUB_ENV
+          echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT_DEV }}' > service-account-dev.json
+          echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT_PROD }}' > service-account-prod.json
 
       - name: Create logs directory
         run: mkdir -p logs
@@ -47,6 +43,11 @@ jobs:
         run: |
           echo "🚀 Démarrage de la migration DEV vers PROD avec Admin SDK..."
           echo "oui" | npm run migrate:dev-to-prod:admin
+
+      - name: Cleanup service account files
+        if: always()
+        run: |
+          rm -f service-account-dev.json service-account-prod.json
 
       - name: Upload logs
         uses: actions/upload-artifact@v4
