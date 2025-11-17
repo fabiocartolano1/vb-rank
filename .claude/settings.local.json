@@ -36,7 +36,10 @@
       "Bash(npm run update:matchs-r2m:*)",
       "Bash(taskkill:*)",
       "Bash(cat:*)",
-      "Bash(node scripts/utils/apply-env-fix.js:*)"
+      "Bash(node scripts/utils/apply-env-fix.js:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git pull:*)"
     ],
     "deny": [],
     "ask": []

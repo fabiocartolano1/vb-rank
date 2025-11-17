@@ -3,6 +3,7 @@ name: Update Matchs N3
 on:
   schedule:
     - cron: '59 22 * * 0,6'  # Samedi et dimanche à 23h59 Paris (22h59 UTC)
+    - cron: '40 18 * * 1'   # Lundi à 19h40 Paris (18h40 UTC)
     - cron: '30 16 * * 1'   # Lundi à 17h30 Paris (16h30 UTC)
   workflow_dispatch:
 
