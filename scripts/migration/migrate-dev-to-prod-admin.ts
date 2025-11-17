@@ -1,9 +1,38 @@
 import * as admin from 'firebase-admin';
 import * as readline from 'readline';
+import * as fs from 'fs';
+import * as path from 'path';
+
+// Fonction pour charger le service account depuis env ou fichier
+function loadServiceAccount(envVar: string, fallbackFile: string): any {
+  // Essayer depuis la variable d'environnement d'abord
+  if (process.env[envVar]) {
+    try {
+      return JSON.parse(process.env[envVar]);
+    } catch (error) {
+      console.error(`❌ Erreur lors du parsing de ${envVar}:`, error);
+    }
+  }
+
+  // Sinon, essayer depuis un fichier local
+  const filePath = path.join(process.cwd(), fallbackFile);
+  if (fs.existsSync(filePath)) {
+    console.log(`📁 Lecture du service account depuis ${fallbackFile}`);
+    return JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+  }
+
+  throw new Error(`Service account non trouvé. Définissez ${envVar} ou créez ${fallbackFile}`);
+}
 
 // Initialiser Firebase Admin pour les deux environnements
-const devServiceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_DEV || '{}');
-const prodServiceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_PROD || '{}');
+const devServiceAccount = loadServiceAccount(
+  'FIREBASE_SERVICE_ACCOUNT_DEV',
+  'service-account-dev.json'
+);
+const prodServiceAccount = loadServiceAccount(
+  'FIREBASE_SERVICE_ACCOUNT_PROD',
+  'service-account-prod.json'
+);
 
 const devApp = admin.initializeApp(
   {

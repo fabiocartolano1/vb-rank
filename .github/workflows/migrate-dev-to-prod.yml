@@ -33,7 +33,6 @@ jobs:
 
       - name: Setup environment variables
         run: |
-          echo "${{ secrets.ENV_FILE }}" > .env
           echo "FIREBASE_SERVICE_ACCOUNT_DEV=${{ secrets.FIREBASE_SERVICE_ACCOUNT_DEV }}" >> $GITHUB_ENV
           echo "FIREBASE_SERVICE_ACCOUNT_PROD=${{ secrets.FIREBASE_SERVICE_ACCOUNT_PROD }}" >> $GITHUB_ENV
 
