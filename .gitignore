@@ -23,6 +23,8 @@ pnpm-lock.yaml
 firebase-debug.log
 firebase-debug.*.log
 .firebase/
+*service-account*.json
+*serviceAccount*.json
 
 # IDEs and editors
 .idea/

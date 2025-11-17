@@ -1,0 +1,65 @@
+name: Migrate Dev to Prod
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirmation:
+        description: 'Tapez "CONFIRMER" pour lancer la migration'
+        required: true
+        type: string
+
+jobs:
+  migrate-dev-to-prod:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate confirmation
+        run: |
+          if [ "${{ github.event.inputs.confirmation }}" != "CONFIRMER" ]; then
+            echo "::error::❌ Migration annulée. Vous devez taper 'CONFIRMER' pour lancer la migration."
+            exit 1
+          fi
+          echo "✅ Confirmation validée"
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Setup environment variables
+        run: |
+          echo "${{ secrets.ENV_FILE }}" > .env
+          echo "FIREBASE_SERVICE_ACCOUNT_DEV=${{ secrets.FIREBASE_SERVICE_ACCOUNT_DEV }}" >> $GITHUB_ENV
+          echo "FIREBASE_SERVICE_ACCOUNT_PROD=${{ secrets.FIREBASE_SERVICE_ACCOUNT_PROD }}" >> $GITHUB_ENV
+
+      - name: Create logs directory
+        run: mkdir -p logs
+
+      - name: Run migration (Dev to Prod with Admin SDK)
+        run: |
+          echo "🚀 Démarrage de la migration DEV vers PROD avec Admin SDK..."
+          echo "oui" | npm run migrate:dev-to-prod:admin
+
+      - name: Upload logs
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: migrate-dev-to-prod-logs-${{ github.run_id }}
+          path: logs/*.log
+          retention-days: 30
+
+      - name: Migration Success
+        if: success()
+        run: |
+          echo "::notice::✅ Migration DEV vers PROD terminée avec succès!"
+
+      - name: Migration Failed
+        if: failure()
+        run: |
+          echo "::error::❌ La migration DEV vers PROD a échoué. Consultez les logs dans les artifacts."
+          exit 1
