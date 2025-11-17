@@ -126,24 +126,39 @@ async function main() {
     // Mettre à jour chaque équipe jeune
     let updated = 0;
     let notFound = 0;
+    let failed = 0;
+    const errors: Array<{ equipe: string; error: string }> = [];
 
     for (const jeuneEquipe of jeunesEquipes) {
-      const matchingAdulte = findMatchingAdulteEquipe(jeuneEquipe, adultesEquipes);
+      try {
+        const matchingAdulte = findMatchingAdulteEquipe(jeuneEquipe, adultesEquipes);
 
-      if (matchingAdulte) {
-        // Vérifier si le logo est différent
-        if (jeuneEquipe.logoUrl !== matchingAdulte.logoUrl) {
-          const docRef = doc(db, 'equipes', jeuneEquipe.id);
-          await updateDoc(docRef, { logoUrl: matchingAdulte.logoUrl });
-          console.log(`  ✅ ${jeuneEquipe.nom} ← ${matchingAdulte.nom} (${matchingAdulte.championnatId})`);
-          updated++;
+        if (matchingAdulte) {
+          // Vérifier si le logo est différent
+          if (jeuneEquipe.logoUrl !== matchingAdulte.logoUrl) {
+            const docRef = doc(db, 'equipes', jeuneEquipe.id);
+            await updateDoc(docRef, { logoUrl: matchingAdulte.logoUrl });
+            console.log(`  ✅ ${jeuneEquipe.nom} ← ${matchingAdulte.nom} (${matchingAdulte.championnatId})`);
+            updated++;
+          } else {
+            console.log(`  ⏭️  ${jeuneEquipe.nom} → logo déjà identique`);
+          }
         } else {
-          console.log(`  ⏭️  ${jeuneEquipe.nom} → logo déjà identique`);
+          console.log(`  ❌ ${jeuneEquipe.nom} → pas de correspondance trouvée`);
+          notFound++;
         }
-      } else {
-        console.log(`  ❌ ${jeuneEquipe.nom} → pas de correspondance trouvée`);
-        notFound++;
+      } catch (error) {
+        failed++;
+        const errorMsg = error instanceof Error ? error.message : String(error);
+        const equipeDesc = `${jeuneEquipe.nom} (${championnatId})`;
+        errors.push({ equipe: equipeDesc, error: errorMsg });
+        console.error(`  ❌ Erreur lors de la mise à jour de ${equipeDesc}: ${errorMsg}`);
       }
+    }
+
+    // Si des erreurs se sont produites pour ce championnat, les signaler mais continuer
+    if (errors.length > 0) {
+      console.log(`\n  ⚠️  ${failed} erreur(s) lors de la mise à jour de ${championnatId}`);
     }
 
     console.log(`\n  📊 ${updated} logos mis à jour, ${notFound} non trouvés sur ${jeunesEquipes.length}`);

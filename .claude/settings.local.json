@@ -34,7 +34,12 @@
       "Bash(ls:*)",
       "Bash(find:*)",
       "Bash(npm run update:matchs-r2m:*)",
-      "Bash(taskkill:*)"
+      "Bash(taskkill:*)",
+      "Bash(node copy-security-pattern.js)",
+      "Bash(npm run update:classement-r2m:*)",
+      "Bash(node:*)",
+      "Bash(dir /s /b *.rules 2)",
+      "Bash(findstr:*)"
     ],
     "deny": [],
     "ask": []

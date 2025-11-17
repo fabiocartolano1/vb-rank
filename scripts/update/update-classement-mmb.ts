@@ -3,6 +3,7 @@ import { getFirestore, collection, getDocs, query, where, updateDoc, doc } from 
 import * as cheerio from 'cheerio';
 import { firebaseConfig } from '../config/firebase-config';
 import { initLogger } from '../utils/logger';
+import { validateClassementData } from '../utils/validation';
 
 // Initialiser Firebase
 const app = initializeApp(firebaseConfig);
@@ -120,8 +121,62 @@ async function updateEquipesInFirebase(equipes: EquipeData[]): Promise<void> {
   let updated = 0;
   let notFound = 0;
   let unchanged = 0;
+  let failed = 0;
+  const errors: Array<{ equipe: string; error: string }> = [];
+
+  // Optimisation : vérification rapide sur les 3 premières équipes
+  console.log('⚡ Vérification rapide des changements...');
+  let hasAnyChange = false;
+  const samplesToCheck = Math.min(3, equipes.length);
+
+  for (let i = 0; i < samplesToCheck; i++) {
+    const equipe = equipes[i];
+    const nomNormalized = normalizeTeamName(equipe.nom);
+
+    for (const [nom, id] of equipesMap.entries()) {
+      if (normalizeTeamName(nom) === nomNormalized) {
+        const existingDoc = await getDocs(query(
+          collection(db, 'equipes'),
+          where('championnatId', '==', 'mmb'),
+          where('nom', '==', nom)
+        ));
+
+        if (!existingDoc.empty) {
+          const existingData = existingDoc.docs[0].data();
+          const hasChanged =
+            existingData.rang !== equipe.rang ||
+            existingData.points !== equipe.points ||
+            existingData.joues !== equipe.joues ||
+            existingData.gagnes !== equipe.gagnes ||
+            existingData.perdus !== equipe.perdus ||
+            existingData.setsPour !== equipe.setsPour ||
+            existingData.setsContre !== equipe.setsContre;
+
+          if (hasChanged) {
+            hasAnyChange = true;
+            break;
+          }
+        }
+        break;
+      }
+    }
+
+    if (hasAnyChange) break;
+  }
+
+  if (!hasAnyChange) {
+    console.log('✅ Aucun changement détecté sur l\'échantillon - arrêt anticipé');
+    console.log('\n📊 Résumé de la mise à jour :');
+    console.log(`   ✅ 0 équipe(s) mise(s) à jour`);
+    console.log(`   ⏭️  ${equipes.length} équipe(s) probablement inchangée(s)`);
+    console.log('   ⚡ Optimisation : script terminé rapidement sans parcourir toutes les équipes');
+    return;
+  }
+
+  console.log('🔄 Changements détectés - traitement de toutes les équipes...\n');
 
   for (const equipe of equipes) {
+    try {
     // Rechercher l'équipe existante
     const q = query(
       collection(db, 'equipes'),
@@ -172,8 +227,25 @@ async function updateEquipesInFirebase(equipes: EquipeData[]): Promise<void> {
   console.log(`   ✅ ${updated} équipe(s) mise(s) à jour`);
   console.log(`   ⏭️  ${unchanged} équipe(s) inchangée(s)`);
   if (notFound > 0) {
-    console.log(`   ⚠️  ${notFound} équipe(s) non trouvée(s)`);
+    console.log(`   ⚠️  ${notFound}   if (failed > 0) {
+    console.log(`   ❌ ${failed} équipe(s) en erreur`);
   }
+
+  // Si des erreurs se sont produites, lever une exception
+  if (errors.length > 0) {
+    throw new Error(
+      `${errors.length} erreur(s) lors de la mise à jour:\n${errors.map(e => `  - ${e.equipe}: ${e.error}`).join('\n')}`
+    );
+  }
+équipe(s) non trouvée(s)`);
+  }
+    } catch (error) {
+      failed++;
+      const errorMsg = error instanceof Error ? error.message : String(error);
+      const equipeDesc = `${equipe.nom} (Rang ${equipe.rang})`;
+      errors.push({ equipe: equipeDesc, error: errorMsg });
+      console.error(`❌ Erreur lors de la mise à jour de ${equipeDesc}: ${errorMsg}`);
+    }
 }
 
 async function verifyEnvironment(): Promise<void> {
@@ -212,10 +284,22 @@ async function main() {
     const equipes = await scrapeClassement(url);
     console.log(`\n✅ ${equipes.length} équipes trouvées dans le classement\n`);
 
-    if (equipes.length === 0) {
-      console.log('⚠️  Aucune équipe trouvée, vérifiez la structure de la page');
-      return;
+    // 3. Valider les données scrapées
+    console.log('🔍 Validation des données scrapées...');
+    const validation = validateClassementData(equipes, 8);
+
+    if (validation.warnings.length > 0) {
+      console.log('\n⚠️  Avertissements :');
+      validation.warnings.forEach(warning => console.log(`   ${warning}`));
     }
+
+    if (!validation.isValid) {
+      console.log('\n❌ Erreurs de validation :');
+      validation.errors.forEach(error => console.log(`   ${error}`));
+      throw new Error('Validation des données échouée - données non fiables, mise à jour annulée');
+    }
+
+    console.log('✅ Validation réussie\n');
 
     // 2. Mettre à jour les équipes dans Firebase
     await updateEquipesInFirebase(equipes);

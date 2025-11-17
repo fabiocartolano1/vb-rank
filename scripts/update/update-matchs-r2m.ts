@@ -3,6 +3,7 @@ import { getFirestore, collection, getDocs, query, where, updateDoc, doc } from 
 import * as cheerio from 'cheerio';
 import { firebaseConfig } from '../config/firebase-config';
 import { initLogger } from '../utils/logger';
+import { validateMatchsData } from '../utils/validation';
 
 // Initialiser Firebase
 const app = initializeApp(firebaseConfig);
@@ -202,9 +203,16 @@ async function updateMatchsInFirebase(matchs: Match[]): Promise<void> {
   let updated = 0;
   let notFound = 0;
   let unchanged = 0;
+  let failed = 0;
+  const errors: Array<{ match: string; error: string }> = [];
 
-  for (const match of matchs) {
-    // Rechercher le match existant
+  // Optimisation : vérification rapide sur les 5 premiers matchs
+  console.log('⚡ Vérification rapide des changements...');
+  let hasAnyChange = false;
+  const samplesToCheck = Math.min(5, matchs.length);
+
+  for (let i = 0; i < samplesToCheck; i++) {
+    const match = matchs[i];
     const q = query(
       collection(db, 'matchs'),
       where('championnatId', '==', match.championnatId),
@@ -215,10 +223,7 @@ async function updateMatchsInFirebase(matchs: Match[]): Promise<void> {
     const existingMatchs = await getDocs(q);
 
     if (!existingMatchs.empty) {
-      const existingDoc = existingMatchs.docs[0];
-      const existingData = existingDoc.data();
-
-      // Vérifier si les données ont changé
+      const existingData = existingMatchs.docs[0].data();
       const hasChanged =
         existingData.date !== match.date ||
         existingData.heure !== match.heure ||
@@ -228,46 +233,96 @@ async function updateMatchsInFirebase(matchs: Match[]): Promise<void> {
         JSON.stringify(existingData.detailSets) !== JSON.stringify(match.detailSets);
 
       if (hasChanged) {
-        // Préparer les données de mise à jour
-        const updateData: any = {
-          date: match.date,
-          heure: match.heure,
-          statut: match.statut,
-        };
-
-        // Ajouter les scores uniquement s'ils existent
-        if (match.scoreDomicile !== null) {
-          updateData.scoreDomicile = match.scoreDomicile;
-        }
-        if (match.scoreExterieur !== null) {
-          updateData.scoreExterieur = match.scoreExterieur;
-        }
-        if (match.detailSets !== null) {
-          updateData.detailSets = match.detailSets;
-        }
-
-        // Ajouter les IDs d'équipes s'ils existent
-        if (match.equipeDomicileId) {
-          updateData.equipeDomicileId = match.equipeDomicileId;
-        }
-        if (match.equipeExterieurId) {
-          updateData.equipeExterieurId = match.equipeExterieurId;
-        }
-
-        await updateDoc(doc(db, 'matchs', existingDoc.id), updateData);
-
-        const statusChange = existingData.statut !== match.statut ? ` (${existingData.statut} → ${match.statut})` : '';
-        const scoreChange = match.scoreDomicile !== null && match.scoreExterieur !== null
-          ? ` - Score: ${match.scoreDomicile}-${match.scoreExterieur}`
-          : '';
-        console.log(`✅ J${match.journee}: ${match.equipeDomicile} vs ${match.equipeExterieur}${statusChange}${scoreChange}`);
-        updated++;
-      } else {
-        unchanged++;
+        hasAnyChange = true;
+        break;
       }
-    } else {
-      console.log(`⚠️  J${match.journee}: ${match.equipeDomicile} vs ${match.equipeExterieur} - Match non trouvé dans la base de données`);
-      notFound++;
+    }
+  }
+
+  if (!hasAnyChange) {
+    console.log('✅ Aucun changement détecté sur l\'échantillon - arrêt anticipé');
+    console.log('\n📊 Résumé de la mise à jour :');
+    console.log(`   ✅ 0 match(s) mis à jour`);
+    console.log(`   ⏭️  ${matchs.length} match(s) probablement inchangé(s)`);
+    console.log('   ⚡ Optimisation : script terminé rapidement sans parcourir tous les matchs');
+    return;
+  }
+
+  console.log('🔄 Changements détectés - traitement de tous les matchs...\n');
+
+  for (const match of matchs) {
+    try {
+      // Rechercher le match existant
+      const q = query(
+        collection(db, 'matchs'),
+        where('championnatId', '==', match.championnatId),
+        where('journee', '==', match.journee),
+        where('equipeDomicile', '==', match.equipeDomicile),
+        where('equipeExterieur', '==', match.equipeExterieur)
+      );
+      const existingMatchs = await getDocs(q);
+
+      if (!existingMatchs.empty) {
+        const existingDoc = existingMatchs.docs[0];
+        const existingData = existingDoc.data();
+
+        // Vérifier si les données ont changé
+        const hasChanged =
+          existingData.date !== match.date ||
+          existingData.heure !== match.heure ||
+          existingData.scoreDomicile !== match.scoreDomicile ||
+          existingData.scoreExterieur !== match.scoreExterieur ||
+          existingData.statut !== match.statut ||
+          JSON.stringify(existingData.detailSets) !== JSON.stringify(match.detailSets);
+
+        if (hasChanged) {
+          // Préparer les données de mise à jour
+          const updateData: any = {
+            date: match.date,
+            heure: match.heure,
+            statut: match.statut,
+          };
+
+          // Ajouter les scores uniquement s'ils existent
+          if (match.scoreDomicile !== null) {
+            updateData.scoreDomicile = match.scoreDomicile;
+          }
+          if (match.scoreExterieur !== null) {
+            updateData.scoreExterieur = match.scoreExterieur;
+          }
+          if (match.detailSets !== null) {
+            updateData.detailSets = match.detailSets;
+          }
+
+          // Ajouter les IDs d'équipes s'ils existent
+          if (match.equipeDomicileId) {
+            updateData.equipeDomicileId = match.equipeDomicileId;
+          }
+          if (match.equipeExterieurId) {
+            updateData.equipeExterieurId = match.equipeExterieurId;
+          }
+
+          await updateDoc(doc(db, 'matchs', existingDoc.id), updateData);
+
+          const statusChange = existingData.statut !== match.statut ? ` (${existingData.statut} → ${match.statut})` : '';
+          const scoreChange = match.scoreDomicile !== null && match.scoreExterieur !== null
+            ? ` - Score: ${match.scoreDomicile}-${match.scoreExterieur}`
+            : '';
+          console.log(`✅ J${match.journee}: ${match.equipeDomicile} vs ${match.equipeExterieur}${statusChange}${scoreChange}`);
+          updated++;
+        } else {
+          unchanged++;
+        }
+      } else {
+        console.log(`⚠️  J${match.journee}: ${match.equipeDomicile} vs ${match.equipeExterieur} - Match non trouvé dans la base de données`);
+        notFound++;
+      }
+    } catch (error) {
+      failed++;
+      const errorMsg = error instanceof Error ? error.message : String(error);
+      const matchDesc = `J${match.journee}: ${match.equipeDomicile} vs ${match.equipeExterieur}`;
+      errors.push({ match: matchDesc, error: errorMsg });
+      console.error(`❌ Erreur lors de la mise à jour de ${matchDesc}: ${errorMsg}`);
     }
   }
 
@@ -276,6 +331,16 @@ async function updateMatchsInFirebase(matchs: Match[]): Promise<void> {
   console.log(`   ⏭️  ${unchanged} match(s) inchangé(s)`);
   if (notFound > 0) {
     console.log(`   ⚠️  ${notFound} match(s) non trouvé(s)`);
+  }
+  if (failed > 0) {
+    console.log(`   ❌ ${failed} match(s) en erreur`);
+  }
+
+  // Si des erreurs se sont produites, lever une exception
+  if (errors.length > 0) {
+    throw new Error(
+      `${errors.length} erreur(s) lors de la mise à jour:\n${errors.map(e => `  - ${e.match}: ${e.error}`).join('\n')}`
+    );
   }
 }
 
@@ -318,12 +383,24 @@ async function main() {
     const matchs = await scrapeMatchs(url, equipesMap);
     console.log(`\n✅ ${matchs.length} matchs trouvés\n`);
 
-    if (matchs.length === 0) {
-      console.log('⚠️  Aucun match trouvé, vérifiez la structure de la page');
-      return;
+    // 3. Valider les données scrapées
+    console.log('🔍 Validation des données scrapées...');
+    const validation = validateMatchsData(matchs, 10);
+
+    if (validation.warnings.length > 0) {
+      console.log('\n⚠️  Avertissements :');
+      validation.warnings.forEach(warning => console.log(`   ${warning}`));
     }
 
-    // 3. Mettre à jour les matchs dans Firebase
+    if (!validation.isValid) {
+      console.log('\n❌ Erreurs de validation :');
+      validation.errors.forEach(error => console.log(`   ${error}`));
+      throw new Error('Validation des données échouée - données non fiables, mise à jour annulée');
+    }
+
+    console.log('✅ Validation réussie\n');
+
+    // 4. Mettre à jour les matchs dans Firebase
     await updateMatchsInFirebase(matchs);
 
     console.log('\n🎉 Mise à jour terminée avec succès !');
