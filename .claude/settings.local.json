@@ -34,7 +34,9 @@
       "Bash(ls:*)",
       "Bash(find:*)",
       "Bash(npm run update:matchs-r2m:*)",
-      "Bash(taskkill:*)"
+      "Bash(taskkill:*)",
+      "Bash(cat:*)",
+      "Bash(node scripts/utils/apply-env-fix.js:*)"
     ],
     "deny": [],
     "ask": []
