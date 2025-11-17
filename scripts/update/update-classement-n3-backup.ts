@@ -3,7 +3,6 @@ import { getFirestore, collection, getDocs, query, where, updateDoc, doc } from 
 import * as cheerio from 'cheerio';
 import { firebaseConfig } from '../config/firebase-config';
 import { initLogger } from '../utils/logger';
-import { getFirestore } from '../config/firestore-wrapper';
 import { validateClassementData } from '../utils/validation';
 
 // Initialiser Firebase
@@ -21,35 +20,13 @@ interface EquipeData {
   setsContre: number;
 }
 
-async function getChampionnatUrl(championnatId: string): Promise<string> {
-  console.log(`📡 Récupération de l'URL du championnat ${championnatId}...`);
-  const championnatDoc = await getDocs(
-    query(collection(db, 'championnats'), where('__name__', '==', championnatId))
-  );
-
-  if (championnatDoc.empty) {
-    throw new Error(`❌ Championnat ${championnatId} non trouvé dans Firebase`);
-  }
-
-  const url = championnatDoc.docs[0].data().url;
-  if (!url) {
-    throw new Error(`❌ URL non renseignée pour ${championnatId} dans Firebase`);
-  }
-
-  console.log(`   URL: ${url}\n`);
-  return url;
-}
-
 async function fetchPage(url: string): Promise<string> {
   console.log('📥 Récupération de la page de classement...');
   const response = await fetch(url);
   if (!response.ok) {
     throw new Error(`HTTP error! status: ${response.status}`);
   }
-  // Convertir en latin1 puis en utf8 pour gérer l'encodage
-  const buffer = await response.arrayBuffer();
-  const decoder = new TextDecoder('iso-8859-1');
-  return decoder.decode(buffer);
+  return await response.text();
 }
 
 // Fonction helper pour convertir en title case
@@ -138,7 +115,7 @@ async function updateEquipesInFirebase(equipes: EquipeData[]): Promise<void> {
       if (normalizeTeamName(nom) === nomNormalized) {
         const existingDoc = await getDocs(query(
           collection(db, 'equipes'),
-          where('championnatId', '==', 'bfc'),
+          where('championnatId', '==', 'nationale-3-f'),
           where('nom', '==', nom)
         ));
 
@@ -182,7 +159,7 @@ async function updateEquipesInFirebase(equipes: EquipeData[]): Promise<void> {
     const q = query(
       collection(db, 'equipes'),
       where('nom', '==', equipe.nom),
-      where('championnatId', '==', 'bfc')
+      where('championnatId', '==', 'nationale-3-f')
     );
     const existingEquipes = await getDocs(q);
 
@@ -268,18 +245,18 @@ async function verifyEnvironment(): Promise<void> {
 
 async function main() {
   // Initialiser le logger
-  const logger = initLogger('update-classement-bfc');
+  const logger = initLogger('update-classement-n3');
   console.log(`📝 Logs enregistrés dans: ${logger.getLogFilePath()}\n`);
 
   try {
-    console.log('🏐 Mise à jour du Classement BFC\n');
+    console.log('🏐 Mise à jour du Classement Nationale 3 Féminine\n');
     console.log('════════════════════════════════════════════════\n');
 
     // Vérifier l'environnement avant de continuer
     await verifyEnvironment();
 
-    // Récupérer l'URL depuis Firebase
-    const url = await getChampionnatUrl('bfc');
+    const url =
+      'https://www.ffvbbeach.org/ffvbapp/resu/vbspo_calendrier.php?saison=2025%2F2026&codent=ABCCS&poule=3FB&division=&tour=&calend=COMPLET&x=20&y=18';
 
     // 1. Scraper le classement
     const equipes = await scrapeClassement(url);

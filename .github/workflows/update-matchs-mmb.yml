@@ -20,15 +20,21 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Setup environment variables
+      - name: Setup service account
         run: |
-          echo "${{ secrets.ENV_FILE }}" > .env
+          echo "${{ secrets.FIREBASE_SERVICE_ACCOUNT_PROD }}" > .env
 
       - name: Create logs directory
         run: mkdir -p logs
 
       - name: Update Matchs MMB
         run: npm run update:matchs-mmb
+
+
+      - name: Cleanup service account
+        if: always()
+        run: |
+          rm -f service-account-prod.json
 
       - name: Upload logs
         uses: actions/upload-artifact@v4

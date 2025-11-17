@@ -1,0 +1,23 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Championnats - Lecture publique, écriture restreinte
+    match /championnats/{championnatId} {
+      allow read: if true;
+      // Permettre l'écriture uniquement aux utilisateurs authentifiés (service accounts)
+      allow write: if request.auth != null;
+    }
+
+    // Équipes - Lecture publique, écriture restreinte
+    match /equipes/{equipeId} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+
+    // Matchs - Lecture publique, écriture restreinte
+    match /matchs/{matchId} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+  }
+}

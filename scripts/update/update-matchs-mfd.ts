@@ -3,6 +3,7 @@ import { getFirestore, collection, getDocs, query, where, updateDoc, doc } from 
 import * as cheerio from 'cheerio';
 import { firebaseConfig } from '../config/firebase-config';
 import { initLogger } from '../utils/logger';
+import { getFirestore } from '../config/firestore-wrapper';
 import { validateMatchsData } from '../utils/validation';
 
 // Initialiser Firebase
