@@ -39,7 +39,12 @@
       "Bash(node scripts/utils/apply-env-fix.js:*)",
       "Bash(git add:*)",
       "Bash(git commit:*)",
-      "Bash(git pull:*)"
+      "Bash(git pull:*)",
+      "Bash(sudo chown:*)",
+      "Bash(mkdir:*)",
+      "Bash(npx cap init:*)",
+      "Bash(npx cap:*)",
+      "Bash(sips:*)"
     ],
     "deny": [],
     "ask": []

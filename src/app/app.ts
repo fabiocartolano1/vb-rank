@@ -8,6 +8,7 @@ import { EquipeFilterService } from './services/equipe-filter.service';
 import { ThemeToggleComponent } from './components/theme-toggle/theme-toggle';
 import { ChampionshipService } from './core/services/championship.service';
 import { filter } from 'rxjs/operators';
+import { Capacitor } from '@capacitor/core';
 
 @Component({
   selector: 'app-root',
@@ -23,6 +24,7 @@ export class App implements OnInit {
   protected readonly isImporting = signal(false);
   protected readonly cresLogoUrl = signal('');
   protected readonly isAgendaRoute = signal(false);
+  protected readonly isIOS = signal(false);
 
   private firestore = inject(Firestore);
   private dataImportService = inject(DataImportService);
@@ -36,6 +38,9 @@ export class App implements OnInit {
   protected readonly selectedChampionnatId = this.equipeFilterService.getSelectedChampionnatIdSignal();
 
   async ngOnInit() {
+    // Détecter si on est sur iOS
+    this.isIOS.set(Capacitor.getPlatform() === 'ios');
+
     // Suivre les changements de route pour cacher le sélecteur d'équipe sur la page agenda
     this.router.events.pipe(
       filter(event => event instanceof NavigationEnd)
