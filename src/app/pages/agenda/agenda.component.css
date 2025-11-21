@@ -16,6 +16,26 @@
   margin: 0;
 }
 
+/* Titre mobile */
+.mobile-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1a202c;
+  text-align: center;
+  margin: 0 0 1.5rem 0;
+  display: none;
+}
+
+:host-context([data-theme="dark"]) .mobile-title {
+  color: #e0e0e0;
+}
+
+@media (max-width: 768px) {
+  .mobile-title {
+    display: block;
+  }
+}
+
 /* Navigation Weekend */
 .weekend-navigation {
   display: flex;
