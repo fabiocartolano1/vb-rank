@@ -1,9 +1,9 @@
 name: Smart Update Matchs M18M
 
 on:
-  schedule:
-    # Toutes les 5 minutes
-    - cron: '*/5 * * * *'
+  # schedule:
+  #   # Toutes les 5 minutes (désactivé)
+  #   - cron: '*/5 * * * *'
   workflow_dispatch:
 
 jobs:

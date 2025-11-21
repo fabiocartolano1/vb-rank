@@ -41,11 +41,19 @@ export class App implements OnInit {
     // Détecter si on est sur iOS
     this.isIOS.set(Capacitor.getPlatform() === 'ios');
 
-    // Suivre les changements de route pour cacher le sélecteur d'équipe sur la page agenda
+    // Suivre les changements de route
     this.router.events.pipe(
       filter(event => event instanceof NavigationEnd)
     ).subscribe(() => {
       this.isAgendaRoute.set(this.router.url === '/agenda');
+
+      // Scroller en haut sauf pour la page "Tous les matchs"
+      if (this.router.url !== '/matchs') {
+        const appMain = document.querySelector('.app-main');
+        if (appMain) {
+          appMain.scrollTop = 0;
+        }
+      }
     });
 
     // Vérifier la route initiale
