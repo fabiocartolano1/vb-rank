@@ -49,7 +49,11 @@
       "Bash(where adb 2)",
       "Bash(./gradlew assembleDebug:*)",
       "Bash(npx @capacitor/assets generate:*)",
-      "Bash(copy:*)"
+      "Bash(copy:*)",
+      "Bash(npm run smart:update:matchs-n3:*)",
+      "Bash(npx tsx:*)",
+      "Bash(npm run smart:update:matchs-r2m:*)",
+      "Bash(npm run smart:update:matchs-m18m:*)"
     ],
     "deny": [],
     "ask": []
