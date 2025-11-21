@@ -60,6 +60,27 @@
               "optimization": false,
               "extractLicenses": false,
               "sourceMap": true
+            },
+            "fufc": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.fufc.ts"
+                }
+              ],
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "500kB",
+                  "maximumError": "1MB"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "4kB",
+                  "maximumError": "9kB"
+                }
+              ],
+              "outputHashing": "all"
             }
           },
           "defaultConfiguration": "production"
@@ -72,6 +93,9 @@
             },
             "development": {
               "buildTarget": "vb-rank-app:build:development"
+            },
+            "fufc": {
+              "buildTarget": "vb-rank-app:build:fufc"
             }
           },
           "defaultConfiguration": "development"

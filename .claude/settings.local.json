@@ -57,7 +57,10 @@
       "Bash(npm run smart:update:m18m:*)",
       "Bash(npm run smart:update:classement-m18m:*)",
       "Bash(npm run smart:update:bfc:*)",
-      "Bash(npm run smart:update:n3:*)"
+      "Bash(npm run smart:update:n3:*)",
+      "Bash(npm run scrape:d3-matin:*)",
+      "Bash(set NODE_TLS_REJECT_UNAUTHORIZED=0)",
+      "Bash(findstr:*)"
     ],
     "deny": [],
     "ask": []

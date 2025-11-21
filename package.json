@@ -4,13 +4,17 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
+    "start:fufc": "ng serve --configuration fufc",
     "build": "ng build",
+    "build:fufc": "ng build --configuration fufc",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "migrate:dev-to-prod": "npx tsx scripts/migration/migrate-dev-to-prod.ts",
     "migrate:prod-to-dev": "npx tsx scripts/migration/migrate-prod-to-dev.ts",
     "sync:dev-to-prod": "npx tsx scripts/migration/sync-dev-to-prod.ts",
     "add:jeunes": "npx tsx scripts/setup/add-jeunes-championnats.ts",
+    "add:d3-matin": "npx tsx scripts/football/setup/add-d3-matin.ts",
+    "scrape:d3-matin": "npx tsx scripts/football/scraping/scrape-d3-matin.ts",
     "scrape:m18m": "npx tsx scripts/scraping/jeunes/scrape-m18m.ts",
     "scrape:bfc": "npx tsx scripts/scraping/jeunes/scrape-bfc.ts",
     "scrape:bmb": "npx tsx scripts/scraping/jeunes/scrape-bmb.ts",
@@ -76,9 +80,11 @@
     "smart:update:mmb": "npx tsx scripts/volleyball/jeunes/smart-update/smart-update-mmb.ts",
     "deploy:prod": "ng build --configuration production && firebase use prod && firebase deploy --only hosting",
     "deploy:dev": "ng build --configuration development && firebase use dev && firebase deploy --only hosting",
+    "deploy:fufc": "ng build --configuration production && firebase use fufc && firebase deploy --only hosting",
     "check:firebase": "firebase projects:list",
     "use:dev": "firebase use dev",
-    "use:prod": "firebase use prod"
+    "use:prod": "firebase use prod",
+    "use:fufc": "firebase use fufc"
   },
   "prettier": {
     "printWidth": 100,
