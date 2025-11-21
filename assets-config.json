@@ -1,0 +1,22 @@
+{
+  "android": {
+    "splash": {
+      "path": "resources/splash.webp",
+      "backgroundColor": "#1a1a1a"
+    },
+    "icon": {
+      "path": "resources/icon.webp",
+      "backgroundColor": "#F762A6"
+    }
+  },
+  "ios": {
+    "splash": {
+      "path": "resources/splash.webp",
+      "backgroundColor": "#1a1a1a"
+    },
+    "icon": {
+      "path": "resources/icon.webp",
+      "backgroundColor": "#F762A6"
+    }
+  }
+}

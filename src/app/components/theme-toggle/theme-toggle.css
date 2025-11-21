@@ -3,20 +3,20 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 44px;
-  height: 44px;
+  width: 36px;
+  height: 36px;
   padding: 0;
-  background: var(--card-bg);
-  border: 2px solid var(--primary-color);
+  background: transparent;
+  border: none;
   border-radius: 50%;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(247, 98, 166, 0.2);
+  opacity: 0.6;
 }
 
 .theme-toggle-btn:hover {
-  background: rgba(247, 98, 166, 0.1);
-  box-shadow: 0 4px 12px rgba(247, 98, 166, 0.3);
+  background: rgba(255, 255, 255, 0.1);
+  opacity: 1;
   transform: scale(1.05);
 }
 
@@ -25,17 +25,18 @@
 }
 
 .theme-icon {
-  width: 20px;
-  height: 20px;
-  color: var(--primary-color);
+  width: 18px;
+  height: 18px;
+  color: rgba(255, 255, 255, 0.85);
   transition: all 0.3s ease;
 }
 
 .theme-toggle-btn:hover .theme-icon {
   transform: rotate(20deg);
+  color: white;
 }
 
-/* Animation de rotation pour le changement de thème */
+/* Animation de rotation pour le changement de thï¿½me */
 @keyframes iconRotate {
   from {
     transform: rotate(0deg);
@@ -54,12 +55,12 @@
 /* Responsive - Mobile */
 @media (max-width: 768px) {
   .theme-toggle-btn {
-    width: 40px;
-    height: 40px;
+    width: 32px;
+    height: 32px;
   }
 
   .theme-icon {
-    width: 18px;
-    height: 18px;
+    width: 16px;
+    height: 16px;
   }
 }

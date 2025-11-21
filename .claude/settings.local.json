@@ -39,7 +39,17 @@
       "Bash(node scripts/utils/apply-env-fix.js:*)",
       "Bash(git add:*)",
       "Bash(git commit:*)",
-      "Bash(git pull:*)"
+      "Bash(git pull:*)",
+      "Bash(sudo chown:*)",
+      "Bash(mkdir:*)",
+      "Bash(npx cap init:*)",
+      "Bash(npx cap:*)",
+      "Bash(sips:*)",
+      "Bash(adb devices:*)",
+      "Bash(where adb 2)",
+      "Bash(./gradlew assembleDebug:*)",
+      "Bash(npx @capacitor/assets generate:*)",
+      "Bash(copy:*)"
     ],
     "deny": [],
     "ask": []

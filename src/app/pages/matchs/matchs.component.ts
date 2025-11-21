@@ -54,17 +54,10 @@ export class MatchsComponent implements OnInit {
       // Ouvrir automatiquement la prochaine journée quand les matchs changent
       if (currentMatchs.length > 0) {
         this.openNextJournee();
-      }
-    });
-
-    // Scroller vers la journée ouverte après le rendu
-    effect(() => {
-      const openJournees = this.openJournees();
-      if (openJournees.size > 0) {
-        // Attendre que le DOM soit mis à jour
+        // Scroller vers la journée ouverte après un court délai
         setTimeout(() => {
           this.scrollToOpenJournee();
-        }, 100);
+        }, 200);
       }
     });
   }
@@ -118,11 +111,18 @@ export class MatchsComponent implements OnInit {
   toggleJournee(journeeNumber: number) {
     const currentOpen = new Set(this.openJournees());
     if (currentOpen.has(journeeNumber)) {
+      // Si la journée est déjà ouverte, on la ferme
       currentOpen.delete(journeeNumber);
+      this.openJournees.set(currentOpen);
     } else {
-      currentOpen.add(journeeNumber);
+      // Sinon, on ferme toutes les autres et on ouvre uniquement celle-ci
+      this.openJournees.set(new Set([journeeNumber]));
+
+      // Scroller vers la journée après un court délai pour laisser le DOM se mettre à jour
+      setTimeout(() => {
+        this.scrollToOpenJournee();
+      }, 100);
     }
-    this.openJournees.set(currentOpen);
   }
 
   isJourneeOpen(journeeNumber: number): boolean {
