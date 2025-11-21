@@ -1,0 +1,77 @@
+import * as fs from 'fs';
+import * as path from 'path';
+
+const championnats = [
+  // Adultes
+  { code: 'n3', nom: 'N3' },
+  { code: 'pnf', nom: 'PNF' },
+  { code: 'pnm', nom: 'PNM' },
+  { code: 'r2f', nom: 'R2F' },
+  { code: 'r2m', nom: 'R2M' },
+  // Jeunes
+  { code: 'm18m', nom: 'M18M' },
+  { code: 'bfc', nom: 'BFC' },
+  { code: 'bmb', nom: 'BMB' },
+  { code: 'cfd', nom: 'CFD' },
+  { code: 'mfd', nom: 'MFD' },
+  { code: 'mmb', nom: 'MMB' },
+];
+
+const template = (code: string, nom: string) => `name: Smart Update ${nom}
+
+on:
+  schedule:
+    # Samedi de 18h à 23h (toutes les heures)
+    - cron: '0 18-23 * * 6'
+    # Dimanche de 12h à 17h (toutes les heures)
+    - cron: '0 12-17 * * 0'
+  workflow_dispatch:
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run smart update ${nom}
+        run: npm run smart:update:${code}
+        env:
+          FIREBASE_API_KEY: \${{ secrets.FIREBASE_API_KEY }}
+          FIREBASE_AUTH_DOMAIN: \${{ secrets.FIREBASE_AUTH_DOMAIN }}
+          FIREBASE_PROJECT_ID: \${{ secrets.FIREBASE_PROJECT_ID }}
+          FIREBASE_STORAGE_BUCKET: \${{ secrets.FIREBASE_STORAGE_BUCKET }}
+          FIREBASE_MESSAGING_SENDER_ID: \${{ secrets.FIREBASE_MESSAGING_SENDER_ID }}
+          FIREBASE_APP_ID: \${{ secrets.FIREBASE_APP_ID }}
+`;
+
+console.log('🚀 Génération des GitHub Actions...\n');
+
+const workflowsDir = path.join(__dirname, '..', '.github', 'workflows');
+
+if (!fs.existsSync(workflowsDir)) {
+  fs.mkdirSync(workflowsDir, { recursive: true });
+}
+
+for (const champ of championnats) {
+  const fileName = `smart-update-${champ.code}.yml`;
+  const filePath = path.join(workflowsDir, fileName);
+  const content = template(champ.code, champ.nom);
+
+  fs.writeFileSync(filePath, content, 'utf-8');
+  console.log(`✅ ${fileName}`);
+}
+
+console.log(`\n🎉 ${championnats.length} GitHub Actions créées avec succès !`);
+console.log('\n📅 Schedule:');
+console.log('   - Samedi de 18h à 23h (toutes les heures)');
+console.log('   - Dimanche de 12h à 17h (toutes les heures)');

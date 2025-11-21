@@ -53,7 +53,11 @@
       "Bash(npm run smart:update:matchs-n3:*)",
       "Bash(npx tsx:*)",
       "Bash(npm run smart:update:matchs-r2m:*)",
-      "Bash(npm run smart:update:matchs-m18m:*)"
+      "Bash(npm run smart:update:matchs-m18m:*)",
+      "Bash(npm run smart:update:m18m:*)",
+      "Bash(npm run smart:update:classement-m18m:*)",
+      "Bash(npm run smart:update:bfc:*)",
+      "Bash(npm run smart:update:n3:*)"
     ],
     "deny": [],
     "ask": []
