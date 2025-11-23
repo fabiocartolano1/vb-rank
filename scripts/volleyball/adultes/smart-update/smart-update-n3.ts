@@ -3,6 +3,7 @@ import { getFirestore, collection, getDocs, query, where, updateDoc, doc } from 
 import * as cheerio from 'cheerio';
 import { firebaseConfig } from '../../../config/firebase-config';
 import { initLogger } from '../../../utils/logger';
+import { toTitleCase, normalizeTeamName } from '../../../utils/text-utils';
 import {
   calculateHash,
   getScrapingState,
@@ -75,17 +76,6 @@ async function fetchPage(url: string): Promise<string> {
   return decoder.decode(buffer);
 }
 
-const toTitleCase = (str: string): string => {
-  return str
-    .toLowerCase()
-    .split(' ')
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ');
-};
-
-function normalizeTeamName(name: string): string {
-  return name.trim().toUpperCase();
-}
 
 async function getEquipesMap(): Promise<Map<string, string>> {
   console.log('📥 Récupération des équipes Nationale 3 depuis Firebase...');

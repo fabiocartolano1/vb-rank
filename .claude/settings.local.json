@@ -60,7 +60,12 @@
       "Bash(npm run smart:update:n3:*)",
       "Bash(npm run scrape:d3-matin:*)",
       "Bash(set NODE_TLS_REJECT_UNAUTHORIZED=0)",
-      "Bash(findstr:*)"
+      "Bash(findstr:*)",
+      "Bash(where:*)",
+      "Bash(node:*)",
+      "Bash(npm run smart:update:r2m:*)",
+      "Bash(for file in smart-update-*.ts)",
+      "Bash(do echo \"Processing $file...\")"
     ],
     "deny": [],
     "ask": []
