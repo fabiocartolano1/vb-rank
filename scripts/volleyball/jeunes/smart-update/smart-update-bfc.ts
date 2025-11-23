@@ -298,7 +298,7 @@ async function scrapeMatchs(html: string, equipesMap: Map<string, string>): Prom
   return matchs;
 }
 
-async function updateEquipesInFirebase(equipes: EquipeData[]): Promise<void> {
+async function updateEquipesInFirebase(equipes: EquipeData[], equipesMap: Map<string, string>): Promise<void> {
   console.log('\n💾 Mise à jour des équipes dans Firebase...');
 
   let updated = 0;
@@ -327,7 +327,7 @@ async function updateEquipesInFirebase(equipes: EquipeData[]): Promise<void> {
         existingData.setsContre !== equipe.setsContre;
 
       if (hasChanged) {
-        await updateDoc(doc(db, 'equipes', existingDoc.id), {
+        await updateDoc(equipeRef, {
           rang: equipe.rang,
           points: equipe.points,
           joues: equipe.joues,
@@ -337,7 +337,7 @@ async function updateEquipesInFirebase(equipes: EquipeData[]): Promise<void> {
           setsContre: equipe.setsContre,
         });
 
-        console.log(`✅ ${equipe.nom} - Mise à jour : Rang ${existingData.rang} → ${equipe.rang}, Points ${existingData.points} → ${equipe.points}`);
+        console.log(`✅ ${equipeNomDB} - Mise à jour : Rang ${existingData.rang} → ${equipe.rang}, Points ${existingData.points} → ${equipe.points}`);
         updated++;
       } else {
         unchanged++;
@@ -545,7 +545,7 @@ async function main() {
       console.log(`✅ ${equipes.length} équipes trouvées dans le classement`);
 
       if (equipes.length > 0) {
-        await updateEquipesInFirebase(equipes);
+        await updateEquipesInFirebase(equipes, equipesMap);
         classementState.lastUpdate = now;
       }
 
