@@ -1,4 +1,4 @@
-name: Smart Update - Championnats Adultes
+name: "[Smart Update] Adultes"
 
 on:
   workflow_dispatch:

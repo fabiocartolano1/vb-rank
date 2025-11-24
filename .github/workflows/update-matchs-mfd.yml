@@ -1,17 +1,10 @@
-name: "[Smart Update] Tous Championnats"
+name: "[Matchs] MFD"
 
 on:
-  schedule:
-    # Tous les jours à 20h
-    - cron: '0 20 * * *'
-    # Samedi de 16h à minuit (toutes les 30 minutes)
-    - cron: '0,30 16-23 * * 6'
-    # Dimanche de 12h à 20h (toutes les 30 minutes)
-    - cron: '0,30 12-20 * * 0'
-  workflow_dispatch: # Permet de lancer manuellement
+  workflow_dispatch:
 
 jobs:
-  update-all-championnats:
+  update:
     runs-on: ubuntu-latest
     timeout-minutes: 5
 
@@ -40,13 +33,13 @@ jobs:
           FIREBASE_MEASUREMENT_ID=${{ secrets.FIREBASE_MEASUREMENT_ID }}
           EOF
 
-      - name: 🏐 Run all smart updates (orchestrator)
-        run: npx tsx scripts/run-all-smart-updates.ts
+      - name: 🏐 Update matchs MFD
+        run: npx tsx scripts/volleyball/jeunes/update-matchs/update-matchs-mfd.ts
 
       - name: 📊 Upload logs (en cas d'échec)
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: smart-update-logs-all-${{ github.run_number }}
+          name: logs-matchs-mfd-${{ github.run_number }}
           path: scripts/logs/
           retention-days: 7
