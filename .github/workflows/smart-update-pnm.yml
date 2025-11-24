@@ -1,11 +1,6 @@
 name: Smart Update PNM
 
 on:
-  schedule:
-    # Samedi de 18h à 23h (toutes les heures)
-    - cron: '0 18-23 * * 6'
-    # Dimanche de 12h à 17h (toutes les heures)
-    - cron: '0 12-17 * * 0'
   workflow_dispatch:
 
 jobs:
