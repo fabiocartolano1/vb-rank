@@ -9,29 +9,9 @@ on:
   workflow_dispatch: # Permet de lancer manuellement
 
 jobs:
-  update-championnats:
+  update-all-championnats:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
-
-    strategy:
-      fail-fast: false  # Continue même si un championnat échoue
-      matrix:
-        championnat:
-          # Jeunes
-          - { nom: 'BFC', path: 'volleyball/jeunes/smart-update/smart-update-bfc.ts', categorie: 'Jeunes' }
-          - { nom: 'BMB', path: 'volleyball/jeunes/smart-update/smart-update-bmb.ts', categorie: 'Jeunes' }
-          - { nom: 'CFD', path: 'volleyball/jeunes/smart-update/smart-update-cfd.ts', categorie: 'Jeunes' }
-          - { nom: 'MFD', path: 'volleyball/jeunes/smart-update/smart-update-mfd.ts', categorie: 'Jeunes' }
-          - { nom: 'MMB', path: 'volleyball/jeunes/smart-update/smart-update-mmb.ts', categorie: 'Jeunes' }
-          - { nom: 'M18M', path: 'volleyball/jeunes/smart-update/smart-update-m18m.ts', categorie: 'Jeunes' }
-          # Adultes
-          - { nom: 'N3', path: 'volleyball/adultes/smart-update/smart-update-n3.ts', categorie: 'Adultes' }
-          - { nom: 'PNF', path: 'volleyball/adultes/smart-update/smart-update-pnf.ts', categorie: 'Adultes' }
-          - { nom: 'PNM', path: 'volleyball/adultes/smart-update/smart-update-pnm.ts', categorie: 'Adultes' }
-          - { nom: 'R2F', path: 'volleyball/adultes/smart-update/smart-update-r2f.ts', categorie: 'Adultes' }
-          - { nom: 'R2M', path: 'volleyball/adultes/smart-update/smart-update-r2m.ts', categorie: 'Adultes' }
-
-    name: 🏐 ${{ matrix.championnat.categorie }} - ${{ matrix.championnat.nom }}
+    timeout-minutes: 5
 
     steps:
       - name: 📥 Checkout code
@@ -58,13 +38,13 @@ jobs:
           FIREBASE_MEASUREMENT_ID=${{ secrets.FIREBASE_MEASUREMENT_ID }}
           EOF
 
-      - name: 🏐 Run smart update - ${{ matrix.championnat.nom }}
-        run: npx tsx scripts/${{ matrix.championnat.path }}
+      - name: 🏐 Run all smart updates (orchestrator)
+        run: npx tsx scripts/run-all-smart-updates.ts
 
       - name: 📊 Upload logs (en cas d'échec)
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: logs-${{ matrix.championnat.nom }}-${{ github.run_number }}
+          name: smart-update-logs-all-${{ github.run_number }}
           path: scripts/logs/
           retention-days: 7
