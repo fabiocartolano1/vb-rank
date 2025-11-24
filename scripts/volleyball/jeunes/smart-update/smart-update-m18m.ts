@@ -76,12 +76,11 @@ async function fetchPage(url: string): Promise<string> {
   return decoder.decode(buffer);
 }
 
-
 async function getEquipesMap(): Promise<Map<string, string>> {
-  console.log('📥 Récupération des équipes M18M depuis Firebase...');
+  console.log('📥 Récupération des équipes Moins 18 Masculin depuis Firebase...');
   const equipesQuery = query(
     collection(db, 'equipes'),
-    where('championnatId', '==', 'moins-18-m')
+    where('championnatId', '==', 'm18m')
   );
   const equipesSnapshot = await getDocs(equipesQuery);
 
@@ -273,7 +272,7 @@ async function scrapeMatchs(html: string, equipesMap: Map<string, string>): Prom
     }
 
     const match: any = {
-      championnatId: 'moins-18-m',
+      championnatId: 'm18m',
       journee: currentJournee,
       date,
       heure: heureText,
@@ -306,44 +305,62 @@ async function updateEquipesInFirebase(equipes: EquipeData[], equipesMap: Map<st
   let unchanged = 0;
 
   for (const equipe of equipes) {
-    const q = query(
-      collection(db, 'equipes'),
-      where('nom', '==', equipe.nom),
-      where('championnatId', '==', 'moins-18-m')
-    );
-    const existingEquipes = await getDocs(q);
+    // Normaliser le nom scrappé pour la recherche
+    const nomScrapeNorm = normalizeTeamName(equipe.nom);
 
-    if (!existingEquipes.empty) {
-      const existingDoc = existingEquipes.docs[0];
-      const existingData = existingDoc.data();
+    let equipeId: string | undefined;
+    let equipeNomDB: string = equipe.nom;
 
-      const hasChanged =
-        existingData.rang !== equipe.rang ||
-        existingData.points !== equipe.points ||
-        existingData.joues !== equipe.joues ||
-        existingData.gagnes !== equipe.gagnes ||
-        existingData.perdus !== equipe.perdus ||
-        existingData.setsPour !== equipe.setsPour ||
-        existingData.setsContre !== equipe.setsContre;
+    // Chercher l'équipe correspondante par normalisation
+    for (const [nom, id] of equipesMap.entries()) {
+      if (normalizeTeamName(nom) === nomScrapeNorm) {
+        equipeId = id;
+        equipeNomDB = nom;
+        console.log(`   🔗 Match: "${equipe.nom}" → "${nom}" (${id})`);
+        break;
+      }
+    }
 
-      if (hasChanged) {
-        await updateDoc(equipeRef, {
-          rang: equipe.rang,
-          points: equipe.points,
-          joues: equipe.joues,
-          gagnes: equipe.gagnes,
-          perdus: equipe.perdus,
-          setsPour: equipe.setsPour,
-          setsContre: equipe.setsContre,
-        });
+    if (equipeId) {
+      const equipeRef = doc(db, 'equipes', equipeId);
+      const existingDoc = await getDocs(query(collection(db, 'equipes'), where('__name__', '==', equipeId)));
 
-        console.log(`✅ ${equipeNomDB} - Mise à jour : Rang ${existingData.rang} → ${equipe.rang}, Points ${existingData.points} → ${equipe.points}`);
-        updated++;
-      } else {
-        unchanged++;
+      if (!existingDoc.empty) {
+        const existingData = existingDoc.docs[0].data();
+
+        const hasChanged =
+          existingData.rang !== equipe.rang ||
+          existingData.points !== equipe.points ||
+          existingData.joues !== equipe.joues ||
+          existingData.gagnes !== equipe.gagnes ||
+          existingData.perdus !== equipe.perdus ||
+          existingData.setsPour !== equipe.setsPour ||
+          existingData.setsContre !== equipe.setsContre;
+
+        if (hasChanged) {
+          await updateDoc(equipeRef, {
+            rang: equipe.rang,
+            points: equipe.points,
+            joues: equipe.joues,
+            gagnes: equipe.gagnes,
+            perdus: equipe.perdus,
+            setsPour: equipe.setsPour,
+            setsContre: equipe.setsContre,
+          });
+
+          console.log(`✅ ${equipeNomDB} - Mise à jour : Rang ${existingData.rang} → ${equipe.rang}, Points ${existingData.points} → ${equipe.points}`);
+          updated++;
+        } else {
+          unchanged++;
+        }
       }
     } else {
       console.log(`⚠️  ${equipe.nom} - Équipe non trouvée dans la base de données`);
+      console.log(`   📝 Normalisé: "${nomScrapeNorm}"`);
+      console.log(`   💡 Équipes disponibles dans la DB:`);
+      for (const [nom] of equipesMap.entries()) {
+        console.log(`      - "${nom}" → normalisé: "${normalizeTeamName(nom)}"`);
+      }
       notFound++;
     }
   }
@@ -457,13 +474,13 @@ async function main() {
   console.log(`📝 Logs enregistrés dans: ${logger.getLogFilePath()}\n`);
 
   try {
-    console.log('🏐 Mise à jour SMART M18M (Classement + Matchs fusionnés)\n');
+    console.log('🏐 Mise à jour SMART Moins 18 Masculin (Classement + Matchs fusionnés)\n');
     console.log('════════════════════════════════════════════════\n');
 
     await verifyEnvironment();
 
     // Récupérer l'URL depuis Firebase (1 seule fois)
-    const url = await getChampionnatUrl('m18-m');
+    const url = await getChampionnatUrl('m18m');
 
     console.log('🔍 Vérification des changements...\n');
     const html = await fetchPage(url);

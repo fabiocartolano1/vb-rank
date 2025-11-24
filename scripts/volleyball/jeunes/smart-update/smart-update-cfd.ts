@@ -76,7 +76,6 @@ async function fetchPage(url: string): Promise<string> {
   return decoder.decode(buffer);
 }
 
-
 async function getEquipesMap(): Promise<Map<string, string>> {
   console.log('📥 Récupération des équipes Cadettes Féminin depuis Firebase...');
   const equipesQuery = query(
