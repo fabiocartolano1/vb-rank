@@ -17,8 +17,8 @@ import {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-const CLASSEMENT_STATE_KEY = 'm18m-classement';
-const MATCHS_STATE_KEY = 'm18m-matchs';
+const CLASSEMENT_STATE_KEY = 'm18-m-classement';
+const MATCHS_STATE_KEY = 'm18-m-matchs';
 
 interface EquipeData {
   nom: string;
@@ -80,7 +80,7 @@ async function getEquipesMap(): Promise<Map<string, string>> {
   console.log('📥 Récupération des équipes Moins 18 Masculin depuis Firebase...');
   const equipesQuery = query(
     collection(db, 'equipes'),
-    where('championnatId', '==', 'm18m')
+    where('championnatId', '==', 'm18-m')
   );
   const equipesSnapshot = await getDocs(equipesQuery);
 
@@ -272,7 +272,7 @@ async function scrapeMatchs(html: string, equipesMap: Map<string, string>): Prom
     }
 
     const match: any = {
-      championnatId: 'm18m',
+      championnatId: 'm18-m',
       journee: currentJournee,
       date,
       heure: heureText,
@@ -480,7 +480,7 @@ async function main() {
     await verifyEnvironment();
 
     // Récupérer l'URL depuis Firebase (1 seule fois)
-    const url = await getChampionnatUrl('m18m');
+    const url = await getChampionnatUrl('m18-m');
 
     console.log('🔍 Vérification des changements...\n');
     const html = await fetchPage(url);

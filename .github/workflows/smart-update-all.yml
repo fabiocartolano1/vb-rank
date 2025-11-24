@@ -1,0 +1,52 @@
+name: Smart Update - Tous Championnats (Jeunes + Adultes)
+
+on:
+  schedule:
+    # Samedi de 18h à 23h (toutes les heures)
+    - cron: '0 18-23 * * 6'
+    # Dimanche de 12h à 17h (toutes les heures)
+    - cron: '0 12-17 * * 0'
+  workflow_dispatch: # Permet de lancer manuellement
+
+jobs:
+  update-all-championnats:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 📦 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm' # ✅ Cache npm activé pour tous les scripts
+
+      - name: 📚 Install dependencies
+        run: npm ci
+
+      - name: 🔐 Setup Firebase config
+        env:
+          FIREBASE_API_KEY: ${{ secrets.FIREBASE_API_KEY }}
+          FIREBASE_AUTH_DOMAIN: ${{ secrets.FIREBASE_AUTH_DOMAIN }}
+          FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
+          FIREBASE_STORAGE_BUCKET: ${{ secrets.FIREBASE_STORAGE_BUCKET }}
+          FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.FIREBASE_MESSAGING_SENDER_ID }}
+          FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
+        run: |
+          echo "Configuration Firebase OK"
+
+      - name: 🏐 Run all smart updates (jeunes + adultes)
+        working-directory: scripts
+        run: npx tsx run-all-smart-updates.ts
+
+      - name: 📊 Upload logs (en cas d'échec)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: smart-update-logs-all-${{ github.run_number }}
+          path: |
+            scripts/volleyball/jeunes/smart-update/logs/
+            scripts/volleyball/adultes/smart-update/logs/
+          retention-days: 7
