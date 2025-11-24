@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "Bash(npx tsx:*)",
-      "Bash(npm run smart:update:all:*)"
+      "Bash(npm run smart:update:all:*)",
+      "Bash(git checkout:*)"
     ],
     "deny": [],
     "ask": []
