@@ -301,40 +301,51 @@ async function updateEquipesInFirebase(equipes: EquipeData[], equipesMap: Map<st
   let unchanged = 0;
 
   for (const equipe of equipes) {
-    const existingEquipes = await db
-      .collection('equipes')
-      .where('nom', '==', equipe.nom)
-      .where('championnatId', '==', 'regionale-2-f')
-      .get();
+    // Trouver l'équipe en utilisant la normalisation
+    const equipeNorm = normalizeTeamName(equipe.nom);
+    let equipeId: string | undefined;
+    let equipeNomDB: string | undefined;
 
-    if (!existingEquipes.empty) {
-      const existingDoc = existingEquipes.docs[0];
-      const existingData = existingDoc.data();
+    for (const [nom, id] of equipesMap.entries()) {
+      if (normalizeTeamName(nom) === equipeNorm) {
+        equipeId = id;
+        equipeNomDB = nom;
+        break;
+      }
+    }
 
-      const hasChanged =
-        existingData.rang !== equipe.rang ||
-        existingData.points !== equipe.points ||
-        existingData.joues !== equipe.joues ||
-        existingData.gagnes !== equipe.gagnes ||
-        existingData.perdus !== equipe.perdus ||
-        existingData.setsPour !== equipe.setsPour ||
-        existingData.setsContre !== equipe.setsContre;
+    if (equipeId) {
+      const equipeRef = db.collection('equipes').doc(equipeId);
+      const existingDoc = await equipeRef.get();
 
-      if (hasChanged) {
-        await existingDoc.ref.update({
-          rang: equipe.rang,
-          points: equipe.points,
-          joues: equipe.joues,
-          gagnes: equipe.gagnes,
-          perdus: equipe.perdus,
-          setsPour: equipe.setsPour,
-          setsContre: equipe.setsContre,
-        });
+      if (existingDoc.exists) {
+        const existingData = existingDoc.data()!;
 
-        console.log(`✅ ${equipeNomDB} - Mise à jour : Rang ${existingData.rang} → ${equipe.rang}, Points ${existingData.points} → ${equipe.points}`);
-        updated++;
-      } else {
-        unchanged++;
+        const hasChanged =
+          existingData.rang !== equipe.rang ||
+          existingData.points !== equipe.points ||
+          existingData.joues !== equipe.joues ||
+          existingData.gagnes !== equipe.gagnes ||
+          existingData.perdus !== equipe.perdus ||
+          existingData.setsPour !== equipe.setsPour ||
+          existingData.setsContre !== equipe.setsContre;
+
+        if (hasChanged) {
+          await equipeRef.update({
+            rang: equipe.rang,
+            points: equipe.points,
+            joues: equipe.joues,
+            gagnes: equipe.gagnes,
+            perdus: equipe.perdus,
+            setsPour: equipe.setsPour,
+            setsContre: equipe.setsContre,
+          });
+
+          console.log(`✅ ${equipeNomDB} - Mise à jour : Rang ${existingData.rang} → ${equipe.rang}, Points ${existingData.points} → ${equipe.points}`);
+          updated++;
+        } else {
+          unchanged++;
+        }
       }
     } else {
       console.log(`⚠️  ${equipe.nom} - Équipe non trouvée dans la base de données`);
