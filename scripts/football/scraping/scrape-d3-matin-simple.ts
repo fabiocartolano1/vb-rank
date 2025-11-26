@@ -3,10 +3,17 @@
 
 import fetch from 'node-fetch';
 import https from 'https';
+import { initializeApp, cert } from 'firebase-admin/app';
+import { getFirestore } from 'firebase-admin/firestore';
 
 const insecureAgent = new https.Agent({
   rejectUnauthorized: false, // allow self-signed certificates
 });
+
+initializeApp({
+  credential: cert(require('../../../fufc-8c9fc-firebase-adminsdk-fbsvc-9022c2fe03.json')),
+});
+const db = getFirestore();
 
 async function fetchInsecure(url: string) {
   return fetch(url, { agent: insecureAgent });
@@ -41,7 +48,13 @@ async function main() {
 
   classement.sort((a: any, b: any) => a.rank - b.rank);
 
-  console.table(classement);
+  console.log(classement);
+
+  classement.forEach(async (eq: { team: string }) => {
+    await db.collection('equipes').doc(eq.team.replace(/\//g, '-')).set({
+      items: eq,
+    });
+  });
 }
 
 main().catch((err) => console.error(err));
