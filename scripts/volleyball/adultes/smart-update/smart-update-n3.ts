@@ -402,6 +402,7 @@ async function updateMatchsInFirebase(matchs: Match[]): Promise<void> {
         existingData.scoreExterieur !== match.scoreExterieur ||
         existingData.statut !== match.statut ||
         existingData.feuilleMatchUrl !== match.feuilleMatchUrl ||
+        (!existingData.feuilleMatchUrl && match.feuilleMatchUrl) || // Ajouter URL manquante
         JSON.stringify(existingData.detailSets) !== JSON.stringify(match.detailSets);
 
       if (hasChanged) {
