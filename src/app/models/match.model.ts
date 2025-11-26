@@ -12,4 +12,5 @@ export interface Match {
   scoreExterieur?: number; // Sets gagnés
   detailSets?: string[]; // Ex: ["25:20", "25:19", "26:24"]
   statut: 'termine' | 'a_venir'; // Statut du match
+  feuilleMatchUrl?: string; // URL vers la feuille de match officielle
 }

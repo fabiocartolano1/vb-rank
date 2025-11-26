@@ -35,6 +35,16 @@
         <span class="score-separator">-</span>
         <span class="score-value">{{ match.scoreExterieur }}</span>
       </div>
+      @if (match.feuilleMatchUrl) {
+      <a
+        [href]="match.feuilleMatchUrl"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="feuille-match-link"
+      >
+        Feuille de match
+      </a>
+      }
       } @else {
       <div class="vs-display">VS</div>
       }
