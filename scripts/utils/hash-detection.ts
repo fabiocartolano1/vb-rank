@@ -1,5 +1,5 @@
-import { getFirestore, doc, getDoc, setDoc } from 'firebase/firestore';
 import { createHash } from 'crypto';
+import type admin from 'firebase-admin';
 
 export interface ScrapingState {
   lastHash: string;
@@ -17,27 +17,27 @@ export function calculateHash(content: string): string {
   return createHash('md5').update(content).digest('hex');
 }
 
-export async function getScrapingState(db: any, stateKey: string): Promise<ScrapingState | null> {
+export async function getScrapingState(db: admin.firestore.Firestore, stateKey: string): Promise<ScrapingState | null> {
   try {
-    const stateDocRef = doc(db, SCRAPING_STATE_COLLECTION, SCRAPING_STATE_DOC);
-    const stateDoc = await getDoc(stateDocRef);
+    const stateDocRef = db.collection(SCRAPING_STATE_COLLECTION).doc(SCRAPING_STATE_DOC);
+    const stateDoc = await stateDocRef.get();
 
-    if (!stateDoc.exists()) {
+    if (!stateDoc.exists) {
       return null;
     }
 
     const data = stateDoc.data();
-    return data[stateKey] || null;
+    return data?.[stateKey] || null;
   } catch (error) {
     console.error('❌ Erreur lors de la récupération du state:', error);
     return null;
   }
 }
 
-export async function updateScrapingState(db: any, stateKey: string, state: ScrapingState): Promise<void> {
+export async function updateScrapingState(db: admin.firestore.Firestore, stateKey: string, state: ScrapingState): Promise<void> {
   try {
-    const stateDocRef = doc(db, SCRAPING_STATE_COLLECTION, SCRAPING_STATE_DOC);
-    await setDoc(stateDocRef, {
+    const stateDocRef = db.collection(SCRAPING_STATE_COLLECTION).doc(SCRAPING_STATE_DOC);
+    await stateDocRef.set({
       [stateKey]: state
     }, { merge: true });
   } catch (error) {

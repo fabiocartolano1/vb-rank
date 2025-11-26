@@ -1,7 +1,5 @@
-import { initializeApp } from 'firebase/app';
-import { getFirestore, collection, getDocs, query, where, updateDoc, doc } from 'firebase/firestore';
 import * as cheerio from 'cheerio';
-import { firebaseConfig } from '../../../config/firebase-config';
+import { getFirestoreAdmin, getFirebaseApp } from '../../../config/firebase-admin-config';
 import { initLogger } from '../../../utils/logger';
 import { toTitleCase, normalizeTeamName } from '../../../utils/text-utils';
 import {
@@ -15,8 +13,8 @@ import {
   ScrapingState
 } from '../../../utils/hash-detection';
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+const db = getFirestoreAdmin();
+const app = getFirebaseApp();
 const CLASSEMENT_STATE_KEY = 'm18-m-classement';
 const MATCHS_STATE_KEY = 'm18-m-matchs';
 
@@ -48,15 +46,13 @@ interface Match {
 
 async function getChampionnatUrl(championnatId: string): Promise<string> {
   console.log(`📡 Récupération de l'URL du championnat ${championnatId}...`);
-  const championnatDoc = await getDocs(
-    query(collection(db, 'championnats'), where('__name__', '==', championnatId))
-  );
+  const championnatDoc = await db.collection('championnats').doc(championnatId).get();
 
-  if (championnatDoc.empty) {
+  if (!championnatDoc.exists) {
     throw new Error(`❌ Championnat ${championnatId} non trouvé dans Firebase`);
   }
 
-  const url = championnatDoc.docs[0].data().url;
+  const url = championnatDoc.data()?.url;
   if (!url) {
     throw new Error(`❌ URL non renseignée pour ${championnatId} dans Firebase`);
   }
@@ -78,11 +74,10 @@ async function fetchPage(url: string): Promise<string> {
 
 async function getEquipesMap(): Promise<Map<string, string>> {
   console.log('📥 Récupération des équipes Moins 18 Masculin depuis Firebase...');
-  const equipesQuery = query(
-    collection(db, 'equipes'),
-    where('championnatId', '==', 'm18-m')
-  );
-  const equipesSnapshot = await getDocs(equipesQuery);
+  const equipesSnapshot = await db
+    .collection('equipes')
+    .where('championnatId', '==', 'm18-m')
+    .get();
 
   const map = new Map<string, string>();
   equipesSnapshot.forEach((doc) => {
@@ -322,7 +317,7 @@ async function updateEquipesInFirebase(equipes: EquipeData[], equipesMap: Map<st
     }
 
     if (equipeId) {
-      const equipeRef = doc(db, 'equipes', equipeId);
+      const equipeRef = db.collection('equipes').doc(equipeId);
       const existingDoc = await getDocs(query(collection(db, 'equipes'), where('__name__', '==', equipeId)));
 
       if (!existingDoc.empty) {
@@ -338,7 +333,7 @@ async function updateEquipesInFirebase(equipes: EquipeData[], equipesMap: Map<st
           existingData.setsContre !== equipe.setsContre;
 
         if (hasChanged) {
-          await updateDoc(equipeRef, {
+          await equipeRef.update({
             rang: equipe.rang,
             points: equipe.points,
             joues: equipe.joues,
@@ -381,14 +376,13 @@ async function updateMatchsInFirebase(matchs: Match[]): Promise<void> {
   let unchanged = 0;
 
   for (const match of matchs) {
-    const q = query(
-      collection(db, 'matchs'),
-      where('championnatId', '==', match.championnatId),
-      where('journee', '==', match.journee),
-      where('equipeDomicile', '==', match.equipeDomicile),
-      where('equipeExterieur', '==', match.equipeExterieur)
-    );
-    const existingMatchs = await getDocs(q);
+    const existingMatchs = await db
+      .collection('matchs')
+      .where('championnatId', '==', match.championnatId)
+      .where('journee', '==', match.journee)
+      .where('equipeDomicile', '==', match.equipeDomicile)
+      .where('equipeExterieur', '==', match.equipeExterieur)
+      .get();
 
     if (!existingMatchs.empty) {
       const existingDoc = existingMatchs.docs[0];
@@ -426,7 +420,7 @@ async function updateMatchsInFirebase(matchs: Match[]): Promise<void> {
           updateData.equipeExterieurId = match.equipeExterieurId;
         }
 
-        await updateDoc(doc(db, 'matchs', existingDoc.id), updateData);
+        await existingDoc.ref.update(updateData);
 
         const statusChange = existingData.statut !== match.statut ? ` (${existingData.statut} → ${match.statut})` : '';
         const scoreChange = match.scoreDomicile !== null && match.scoreExterieur !== null
@@ -454,7 +448,7 @@ async function updateMatchsInFirebase(matchs: Match[]): Promise<void> {
 async function verifyEnvironment(): Promise<void> {
   console.log('🔍 Vérification de l\'environnement...');
 
-  const projectId = firebaseConfig.projectId;
+  const projectId = app.options.projectId || 'unknown';
   console.log(`   Projet Firebase: ${projectId}`);
 
   const validProjects = ['vb-rank', 'le-cres-vb'];

@@ -3,7 +3,12 @@
     "allow": [
       "Bash(npx tsx:*)",
       "Bash(npm run smart:update:all:*)",
-      "Bash(git checkout:*)"
+      "Bash(git checkout:*)",
+      "Bash(git push:*)",
+      "Bash(cat:*)",
+      "Bash(npm run smart:update:n3:*)",
+      "Bash(npm install:*)",
+      "Bash(npx tsc:*)"
     ],
     "deny": [],
     "ask": []
