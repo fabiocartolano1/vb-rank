@@ -9,7 +9,8 @@
       "Bash(npm run smart:update:n3:*)",
       "Bash(npm install:*)",
       "Bash(npx tsc:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
     ],
     "deny": [],
     "ask": []
