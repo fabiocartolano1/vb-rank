@@ -42,6 +42,7 @@ interface Match {
   scoreExterieur?: number;
   detailSets?: string[];
   statut: 'termine' | 'a_venir';
+  feuilleMatchUrl?: string;
 }
 
 async function getChampionnatUrl(championnatId: string): Promise<string> {
@@ -217,6 +218,7 @@ async function scrapeMatchs(html: string, equipesMap: Map<string, string>): Prom
     let scoreExterieur = '';
     let sets: string[] = [];
     let statut = 'a_venir';
+    let feuilleMatchUrl: string | undefined;
 
     if (matchPlayed) {
       scoreDomicile = $(cells[6]).text().trim();
@@ -227,6 +229,15 @@ async function scrapeMatchs(html: string, equipesMap: Map<string, string>): Prom
         .split(/[,;]/)
         .map((s) => s.trim().replace(/\s+/g, ':'));
       statut = 'termine';
+
+      // Récupérer l'URL de la feuille de match depuis le form
+      const form = $row.find('form');
+      if (form.length > 0) {
+        const action = form.attr('action');
+        if (action && action.startsWith('../resu/')) {
+          feuilleMatchUrl = `https://www.ffvbbeach.org/ffvbapp${action.substring(2)}`;
+        }
+      }
     }
 
     if (
@@ -285,6 +296,9 @@ async function scrapeMatchs(html: string, equipesMap: Map<string, string>): Prom
     }
     if (equipeExterieurId) {
       match.equipeExterieurId = equipeExterieurId;
+    }
+    if (feuilleMatchUrl) {
+      match.feuilleMatchUrl = feuilleMatchUrl;
     }
 
     matchs.push(match);
@@ -387,6 +401,7 @@ async function updateMatchsInFirebase(matchs: Match[]): Promise<void> {
         existingData.scoreDomicile !== match.scoreDomicile ||
         existingData.scoreExterieur !== match.scoreExterieur ||
         existingData.statut !== match.statut ||
+        existingData.feuilleMatchUrl !== match.feuilleMatchUrl ||
         JSON.stringify(existingData.detailSets) !== JSON.stringify(match.detailSets);
 
       if (hasChanged) {
@@ -411,6 +426,9 @@ async function updateMatchsInFirebase(matchs: Match[]): Promise<void> {
         }
         if (match.equipeExterieurId) {
           updateData.equipeExterieurId = match.equipeExterieurId;
+        }
+        if (match.feuilleMatchUrl) {
+          updateData.feuilleMatchUrl = match.feuilleMatchUrl;
         }
 
         await existingDoc.ref.update(updateData);
