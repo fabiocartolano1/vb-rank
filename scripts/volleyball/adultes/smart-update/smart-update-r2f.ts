@@ -301,12 +301,11 @@ async function updateEquipesInFirebase(equipes: EquipeData[], equipesMap: Map<st
   let unchanged = 0;
 
   for (const equipe of equipes) {
-    const q = query(
-      collection(db, 'equipes'),
-      where('nom', '==', equipe.nom),
-      where('championnatId', '==', 'regionale-2-f')
-    );
-    const existingEquipes = await getDocs(q);
+    const existingEquipes = await db
+      .collection('equipes')
+      .where('nom', '==', equipe.nom)
+      .where('championnatId', '==', 'regionale-2-f')
+      .get();
 
     if (!existingEquipes.empty) {
       const existingDoc = existingEquipes.docs[0];
@@ -322,7 +321,7 @@ async function updateEquipesInFirebase(equipes: EquipeData[], equipesMap: Map<st
         existingData.setsContre !== equipe.setsContre;
 
       if (hasChanged) {
-        await equipeRef.update({
+        await existingDoc.ref.update({
           rang: equipe.rang,
           points: equipe.points,
           joues: equipe.joues,

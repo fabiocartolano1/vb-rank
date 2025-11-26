@@ -318,7 +318,7 @@ async function updateEquipesInFirebase(equipes: EquipeData[], equipesMap: Map<st
 
     if (equipeId) {
       const equipeRef = db.collection('equipes').doc(equipeId);
-      const existingDoc = await getDocs(query(collection(db, 'equipes'), where('__name__', '==', equipeId)));
+      const existingDoc = await db.collection('equipes').doc(equipeId).get();
 
       if (!existingDoc.empty) {
         const existingData = existingDoc.docs[0].data();
