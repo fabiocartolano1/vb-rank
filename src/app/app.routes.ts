@@ -25,5 +25,9 @@ export const routes: Routes = [
   {
     path: 'instagram',
     loadComponent: () => import('./pages/instagram/instagram').then(m => m.Instagram)
+  },
+  {
+    path: 'about',
+    loadComponent: () => import('./pages/about/about.component').then(m => m.AboutComponent)
   }
 ];

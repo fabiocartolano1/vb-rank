@@ -62,8 +62,11 @@
   position: relative;
 }
 
-.theme-toggle {
+.header-actions {
   margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
 }
 
 .header-logo {
@@ -394,6 +397,11 @@
 @media (max-width: 768px) {
   .app-container {
     padding-bottom: 55px; /* Espace pour la barre de navigation fixe en bas */
+  }
+
+  /* Masquer l'onglet "Nos Matchs" en mobile */
+  .nav-link.hide-on-mobile {
+    display: none;
   }
 
   .app-header {

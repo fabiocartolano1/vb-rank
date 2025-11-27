@@ -15,7 +15,11 @@
       "Bash(npm start)",
       "Bash(netstat:*)",
       "Bash(findstr:*)",
-      "Bash(taskkill:*)"
+      "Bash(taskkill:*)",
+      "Bash(npx ts-node:*)",
+      "Bash(NODE_TLS_REJECT_UNAUTHORIZED=0 npx tsx:*)",
+      "Bash(mkdir:*)",
+      "Bash(timeout /t 10)"
     ],
     "deny": [],
     "ask": []
