@@ -6,6 +6,7 @@ import { Match } from '../../models/match.model';
 import { Equipe } from '../../models/equipe.model';
 import { MatchCardComponent } from '../../components/match-card/match-card.component';
 import { ChampionnatDropdownComponent } from '../../components/championnat-dropdown/championnat-dropdown';
+import { ToggleButtonComponent } from '../../components/toggle-button/toggle-button.component';
 import { ChampionshipService } from '../../core/services/championship.service';
 import { TeamUtils } from '../../core/utils/team.utils';
 import { DateUtils } from '../../core/utils/date.utils';
@@ -14,7 +15,7 @@ import { MatchUtils } from '../../core/utils/match.utils';
 @Component({
   selector: 'app-matchs',
   standalone: true,
-  imports: [CommonModule, MatchCardComponent, ChampionnatDropdownComponent],
+  imports: [CommonModule, MatchCardComponent, ChampionnatDropdownComponent, ToggleButtonComponent],
   templateUrl: './matchs.component.html',
   styleUrl: './matchs.component.css',
 })
@@ -28,6 +29,7 @@ export class MatchsComponent implements OnInit {
   loading = signal(true);
   error = signal('');
   openJournees = signal<Set<number>>(new Set());
+  showAllMatches = signal(true); // false = tous les matchs, true = nos matchs uniquement
 
   readonly championnats = this.championshipService.getChampionships();
 
@@ -38,7 +40,14 @@ export class MatchsComponent implements OnInit {
   matchs = computed(() => {
     const championnatId = this.selectedChampionnatId();
     const all = this.allMatchs();
-    return all.filter((match) => match.championnatId === championnatId);
+    const filteredByChampionnat = all.filter((match) => match.championnatId === championnatId);
+
+    // En mode "nos matchs" (toggle activé), filtrer uniquement les matchs CRES
+    if (this.showAllMatches()) {
+      return filteredByChampionnat.filter((match) => TeamUtils.isCresMatch(match));
+    }
+
+    return filteredByChampionnat;
   });
 
   equipes = computed(() => {
@@ -161,7 +170,50 @@ export class MatchsComponent implements OnInit {
     }
   }
 
+  getSortedMatchs() {
+    const validMatches = MatchUtils.filterValidMatches(this.matchs());
+    return DateUtils.sortMatchesByDate(validMatches);
+  }
+
   onChampionnatChange(championnatId: string) {
     this.equipeFilterService.setSelectedChampionnatId(championnatId);
+  }
+
+  toggleMatchView() {
+    this.showAllMatches.set(!this.showAllMatches());
+    // Rouvrir la prochaine journée quand on change de vue
+    setTimeout(() => {
+      this.openNextJournee();
+      setTimeout(() => {
+        this.scrollToOpenJournee();
+      }, 100);
+    }, 50);
+  }
+
+  getCresWin(match: Match): boolean | null {
+    // Si le match n'est pas terminé, retourner null
+    if (match.statut !== 'termine' ||
+        match.scoreDomicile === null ||
+        match.scoreDomicile === undefined ||
+        match.scoreExterieur === null ||
+        match.scoreExterieur === undefined) {
+      return null;
+    }
+
+    const isCresHome = TeamUtils.isCresTeam(match.equipeDomicile);
+    const isCresAway = TeamUtils.isCresTeam(match.equipeExterieur);
+
+    // Si CRES est à domicile
+    if (isCresHome) {
+      return match.scoreDomicile > match.scoreExterieur;
+    }
+
+    // Si CRES est à l'extérieur
+    if (isCresAway) {
+      return match.scoreExterieur > match.scoreDomicile;
+    }
+
+    // Cas où ce n'est pas un match du CRES (ne devrait pas arriver)
+    return null;
   }
 }

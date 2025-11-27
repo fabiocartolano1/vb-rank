@@ -15,7 +15,8 @@
       "Bash(npm start)",
       "Bash(netstat:*)",
       "Bash(findstr:*)",
-      "Bash(taskkill:*)"
+      "Bash(taskkill:*)",
+      "Bash(ping:*)"
     ],
     "deny": [],
     "ask": []
