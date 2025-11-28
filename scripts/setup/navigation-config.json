@@ -1,0 +1,80 @@
+{
+  "navigation": {
+    "desktop": [
+      {
+        "id": "classement",
+        "label": "Classement",
+        "route": "/classement",
+        "enabled": true
+      },
+      {
+        "id": "matchs",
+        "label": "Tous les Matchs",
+        "route": "/matchs",
+        "enabled": true
+      },
+      {
+        "id": "matchs-cres",
+        "label": "Nos Matchs",
+        "route": "/matchs-cres",
+        "enabled": true
+      },
+      {
+        "id": "agenda",
+        "label": "Au Crès ce weekend",
+        "route": "/agenda",
+        "enabled": true
+      },
+      {
+        "id": "instagram",
+        "label": "Actu",
+        "route": "/instagram",
+        "enabled": true
+      },
+      {
+        "id": "about",
+        "label": "À propos",
+        "route": "/about",
+        "enabled": true
+      }
+    ],
+    "mobile": [
+      {
+        "id": "classement",
+        "label": "Classement",
+        "route": "/classement",
+        "enabled": true
+      },
+      {
+        "id": "matchs",
+        "label": "Tous les Matchs",
+        "route": "/matchs",
+        "enabled": true
+      },
+      {
+        "id": "matchs-cres",
+        "label": "Nos Matchs",
+        "route": "/matchs-cres",
+        "enabled": false
+      },
+      {
+        "id": "agenda",
+        "label": "Au Crès ce weekend",
+        "route": "/agenda",
+        "enabled": true
+      },
+      {
+        "id": "instagram",
+        "label": "Actu",
+        "route": "/instagram",
+        "enabled": true
+      },
+      {
+        "id": "about",
+        "label": "À propos",
+        "route": "/about",
+        "enabled": true
+      }
+    ]
+  }
+}

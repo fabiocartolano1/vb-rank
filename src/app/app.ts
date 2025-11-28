@@ -1,4 +1,4 @@
-import { Component, signal, inject, OnInit } from '@angular/core';
+import { Component, signal, inject, OnInit, computed } from '@angular/core';
 import { RouterOutlet, RouterLink, RouterLinkActive, Router, NavigationEnd } from '@angular/router';
 import { Firestore, collection, getDocs } from '@angular/fire/firestore';
 import { CommonModule } from '@angular/common';
@@ -7,6 +7,7 @@ import { DataService } from './services/data.service';
 import { EquipeFilterService } from './services/equipe-filter.service';
 import { ThemeToggleComponent } from './components/theme-toggle/theme-toggle';
 import { ChampionshipService } from './core/services/championship.service';
+import { ConfigService } from './services/config.service';
 import { filter } from 'rxjs/operators';
 import { Capacitor } from '@capacitor/core';
 
@@ -32,10 +33,22 @@ export class App implements OnInit {
   private dataService = inject(DataService);
   private equipeFilterService = inject(EquipeFilterService);
   private championshipService = inject(ChampionshipService);
+  private configService = inject(ConfigService);
 
   // Liste des championnats adultes (utilisé dans la navigation)
   protected readonly championnats = this.championshipService.getAdultChampionships();
   protected readonly selectedChampionnatId = this.equipeFilterService.getSelectedChampionnatIdSignal();
+
+  // Navigation configurée depuis Firestore
+  protected readonly desktopNavItems = computed(() => {
+    const config = this.configService.navigationConfig();
+    return config?.desktop?.filter(item => item.enabled) || [];
+  });
+
+  protected readonly mobileNavItems = computed(() => {
+    const config = this.configService.navigationConfig();
+    return config?.mobile?.filter(item => item.enabled) || [];
+  });
 
   async ngOnInit() {
     // Détecter si on est sur iOS
@@ -87,6 +100,18 @@ export class App implements OnInit {
 
   onChampionnatChange(championnatId: string) {
     this.equipeFilterService.setSelectedChampionnatId(championnatId);
+  }
+
+  // Détermine si un item doit être caché en mobile
+  isHiddenOnMobile(itemId: string): boolean {
+    const config = this.configService.navigationConfig();
+    const mobileItem = config?.mobile?.find(item => item.id === itemId);
+    return !mobileItem?.enabled;
+  }
+
+  // Retourne la classe CSS pour un item de navigation
+  getNavItemClass(itemId: string): string {
+    return this.isHiddenOnMobile(itemId) ? 'nav-link hide-on-mobile' : 'nav-link';
   }
 
   async importData() {

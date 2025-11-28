@@ -19,7 +19,9 @@
       "Bash(npx ts-node:*)",
       "Bash(NODE_TLS_REJECT_UNAUTHORIZED=0 npx tsx:*)",
       "Bash(mkdir:*)",
-      "Bash(timeout /t 10)"
+      "Bash(timeout /t 10)",
+      "Bash(set GOOGLE_APPLICATION_CREDENTIALS=)",
+      "Bash(set GCLOUD_PROJECT=le-cres-vb)"
     ],
     "deny": [],
     "ask": []

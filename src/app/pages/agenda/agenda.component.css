@@ -131,6 +131,14 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1.5rem;
+  justify-items: center;
+}
+
+/* Centrer quand il n'y a qu'un seul jour affiché */
+.weekend-view:has(.day-column:only-of-type) {
+  grid-template-columns: 1fr;
+  max-width: 600px;
+  margin: 0 auto;
 }
 
 @media (max-width: 768px) {
@@ -144,6 +152,7 @@
   border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  width: 100%;
 }
 
 :host-context([data-theme="dark"]) .day-column {
@@ -379,6 +388,9 @@
   background: white;
   border-radius: 12px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 600px;
+  grid-column: 1 / -1;
 }
 
 :host-context([data-theme="dark"]) .no-weekend-matches {
