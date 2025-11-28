@@ -6,6 +6,14 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './about.component.html',
-  styleUrl: './about.component.css',
+  styleUrls: ['./about.component.css']
 })
-export class AboutComponent {}
+export class AboutComponent {
+  openPrivacyPolicy(): void {
+    window.open('/legal/privacy.html', '_blank');
+  }
+
+  openTermsOfService(): void {
+    window.open('/legal/terms.html', '_blank');
+  }
+}

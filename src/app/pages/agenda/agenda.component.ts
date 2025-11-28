@@ -35,24 +35,39 @@ export class AgendaComponent implements OnInit {
   // Tous les weekends disponibles
   weekends = computed(() => {
     const matchs = this.allMatchs();
-    const weekendMap = new Map<string, Date>();
 
-    // Trouver tous les weekends uniques des matchs du Crès à domicile
-    matchs
-      .filter(
-        (match) =>
-          match.equipeDomicile.toLowerCase().includes('crès') ||
-          match.equipeDomicile.toLowerCase().includes('cres')
-      )
-      .forEach((match) => {
-        const matchDate = new Date(match.date);
-        const saturday = this.getSaturday(matchDate);
-        const weekKey = saturday.toISOString().split('T')[0];
-        weekendMap.set(weekKey, saturday);
-      });
+    if (matchs.length === 0) {
+      return [];
+    }
 
-    // Convertir en tableau et trier
-    return Array.from(weekendMap.values()).sort((a, b) => a.getTime() - b.getTime());
+    // Trouver la plage de dates de tous les matchs (pas seulement ceux à domicile)
+    const dates = matchs
+      .filter((match) => MatchUtils.isValidMatch(match))
+      .map((match) => new Date(match.date));
+
+    if (dates.length === 0) {
+      return [];
+    }
+
+    const minDate = new Date(Math.min(...dates.map((d) => d.getTime())));
+    const maxDate = new Date(Math.max(...dates.map((d) => d.getTime())));
+
+    // Générer tous les weekends entre la première et la dernière date
+    const weekends: Date[] = [];
+    let currentSaturday = this.getSaturday(minDate);
+
+    // Reculer au samedi précédent si nécessaire
+    while (currentSaturday > minDate) {
+      currentSaturday.setDate(currentSaturday.getDate() - 7);
+    }
+
+    // Générer tous les weekends jusqu'à la date max
+    while (currentSaturday <= maxDate) {
+      weekends.push(new Date(currentSaturday));
+      currentSaturday.setDate(currentSaturday.getDate() + 7);
+    }
+
+    return weekends;
   });
 
   // Weekend actuellement affiché

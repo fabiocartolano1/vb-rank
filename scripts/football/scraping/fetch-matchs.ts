@@ -1,16 +1,11 @@
-// Run with: ts-node matchs.ts
+// Run with: npx tsx fetch-matchs.ts
 // All comments must be in English
 
-import fetch from 'node-fetch';
 import https from 'https';
 
 const insecureAgent = new https.Agent({
-  rejectUnauthorized: false, // allow self-signed certificates
+  rejectUnauthorized: false,
 });
-
-async function fetchInsecure(url: string) {
-  return fetch(url, { agent: insecureAgent });
-}
 
 interface MatchRaw {
   date: string;
@@ -18,8 +13,8 @@ interface MatchRaw {
   type: string;
   home_team: { short_name: string };
   away_team: { short_name: string };
-  home_goals: number | null;
-  away_goals: number | null;
+  home_score: number | null;
+  away_score: number | null;
   is_forfait: boolean;
 }
 
@@ -42,17 +37,36 @@ async function fetchAllMatches() {
 
     let res;
     try {
-      res = await fetchInsecure(url);
+      res = await fetch(url, {
+        // @ts-ignore - agent is not in standard fetch but works in Node.js
+        agent: insecureAgent
+      });
     } catch (e) {
-      break; // network or TLS error -> stop
+      console.log('Network error:', e);
+      break;
     }
 
-    if (!res.ok) break;
+    if (!res.ok) {
+      console.log('HTTP error:', res.status);
+      break;
+    }
 
-    const json = await res.json();
+    const json: any = await res.json();
+
+    // Log the raw response to understand the structure
+    if (page === 1) {
+      console.log('Raw API response (first 2 items):');
+      console.log(JSON.stringify({
+        ...json,
+        'hydra:member': json['hydra:member']?.slice(0, 2)
+      }, null, 2));
+    }
 
     const list: MatchRaw[] = json['hydra:member'];
-    if (!list || list.length === 0) break;
+    if (!list || list.length === 0) {
+      console.log('No more matches found, stopping at page', page);
+      break;
+    }
 
     for (const m of list) {
       all.push({
@@ -62,7 +76,7 @@ async function fetchAllMatches() {
         home: m.home_team?.short_name ?? '?',
         away: m.away_team?.short_name ?? '?',
         score:
-          m.home_goals != null && m.away_goals != null ? `${m.home_goals} - ${m.away_goals}` : '-',
+          m.home_score != null && m.away_score != null ? `${m.home_score} - ${m.away_score}` : '-',
         forfait: m.is_forfait,
       });
     }
@@ -75,6 +89,7 @@ async function fetchAllMatches() {
 
 async function main() {
   const matches = await fetchAllMatches();
+  console.log('\n\nMatches found:');
   console.table(matches);
 }
 

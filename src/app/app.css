@@ -62,8 +62,11 @@
   position: relative;
 }
 
-.theme-toggle {
+.header-actions {
   margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
 }
 
 .header-logo {
@@ -396,6 +399,11 @@
     padding-bottom: 55px; /* Espace pour la barre de navigation fixe en bas */
   }
 
+  /* Masquer l'onglet "Nos Matchs" en mobile */
+  .nav-link.hide-on-mobile {
+    display: none;
+  }
+
   .app-header {
     padding: 1rem 1rem;
   }
@@ -436,7 +444,11 @@
     box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.08);
     border-top: 1px solid var(--card-border);
     padding: 0;
+    margin: 0;
     z-index: 1000;
+    /* Force la navigation à être collée au bas sans espace */
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
   }
 
   /* iOS uniquement - padding bottom pour la navigation */

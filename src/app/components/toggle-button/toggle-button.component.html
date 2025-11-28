@@ -1,0 +1,6 @@
+<div class="toggle-container" (click)="onToggle()">
+  <span class="toggle-label">{{ label() }}</span>
+  <div class="toggle-switch" [class.active]="!checked()">
+    <div class="toggle-slider"></div>
+  </div>
+</div>

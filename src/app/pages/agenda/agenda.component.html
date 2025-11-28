@@ -44,18 +44,14 @@
     <!-- Vue Weekend -->
     <div class="weekend-view">
       <!-- Samedi -->
-      <div class="day-column">
-        <div class="day-header">
-          <h3 class="day-name">Samedi</h3>
-          <p class="day-date">{{ formatDate(currentWeekend()) }}</p>
-        </div>
+      @if (weekendMatchs().saturday.length > 0) {
+        <div class="day-column">
+          <div class="day-header">
+            <h3 class="day-name">Samedi</h3>
+            <p class="day-date">{{ formatDate(currentWeekend()) }}</p>
+          </div>
 
-        <div class="day-matches">
-          @if (weekendMatchs().saturday.length === 0) {
-            <div class="no-matches">
-              <p>Aucun match</p>
-            </div>
-          } @else {
+          <div class="day-matches">
             @for (item of weekendMatchs().saturday; track item.match.id) {
               <div class="match-card"
                    [class.match-won]="isMatchWon(item.match)"
@@ -102,23 +98,19 @@
                 }
               </div>
             }
-          }
+          </div>
         </div>
-      </div>
+      }
 
       <!-- Dimanche -->
-      <div class="day-column">
-        <div class="day-header">
-          <h3 class="day-name">Dimanche</h3>
-          <p class="day-date">{{ formatDate(currentSunday()) }}</p>
-        </div>
+      @if (weekendMatchs().sunday.length > 0) {
+        <div class="day-column">
+          <div class="day-header">
+            <h3 class="day-name">Dimanche</h3>
+            <p class="day-date">{{ formatDate(currentSunday()) }}</p>
+          </div>
 
-        <div class="day-matches">
-          @if (weekendMatchs().sunday.length === 0) {
-            <div class="no-matches">
-              <p>Aucun match</p>
-            </div>
-          } @else {
+          <div class="day-matches">
             @for (item of weekendMatchs().sunday; track item.match.id) {
               <div class="match-card"
                    [class.match-won]="isMatchWon(item.match)"
@@ -165,9 +157,16 @@
                 }
               </div>
             }
-          }
+          </div>
         </div>
-      </div>
+      }
+
+      <!-- Message si aucun match le weekend -->
+      @if (weekendMatchs().saturday.length === 0 && weekendMatchs().sunday.length === 0) {
+        <div class="no-weekend-matches">
+          <p>Aucun match à domicile ce weekend</p>
+        </div>
+      }
     </div>
   }
 </div>
