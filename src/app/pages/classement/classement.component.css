@@ -165,6 +165,8 @@ h1 {
 }
 
 .table-container {
+  margin-top: 1.5rem;
+
   background: var(--card-bg);
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
@@ -173,7 +175,6 @@ h1 {
 }
 
 .classement-table {
-  margin-top: 1.5rem;
   width: 100%;
   border-collapse: collapse;
 }

@@ -23,10 +23,6 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/agenda/agenda.component').then(m => m.AgendaComponent)
   },
   {
-    path: 'instagram',
-    loadComponent: () => import('./pages/instagram/instagram').then(m => m.Instagram)
-  },
-  {
     path: 'about',
     loadComponent: () => import('./pages/about/about.component').then(m => m.AboutComponent)
   }
