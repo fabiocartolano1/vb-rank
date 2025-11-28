@@ -370,6 +370,29 @@
   font-style: italic;
 }
 
+.no-weekend-matches {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  padding: 2rem;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+:host-context([data-theme="dark"]) .no-weekend-matches {
+  background: #1a1a1a;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.no-weekend-matches p {
+  margin: 0;
+  font-size: 1.125rem;
+  color: #a0aec0;
+  font-style: italic;
+}
+
 /* Loading & Error */
 .loading-container {
   display: flex;

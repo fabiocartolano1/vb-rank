@@ -60,8 +60,8 @@ export class MatchsComponent implements OnInit {
     // Réagir aux changements de matchs (qui changent quand le championnat change)
     effect(() => {
       const currentMatchs = this.matchs();
-      // Ouvrir automatiquement la prochaine journée quand les matchs changent
-      if (currentMatchs.length > 0) {
+      // Ouvrir automatiquement la prochaine journée quand les matchs changent (sauf en mobile)
+      if (currentMatchs.length > 0 && !this.isMobile()) {
         this.openNextJournee();
         // Scroller vers la journée ouverte après un court délai
         setTimeout(() => {
@@ -175,19 +175,25 @@ export class MatchsComponent implements OnInit {
     }
   }
 
+  private isMobile(): boolean {
+    return window.innerWidth <= 768;
+  }
+
   onChampionnatChange(championnatId: string) {
     this.equipeFilterService.setSelectedChampionnatId(championnatId);
   }
 
   toggleMatchView() {
     this.showAllMatches.set(!this.showAllMatches());
-    // Rouvrir la prochaine journée quand on change de vue
-    setTimeout(() => {
-      this.openNextJournee();
+    // Rouvrir la prochaine journée quand on change de vue (sauf en mobile)
+    if (!this.isMobile()) {
       setTimeout(() => {
-        this.scrollToOpenJournee();
-      }, 100);
-    }, 50);
+        this.openNextJournee();
+        setTimeout(() => {
+          this.scrollToOpenJournee();
+        }, 100);
+      }, 50);
+    }
   }
 
   getCresWin(match: Match): boolean | null {

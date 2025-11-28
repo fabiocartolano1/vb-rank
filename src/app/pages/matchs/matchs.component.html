@@ -5,15 +5,17 @@
     <app-championnat-dropdown
       [championnats]="championnats"
       [selectedId]="selectedChampionnatId()"
-      (selectionChange)="onChampionnatChange($event)">
+      (selectionChange)="onChampionnatChange($event)"
+    >
     </app-championnat-dropdown>
 
     <!-- Toggle pour mobile uniquement -->
     <div class="mobile-toggle">
       <app-toggle-button
         [checked]="showAllMatches()"
-        [label]="'Tous les matchs'"
-        (toggleChange)="toggleMatchView()">
+        [label]="'Complet'"
+        (toggleChange)="toggleMatchView()"
+      >
       </app-toggle-button>
     </div>
   </div>
@@ -23,58 +25,57 @@
   } @if (error()) {
   <div class="error">{{ error() }}</div>
   } @if (!loading() && !error()) {
-    <!-- Vue "Nos matchs" : liste simple triée par date -->
-    @if (showAllMatches()) {
-      <div class="matchs-grid-simple">
-        @for (match of getSortedMatchs(); track match.id) {
+  <!-- Vue "Nos matchs" : liste simple triée par date -->
+  @if (showAllMatches()) {
+  <div class="matchs-grid-simple">
+    @for (match of getSortedMatchs(); track match.id) {
+    <app-match-card
+      [match]="match"
+      [getTeamLogo]="getTeamLogo.bind(this)"
+      [formatDate]="formatDate.bind(this)"
+      [miseEnAvant]="false"
+      [cresWin]="getCresWin(match)"
+    ></app-match-card>
+    }
+  </div>
+  } @else {
+  <!-- Vue "Tous les matchs" : par journées -->
+  <div class="matchs-list">
+    @for (journeeData of getMatchsByJournee(); track journeeData[0]) {
+    <div class="journee-section" [id]="'journee-' + journeeData[0]">
+      <button
+        class="journee-title"
+        (click)="toggleJournee(journeeData[0])"
+        [class.open]="isJourneeOpen(journeeData[0])"
+      >
+        <span>Journée {{ journeeData[0] }}</span>
+        <svg
+          class="chevron-icon"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="3"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <polyline points="6 9 12 15 18 9"></polyline>
+        </svg>
+      </button>
+
+      <div class="matchs-grid" [class.collapsed]="!isJourneeOpen(journeeData[0])">
+        @for (match of journeeData[1]; track match.id) {
         <app-match-card
           [match]="match"
           [getTeamLogo]="getTeamLogo.bind(this)"
           [formatDate]="formatDate.bind(this)"
-          [miseEnAvant]="false"
-          [cresWin]="getCresWin(match)"
+          [miseEnAvant]="isCresMatch(match)"
+          [cresWin]="null"
         ></app-match-card>
         }
       </div>
-    } @else {
-      <!-- Vue "Tous les matchs" : par journées -->
-      <div class="matchs-list">
-        @for (journeeData of getMatchsByJournee(); track journeeData[0]) {
-        <div class="journee-section" [id]="'journee-' + journeeData[0]">
-          <button
-            class="journee-title"
-            (click)="toggleJournee(journeeData[0])"
-            [class.open]="isJourneeOpen(journeeData[0])"
-          >
-            <span>Journée {{ journeeData[0] }}</span>
-            <svg
-              class="chevron-icon"
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="3"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <polyline points="6 9 12 15 18 9"></polyline>
-            </svg>
-          </button>
-
-          <div class="matchs-grid" [class.collapsed]="!isJourneeOpen(journeeData[0])">
-            @for (match of journeeData[1]; track match.id) {
-            <app-match-card
-              [match]="match"
-              [getTeamLogo]="getTeamLogo.bind(this)"
-              [formatDate]="formatDate.bind(this)"
-              [miseEnAvant]="isCresMatch(match)"
-              [cresWin]="null"
-            ></app-match-card>
-            }
-          </div>
-        </div>
-        }
-      </div>
+    </div>
     }
-  }
+  </div>
+  } }
 </div>
