@@ -18,11 +18,11 @@ export const CHAMPIONSHIPS: readonly Championship[] = [
   { id: 'regionale-2-m', name: 'Régionale 2 M' },
   { id: 'regionale-2-f', name: 'Régionale 2 F' },
   { id: 'm18-m', name: 'M18 M' },
-  { id: 'bfc', name: 'Benjamines' },
-  { id: 'bmb', name: 'Benjamins' },
-  { id: 'mfd', name: 'Minimes F' },
-  { id: 'mmb', name: 'Minimes M' },
-  { id: 'cfd', name: 'Cadettes' }
+  { id: 'cfd', name: 'M18 F' },
+  { id: 'mmb', name: 'M15 M' },
+  { id: 'mfd', name: 'M15 F' },
+  { id: 'bfc', name: 'M13 F' },
+  { id: 'bmb', name: 'M13 M' },
 ] as const;
 
 /**
