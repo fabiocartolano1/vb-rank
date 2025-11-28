@@ -1,0 +1,114 @@
+.instagram-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.instagram-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 2rem;
+  padding: 1rem;
+  background: var(--surface-color);
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.instagram-icon {
+  width: 32px;
+  height: 32px;
+  color: #E1306C;
+}
+
+.instagram-header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+.instagram-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.instagram-card {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  border-radius: 16px;
+  padding: 2rem;
+  text-align: center;
+  box-shadow: 0 4px 16px rgba(240, 147, 251, 0.3);
+}
+
+.instagram-description {
+  color: white;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  margin: 0 0 1.5rem 0;
+  font-weight: 500;
+}
+
+.instagram-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: white;
+  color: #f5576c;
+  padding: 1rem 2rem;
+  border-radius: 50px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1.1rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.instagram-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+}
+
+.instagram-button .button-icon {
+  width: 24px;
+  height: 24px;
+  stroke: #f5576c;
+}
+
+.feed-container {
+  background: var(--surface-color);
+  border-radius: 12px;
+  padding: 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.juicer-feed {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .instagram-container {
+    padding: 0.5rem;
+  }
+
+  .instagram-header h2 {
+    font-size: 1.25rem;
+  }
+
+  .instagram-card {
+    padding: 1.5rem;
+  }
+
+  .instagram-description {
+    font-size: 1rem;
+  }
+
+  .instagram-button {
+    padding: 0.875rem 1.5rem;
+    font-size: 1rem;
+  }
+}
