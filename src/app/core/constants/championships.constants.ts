@@ -13,16 +13,16 @@ export interface Championship {
  */
 export const CHAMPIONSHIPS: readonly Championship[] = [
   { id: 'nationale-3-f', name: 'Nationale 3 F' },
-  { id: 'prenationale-m', name: 'Prénationale M' },
-  { id: 'prenationale-f', name: 'Prénationale F' },
+  { id: 'prenationale-m', name: 'Pré-nationale M' },
+  { id: 'prenationale-f', name: 'Pré-nationale F' },
   { id: 'regionale-2-m', name: 'Régionale 2 M' },
   { id: 'regionale-2-f', name: 'Régionale 2 F' },
   { id: 'm18-m', name: 'M18 M' },
   { id: 'cfd', name: 'M18 F' },
   { id: 'mmb', name: 'M15 M' },
   { id: 'mfd', name: 'M15 F' },
-  { id: 'bfc', name: 'M13 F' },
   { id: 'bmb', name: 'M13 M' },
+  { id: 'bfc', name: 'M13 F' },
 ] as const;
 
 /**
