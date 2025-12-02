@@ -6,6 +6,10 @@ export interface Championship {
   id: string;
   /** Nom d'affichage du championnat */
   name: string;
+  /** Label optionnel pour le dropdown (si différent du nom) */
+  label?: string;
+  /** Ordre d'affichage dans le dropdown (si non défini, tri alphabétique) */
+  ordre?: number;
 }
 
 /**

@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal, computed } from '@angular/core';
+import { Component, inject, OnInit, signal, computed, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DataService } from '../../services/data.service';
 import { Equipe } from '../../models/equipe.model';
@@ -24,8 +24,9 @@ export class ClassementComponent implements OnInit {
   loading = signal(true);
   error = signal('');
 
-  // Liste des championnats disponibles
-  readonly championnats = this.championshipService.getChampionships();
+  // Signal pour les championnats chargés depuis Firestore
+  readonly championnats = this.championshipService.getChampionshipsSignal();
+  readonly championnatsLoaded = this.championshipService.isLoaded();
 
   // Signal pour le championnat sélectionné
   selectedChampionnatId = this.equipeFilterService.getSelectedChampionnatIdSignal();
@@ -36,6 +37,22 @@ export class ClassementComponent implements OnInit {
     const all = this.allEquipes();
     return all.filter((equipe) => equipe.championnatId === championnatId);
   });
+
+  constructor() {
+    // Effect pour sélectionner automatiquement le premier championnat quand ils sont chargés
+    effect(() => {
+      const availableChampionnats = this.championnats();
+      const currentSelection = this.selectedChampionnatId();
+
+      if (availableChampionnats.length > 0) {
+        const selectedExists = availableChampionnats.some(c => c.id === currentSelection);
+        if (!selectedExists) {
+          // Sélectionner le premier championnat disponible
+          this.equipeFilterService.setSelectedChampionnatId(availableChampionnats[0].id);
+        }
+      }
+    });
+  }
 
   ngOnInit() {
     // Charger toutes les équipes (qui contiennent maintenant les données de classement)

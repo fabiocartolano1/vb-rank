@@ -26,7 +26,15 @@ export class ChampionnatDropdownComponent {
 
   getSelectedName(): string {
     const selected = this.championnats.find(c => c.id === this.selectedId);
-    return selected ? selected.name : this.championnats[0]?.name || '';
+    if (selected) {
+      return selected.label || selected.name;
+    }
+    const first = this.championnats[0];
+    return first ? (first.label || first.name) : '';
+  }
+
+  getDisplayName(championship: Championship): string {
+    return championship.label || championship.name;
   }
 
   onSelectChampionnat(id: string) {

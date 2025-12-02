@@ -21,7 +21,15 @@
       "Bash(mkdir:*)",
       "Bash(timeout /t 10)",
       "Bash(set GOOGLE_APPLICATION_CREDENTIALS=)",
-      "Bash(set GCLOUD_PROJECT=le-cres-vb)"
+      "Bash(set GCLOUD_PROJECT=le-cres-vb)",
+      "Bash(git remote set-url:*)",
+      "Bash(npm run copy:config-to-fufc:*)",
+      "Bash(firebase use:*)",
+      "Bash(firebase firestore:rules:get:*)",
+      "Bash(npm run add:config-to-fufc:*)",
+      "Bash(npm run start:fufc:*)",
+      "Bash(FIREBASE_PROJECT_ID=fufc-8c9fc NODE_TLS_REJECT_UNAUTHORIZED=0 npx tsx:*)",
+      "Bash(set FIREBASE_SERVICE_ACCOUNT_JSON=)"
     ],
     "deny": [],
     "ask": []

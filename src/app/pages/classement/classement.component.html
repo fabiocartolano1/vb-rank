@@ -1,7 +1,7 @@
 <div class="classement-container">
   <!-- Sélecteur de championnat -->
   <app-championnat-dropdown
-    [championnats]="championnats"
+    [championnats]="championnats()"
     [selectedId]="selectedChampionnatId()"
     (selectionChange)="onChampionnatChange($event)">
   </app-championnat-dropdown>

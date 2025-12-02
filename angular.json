@@ -58,6 +58,7 @@
               "sourceMap": true
             },
             "fufc": {
+              "index": "src/environments/index-files/index.fufc.html",
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",

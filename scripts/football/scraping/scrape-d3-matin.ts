@@ -1,28 +1,17 @@
-// Run with: npx tsx scripts/football/scraping/scrape-d3-matin-simple.ts
-// All comments must be in English
+// Script to scrape D3 Matin standings and save to FUFC Firebase
 
 import fetch from 'node-fetch';
 import https from 'https';
-import { initializeApp } from 'firebase/app';
-import { getFirestore, collection, getDocs, doc, setDoc, query, where } from 'firebase/firestore';
+import admin from 'firebase-admin';
 
-// FUFC Firebase config
-const fufcConfig = {
-  apiKey: 'AIzaSyCGsb39fQM7qdaY_oTEQfw0ex-jJPAfv_U',
-  authDomain: 'fufc-8c9fc.firebaseapp.com',
-  projectId: 'fufc-8c9fc',
-  storageBucket: 'fufc-8c9fc.firebasestorage.app',
-  messagingSenderId: '702980907146',
-  appId: '1:702980907146:web:9086aa0ab1ef3851be8d73',
-  measurementId: 'G-J9ZRZTVZ92',
-};
-
-// Initialize Firebase for FUFC
-const fufcApp = initializeApp(fufcConfig, 'fufc');
-const db = getFirestore(fufcApp);
+// Force FUFC project connection
+const app = admin.initializeApp({
+  projectId: 'fufc-8c9fc'
+});
+const db = admin.firestore(app);
 
 const insecureAgent = new https.Agent({
-  rejectUnauthorized: false, // allow self-signed certificates
+  rejectUnauthorized: false,
 });
 
 async function fetchInsecure(url: string) {
@@ -39,11 +28,9 @@ async function main() {
   }
 
   const json = await res.json();
-
   const list = json['hydra:member'];
 
   const classement = list.map((e: any) => ({
-    // Attributs pour l'application
     nom: e.equipe.short_name,
     rang: e.rank,
     points: e.point_count,
@@ -54,7 +41,6 @@ async function main() {
     setsPour: e.goals_for_count,
     setsContre: e.goals_against_count,
     logoUrl: '',
-    // Attributs supplémentaires
     goalDiff: e.goals_diff,
     forfait: e.is_forfait,
   }));
@@ -63,10 +49,8 @@ async function main() {
 
   console.log(classement);
 
-  // Récupérer l'ID du championnat D3 Matin
-  const championnatsRef = collection(db, 'championnats');
-  const q = query(championnatsRef, where('nom', '==', 'D3 Matin'));
-  const championnatsSnapshot = await getDocs(q);
+  // Get D3 Matin championship ID
+  const championnatsSnapshot = await db.collection('championnats').where('nom', '==', 'D3 Matin').get();
   let championnatId = '';
 
   if (!championnatsSnapshot.empty) {
@@ -77,18 +61,18 @@ async function main() {
     return;
   }
 
-  // Sauvegarder les équipes avec le championnatId
+  // Save teams with championnatId
   for (const eq of classement) {
     const equipeData = {
       ...eq,
       championnatId: championnatId,
     };
-    const equipeRef = doc(db, 'equipes', eq.nom.replace(/\//g, '-'));
-    await setDoc(equipeRef, equipeData);
+    await db.collection('equipes').doc(eq.nom.replace(/\//g, '-')).set(equipeData);
     console.log(`✅ Équipe sauvegardée: ${eq.nom}`);
   }
 
   console.log('\n🎉 Scraping terminé !');
+  await app.delete();
 }
 
 main().catch((err) => console.error(err));

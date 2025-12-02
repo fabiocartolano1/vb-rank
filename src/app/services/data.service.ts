@@ -9,6 +9,7 @@ import {
 import { Observable } from 'rxjs';
 import { Equipe } from '../models/equipe.model';
 import { Match } from '../models/match.model';
+import { Championnat } from '../models/championnat.model';
 
 @Injectable({
   providedIn: 'root',
@@ -27,5 +28,10 @@ export class DataService {
     // Pas d'orderBy multiple pour éviter le besoin d'index composite
     // Le tri sera fait côté client dans le composant
     return collectionData(matchsCollection, { idField: 'id' }) as Observable<Match[]>;
+  }
+
+  getChampionnats(): Observable<Championnat[]> {
+    const championnatsCollection = collection(this.firestore, 'championnats');
+    return collectionData(championnatsCollection, { idField: 'id' }) as Observable<Championnat[]>;
   }
 }
