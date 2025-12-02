@@ -3,8 +3,8 @@
   <header class="app-header">
     <div class="header-content">
       <div class="header-title-container">
-        <img src="/logo-le-cres.ico" alt="Le Crès VB" class="header-logo" />
-        <h1 class="app-title">Le Crès Volley-Ball</h1>
+        <img [src]="clubLogo()" [alt]="clubName()" class="header-logo" />
+        <h1 class="app-title">{{ clubName() }}</h1>
         <app-theme-toggle class="theme-toggle"></app-theme-toggle>
       </div>
     </div>
@@ -70,7 +70,7 @@
             </svg>
           }
         }
-        <span class="nav-label">{{ item.label }}</span>
+        <span class="nav-label">{{ getNavItemLabel(item) }}</span>
       </a>
     }
   </nav>

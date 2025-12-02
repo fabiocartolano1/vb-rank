@@ -34,7 +34,7 @@
   min-width: 200px;
   padding: 0.75rem 1.25rem;
   background: white;
-  border: 2px solid #F762A6;
+  border: 2px solid var(--club-primary, #F762A6);
   border-radius: 12px;
   color: #1a1a1a;
   font-size: 0.875rem;
@@ -42,13 +42,14 @@
   font-family: 'Poppins', sans-serif;
   cursor: pointer;
   transition: all 0.2s ease;
-  box-shadow: 0 2px 8px rgba(247, 98, 166, 0.15);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 .dropdown-trigger:hover {
-  background: rgba(247, 98, 166, 0.05);
-  box-shadow: 0 4px 12px rgba(247, 98, 166, 0.25);
+  background: var(--club-primary, #F762A6);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
   transform: translateY(-1px);
+  opacity: 0.05;
 }
 
 .dropdown-label {
@@ -57,7 +58,7 @@
 }
 
 .dropdown-icon {
-  color: #F762A6;
+  color: var(--club-primary, #F762A6);
   transition: transform 0.3s ease;
   flex-shrink: 0;
 }
@@ -73,7 +74,7 @@
   transform: translateX(-50%);
   min-width: 200px;
   background: white;
-  border: 2px solid #F762A6;
+  border: 2px solid var(--club-primary, #F762A6);
   border-radius: 12px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
   overflow: hidden;
@@ -109,11 +110,12 @@
 }
 
 .dropdown-item:hover {
-  background: rgba(247, 98, 166, 0.1);
+  background: var(--club-primary, #F762A6);
+  opacity: 0.1;
 }
 
 .dropdown-item.active {
-  background: #F762A6;
+  background: var(--club-primary, #F762A6);
   color: white;
   font-weight: 700;
 }
@@ -121,7 +123,7 @@
 .equipe-pill {
   background: transparent;
   color: #1a1a1a;
-  border: 1px solid rgba(247, 98, 166, 0.4);
+  border: 1px solid var(--club-primary, #F762A6);
   border-radius: 20px;
   padding: 0.4rem 1rem;
   font-size: 0.75rem;
@@ -133,20 +135,23 @@
   letter-spacing: 0.3px;
   white-space: nowrap;
   flex-shrink: 0;
+  opacity: 0.4;
 }
 
 .equipe-pill:hover {
-  background: rgba(247, 98, 166, 0.1);
-  border-color: rgba(247, 98, 166, 0.6);
+  background: var(--club-primary, #F762A6);
+  border-color: var(--club-primary, #F762A6);
   transform: translateY(-1px);
+  opacity: 0.6;
 }
 
 .equipe-pill.active {
-  background: #F762A6;
-  border: 2px solid #F762A6;
+  background: var(--club-primary, #F762A6);
+  border: 2px solid var(--club-primary, #F762A6);
   color: white;
   font-weight: 700;
-  box-shadow: 0 2px 8px rgba(247, 98, 166, 0.3);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  opacity: 1;
 }
 
 .equipe-pill:active {

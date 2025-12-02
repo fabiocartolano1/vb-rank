@@ -50,6 +50,19 @@ export class App implements OnInit {
     return config?.mobile?.filter(item => item.enabled) || [];
   });
 
+  // Configuration du club
+  protected readonly clubName = computed(() => {
+    return this.configService.clubConfig()?.name || 'Le Crès Volley-Ball';
+  });
+
+  protected readonly clubLogo = computed(() => {
+    return this.configService.clubConfig()?.logo || '/logo-le-cres.ico';
+  });
+
+  protected readonly teamKeywords = computed(() => {
+    return this.configService.clubConfig()?.teamKeywords || ['crès', 'cres'];
+  });
+
   async ngOnInit() {
     // Détecter si on est sur iOS
     this.isIOS.set(Capacitor.getPlatform() === 'ios');
@@ -112,6 +125,14 @@ export class App implements OnInit {
   // Retourne la classe CSS pour un item de navigation
   getNavItemClass(itemId: string): string {
     return this.isHiddenOnMobile(itemId) ? 'nav-link hide-on-mobile' : 'nav-link';
+  }
+
+  // Retourne le label dynamique pour un item de navigation
+  getNavItemLabel(item: any): string {
+    if (item.id === 'agenda') {
+      return 'À Domicile';
+    }
+    return item.label;
   }
 
   async importData() {

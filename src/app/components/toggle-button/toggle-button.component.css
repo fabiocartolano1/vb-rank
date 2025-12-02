@@ -5,19 +5,20 @@
   gap: 0.5rem;
   padding: 0.75rem 1rem;
   background: white;
-  border: 2px solid #F762A6;
+  border: 2px solid var(--club-primary, #F762A6);
   border-radius: 12px;
   cursor: pointer;
   user-select: none;
-  box-shadow: 0 2px 8px rgba(247, 98, 166, 0.15);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   transition: all 0.2s ease;
   min-height: 44px;
 }
 
 .toggle-container:hover {
-  background: rgba(247, 98, 166, 0.05);
-  box-shadow: 0 4px 12px rgba(247, 98, 166, 0.25);
+  background: var(--club-primary, #F762A6);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
   transform: translateY(-1px);
+  opacity: 0.05;
 }
 
 .toggle-label {
@@ -41,7 +42,7 @@
 }
 
 .toggle-switch.active {
-  background: #F762A6;
+  background: var(--club-primary, #F762A6);
 }
 
 .toggle-slider {
@@ -74,7 +75,7 @@
 }
 
 :host-context([data-theme='dark']) .toggle-switch.active {
-  background: #F762A6;
+  background: var(--club-primary, #F762A6);
 }
 
 /* Mobile adjustments */

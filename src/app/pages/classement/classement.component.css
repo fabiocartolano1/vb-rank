@@ -20,7 +20,7 @@
   min-width: 200px;
   padding: 0.75rem 1.25rem;
   background: var(--card-bg);
-  border: 2px solid #f762a6;
+  border: 2px solid var(--club-primary, #f762a6);
   border-radius: 12px;
   color: var(--text-color);
   font-size: 0.875rem;
@@ -28,14 +28,17 @@
   font-family: 'Poppins', sans-serif;
   cursor: pointer;
   transition: all 0.2s ease;
-  box-shadow: 0 2px 8px rgba(247, 98, 166, 0.15);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
-.dropdown-trigger:hover {
-  background: rgba(247, 98, 166, 0.05);
-  box-shadow: 0 4px 12px rgba(247, 98, 166, 0.25);
+/* Hover désactivé pour mobile
+.dropdown-trigger:hover:not(.open) {
+  background: var(--club-primary, #f762a6);
+  color: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
   transform: translateY(-1px);
 }
+*/
 
 .dropdown-label {
   text-transform: uppercase;
@@ -43,7 +46,7 @@
 }
 
 .dropdown-icon {
-  color: #f762a6;
+  color: var(--club-primary, #f762a6);
   transition: transform 0.3s ease;
   flex-shrink: 0;
 }
@@ -59,7 +62,7 @@
   transform: translateX(-50%);
   min-width: 200px;
   background: var(--card-bg);
-  border: 2px solid #f762a6;
+  border: 2px solid var(--club-primary, #f762a6);
   border-radius: 12px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
   overflow: hidden;
@@ -95,11 +98,12 @@
 }
 
 .dropdown-item:hover {
-  background: rgba(247, 98, 166, 0.1);
+  background: var(--club-primary, #f762a6);
+  color: white;
 }
 
 .dropdown-item.active {
-  background: #f762a6;
+  background: var(--club-primary, #f762a6);
   color: white;
   font-weight: 700;
 }
@@ -107,7 +111,7 @@
 .equipe-pill {
   background: transparent;
   color: var(--text-color);
-  border: 1px solid rgba(247, 98, 166, 0.4);
+  border: 1px solid var(--club-primary, #f762a6);
   border-radius: 20px;
   padding: 0.4rem 1rem;
   font-size: 0.75rem;
@@ -119,20 +123,24 @@
   letter-spacing: 0.3px;
   white-space: nowrap;
   flex-shrink: 0;
+  opacity: 0.7;
 }
 
 .equipe-pill:hover {
-  background: rgba(247, 98, 166, 0.1);
-  border-color: rgba(247, 98, 166, 0.6);
+  background: var(--club-primary, #f762a6);
+  border-color: var(--club-primary, #f762a6);
+  color: white;
   transform: translateY(-1px);
+  opacity: 1;
 }
 
 .equipe-pill.active {
-  background: #f762a6;
-  border: 2px solid #f762a6;
+  background: var(--club-primary, #f762a6);
+  border: 2px solid var(--club-primary, #f762a6);
   color: white;
   font-weight: 700;
-  box-shadow: 0 2px 8px rgba(247, 98, 166, 0.3);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  opacity: 1;
 }
 
 .equipe-pill:active {
@@ -209,15 +217,23 @@ h1 {
 
 /* Mise en avant ligne du Crès */
 .classement-table tbody tr.cres-team {
-  background: linear-gradient(90deg, rgba(247, 98, 166, 0.15) 0%, rgba(247, 98, 166, 0.06) 100%);
-  border-left: 4px solid #f762a6;
-  border-top: 2px solid rgba(247, 98, 166, 0.4);
-  border-bottom: 2px solid rgba(247, 98, 166, 0.4);
-  box-shadow: inset 0 0 0 1px rgba(247, 98, 166, 0.1);
+  background: linear-gradient(
+    90deg,
+    rgba(var(--club-primary-rgb), 0.15) 0%,
+    rgba(var(--club-primary-rgb), 0.05) 100%
+  );
+  border-left: 4px solid var(--club-primary, #f762a6);
+  border-top: 2px solid var(--club-primary, #f762a6);
+  border-bottom: 2px solid var(--club-primary, #f762a6);
+  box-shadow: inset 0 0 0 1px var(--club-primary, #f762a6);
 }
 
 .classement-table tbody tr.cres-team:hover {
-  background: linear-gradient(90deg, rgba(247, 98, 166, 0.2) 0%, rgba(247, 98, 166, 0.08) 100%);
+  background: linear-gradient(
+    90deg,
+    rgba(var(--club-primary-rgb), 0.25) 0%,
+    rgba(var(--club-primary-rgb), 0.1) 100%
+  );
 }
 
 .classement-table tbody tr:last-child td {

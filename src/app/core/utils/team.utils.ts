@@ -7,31 +7,61 @@ import { ASSETS, CRES_KEYWORDS } from '../constants/assets.constants';
  */
 export class TeamUtils {
   /**
-   * Vérifie si une équipe est celle du Crès
+   * Mots-clés pour identifier l'équipe principale
+   * Peut être défini dynamiquement depuis la configuration
+   */
+  private static mainTeamKeywords: string[] = [...CRES_KEYWORDS];
+
+  /**
+   * Définit les mots-clés de l'équipe principale
+   * @param keywords Liste de mots-clés pour identifier l'équipe
+   */
+  static setMainTeamKeywords(keywords: string[]): void {
+    this.mainTeamKeywords = keywords;
+  }
+
+  /**
+   * Vérifie si une équipe est l'équipe principale
    * @param teamName Nom de l'équipe
-   * @returns true si l'équipe est celle du Crès
+   * @returns true si l'équipe est l'équipe principale
    */
-  static isCresTeam(teamName: string): boolean {
+  static isMainTeam(teamName: string): boolean {
     const normalized = teamName.toLowerCase();
-    return CRES_KEYWORDS.some(keyword => normalized.includes(keyword));
+    return this.mainTeamKeywords.some(keyword => normalized.includes(keyword.toLowerCase()));
   }
 
   /**
-   * Vérifie si un match implique l'équipe du Crès
+   * Vérifie si un match implique l'équipe principale
    * @param match Match à vérifier
-   * @returns true si le match implique le Crès
+   * @returns true si le match implique l'équipe principale
    */
+  static isMainMatch(match: Match): boolean {
+    return this.isMainTeam(match.equipeDomicile) || this.isMainTeam(match.equipeExterieur);
+  }
+
+  /**
+   * Vérifie si l'équipe principale joue à domicile
+   * @param match Match à vérifier
+   * @returns true si l'équipe principale joue à domicile
+   */
+  static isMainHome(match: Match): boolean {
+    return this.isMainTeam(match.equipeDomicile);
+  }
+
+  // Méthodes legacy pour compatibilité (deprecated)
+  /** @deprecated Utilisez isMainTeam() */
+  static isCresTeam(teamName: string): boolean {
+    return this.isMainTeam(teamName);
+  }
+
+  /** @deprecated Utilisez isMainMatch() */
   static isCresMatch(match: Match): boolean {
-    return this.isCresTeam(match.equipeDomicile) || this.isCresTeam(match.equipeExterieur);
+    return this.isMainMatch(match);
   }
 
-  /**
-   * Vérifie si le Crès joue à domicile
-   * @param match Match à vérifier
-   * @returns true si le Crès joue à domicile
-   */
+  /** @deprecated Utilisez isMainHome() */
   static isCresHome(match: Match): boolean {
-    return this.isCresTeam(match.equipeDomicile);
+    return this.isMainHome(match);
   }
 
   /**

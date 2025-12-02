@@ -1,5 +1,5 @@
 <div class="dropdown-wrapper">
-  <button class="dropdown-trigger" (click)="toggleDropdown()">
+  <button class="dropdown-trigger" [class.open]="isDropdownOpen()" (click)="toggleDropdown()">
     <span class="dropdown-label">{{ getSelectedName() }}</span>
     <svg
       class="dropdown-icon"
