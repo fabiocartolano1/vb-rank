@@ -29,5 +29,9 @@ export const routes: Routes = [
   {
     path: 'about',
     loadComponent: () => import('./pages/about/about.component').then(m => m.AboutComponent)
+  },
+  {
+    path: 'about-fufc',
+    loadComponent: () => import('./pages/about-fufc/about-fufc.component').then(m => m.AboutFufcComponent)
   }
 ];

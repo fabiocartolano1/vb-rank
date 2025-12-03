@@ -20,6 +20,7 @@
     "add:jeunes": "npx tsx scripts/setup/add-jeunes-championnats.ts",
     "add:d3-matin": "npx tsx scripts/football/setup/add-d3-matin.ts",
     "scrape:d3-matin": "npx tsx scripts/football/scraping/scrape-d3-matin.ts",
+    "smart:update:fufc": "npx tsx scripts/football/smart-update/smart-update-d3-matin-client.ts",
     "scrape:m18m": "npx tsx scripts/scraping/jeunes/scrape-m18m.ts",
     "scrape:bfc": "npx tsx scripts/scraping/jeunes/scrape-bfc.ts",
     "scrape:bmb": "npx tsx scripts/scraping/jeunes/scrape-bmb.ts",

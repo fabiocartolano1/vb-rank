@@ -153,9 +153,9 @@ export class AgendaComponent implements OnInit {
 
     return this.allMatchs()
       .filter((match) => {
-        const matchDate = match.date;
-        // Filtrer uniquement les matchs valides à domicile du Crès
-        return matchDate === dayString &&
+        const matchDateOnly = match.date.split('T')[0];
+        // Filtrer uniquement les matchs valides à domicile de l'équipe principale
+        return matchDateOnly === dayString &&
                MatchUtils.isValidMatch(match) &&
                TeamUtils.isCresHome(match);
       })

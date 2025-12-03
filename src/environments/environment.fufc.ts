@@ -11,17 +11,17 @@ export const environment = {
     measurementId: 'G-J9ZRZTVZ92',
   },
   club: {
-    name: 'FUFC Volley-Ball',
+    name: 'Friends United FC',
     shortName: 'FUFC',
-    logo: '/assets/logo-fufc.png',
+    logo: '/fufc.jpg',
     colors: {
-      primary: '#F762A6', // Rose
-      secondary: '#667eea', // Bleu
-      accent: '#764ba2',
+      primary: '#1e40af', // Bleu
+      secondary: '#3b82f6',
+      accent: '#1e3a8a',
       background: '#f8f9fa',
       text: '#1a1a1a',
     },
     // Mots-clés pour identifier les équipes du club dans les données
-    teamKeywords: ['fufc', 'FRIENDS UNITED FC', 'friends'],
+    teamKeywords: ['fufc', 'FRIENDS UNITED FC', 'friends', 'friends united'],
   },
 };

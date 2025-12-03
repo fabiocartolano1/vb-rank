@@ -48,7 +48,11 @@ export class DateUtils {
    * @returns Date complète du match
    */
   static parseMatchDateTime(match: Match): Date {
-    const dateTimeString = match.date + (match.heure ? 'T' + match.heure : '');
+    // Si match.date est au format ISO complet (avec T), extraire juste la partie date
+    const dateOnly = match.date.split('T')[0];
+
+    // Construire la date/heure complète
+    const dateTimeString = match.heure ? `${dateOnly}T${match.heure}` : match.date;
     return new Date(dateTimeString);
   }
 
