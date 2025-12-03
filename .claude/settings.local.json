@@ -4,7 +4,12 @@
       "Bash(NODE_TLS_REJECT_UNAUTHORIZED=0 node:*)",
       "Bash(set:*)",
       "Bash(npm run smart:update:fufc:*)",
-      "Bash(if exist \"c:\\Users\\fcartolano\\Desktop\\perso-dev\\vb-rank\\classement\\vb-rank-app\\scripts\\football\\setup\" rmdir \"c:\\Users\\fcartolano\\Desktop\\perso-dev\\vb-rank\\classement\\vb-rank-app\\scripts\\football\\setup\")"
+      "Bash(if exist \"c:\\Users\\fcartolano\\Desktop\\perso-dev\\vb-rank\\classement\\vb-rank-app\\scripts\\football\\setup\" rmdir \"c:\\Users\\fcartolano\\Desktop\\perso-dev\\vb-rank\\classement\\vb-rank-app\\scripts\\football\\setup\")",
+      "Bash(npm run build:fufc:*)",
+      "Bash(firebase deploy:*)",
+      "Bash(npm run build:deploy:fufc:*)",
+      "Bash(ng generate:*)",
+      "Bash(npx ng build:*)"
     ],
     "deny": [],
     "ask": []

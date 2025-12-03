@@ -26,6 +26,7 @@ export class App implements OnInit {
   protected readonly cresLogoUrl = signal('');
   protected readonly isAgendaRoute = signal(false);
   protected readonly isIOS = signal(false);
+  protected readonly currentRoute = signal('');
 
   private firestore = inject(Firestore);
   private dataImportService = inject(DataImportService);
@@ -71,6 +72,7 @@ export class App implements OnInit {
     this.router.events.pipe(
       filter(event => event instanceof NavigationEnd)
     ).subscribe(() => {
+      this.currentRoute.set(this.router.url);
       this.isAgendaRoute.set(this.router.url === '/agenda');
 
       // Scroller en haut sauf pour la page "Tous les matchs"
@@ -83,6 +85,7 @@ export class App implements OnInit {
     });
 
     // Vérifier la route initiale
+    this.currentRoute.set(this.router.url);
     this.isAgendaRoute.set(this.router.url === '/agenda');
     // Charger le logo du Crès
     this.dataService.getEquipes().subscribe({
@@ -133,6 +136,25 @@ export class App implements OnInit {
       return 'À Domicile';
     }
     return item.label;
+  }
+
+  // Détermine si un item de navigation est actif (pour supporter /matchs et /matchs-all)
+  isNavItemActive(itemId: string): boolean {
+    const currentUrl = this.currentRoute();
+
+    // Pour l'item "matchs", considérer actif si on est sur /matchs ou /matchs-all
+    if (itemId === 'matchs') {
+      return currentUrl === '/matchs' || currentUrl === '/matchs-all';
+    }
+
+    // Pour les autres items, vérifier la correspondance exacte avec la route
+    const navItems = this.desktopNavItems();
+    const item = navItems.find(i => i.id === itemId);
+    if (item) {
+      return currentUrl === item.route;
+    }
+
+    return false;
   }
 
   async importData() {

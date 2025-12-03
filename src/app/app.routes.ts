@@ -15,6 +15,10 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/matchs/matchs.component').then(m => m.MatchsComponent)
   },
   {
+    path: 'matchs-all',
+    loadComponent: () => import('./pages/matchs-all/matchs-all').then(m => m.MatchsAllComponent)
+  },
+  {
     path: 'matchs-cres',
     loadComponent: () => import('./pages/matchs-cres/matchs-cres.component').then(m => m.MatchsCresComponent)
   },

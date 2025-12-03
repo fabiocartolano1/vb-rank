@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal, computed } from '@angular/core';
+import { Component, inject, OnInit, signal, effect, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { DataService } from '../../services/data.service';
@@ -14,13 +14,13 @@ import { DateUtils } from '../../core/utils/date.utils';
 import { MatchUtils } from '../../core/utils/match.utils';
 
 @Component({
-  selector: 'app-matchs',
+  selector: 'app-matchs-all',
   standalone: true,
   imports: [CommonModule, MatchCardComponent, ChampionnatDropdownComponent, ToggleButtonComponent],
-  templateUrl: './matchs.component.html',
-  styleUrl: './matchs.component.css',
+  templateUrl: './matchs-all.html',
+  styleUrl: './matchs-all.css',
 })
-export class MatchsComponent implements OnInit {
+export class MatchsAllComponent implements OnInit {
   private dataService = inject(DataService);
   private equipeFilterService = inject(EquipeFilterService);
   private championshipService = inject(ChampionshipService);
@@ -30,20 +30,18 @@ export class MatchsComponent implements OnInit {
   allEquipes = signal<Equipe[]>([]);
   loading = signal(true);
   error = signal('');
+  openJournees = signal<Set<number>>(new Set());
 
   readonly championnats = this.championshipService.getChampionships();
 
   // Signal pour le championnat sélectionné
   selectedChampionnatId = this.equipeFilterService.getSelectedChampionnatIdSignal();
 
-  // Computed signals pour filtrer UNIQUEMENT NOS MATCHS
+  // Computed signals pour filtrer par championnat - TOUS LES MATCHS
   matchs = computed(() => {
     const championnatId = this.selectedChampionnatId();
     const all = this.allMatchs();
-    const filteredByChampionnat = all.filter((match) => match.championnatId === championnatId);
-
-    // Filtrer uniquement les matchs de notre équipe
-    return filteredByChampionnat.filter((match) => TeamUtils.isCresMatch(match));
+    return all.filter((match) => match.championnatId === championnatId);
   });
 
   equipes = computed(() => {
@@ -51,6 +49,19 @@ export class MatchsComponent implements OnInit {
     const all = this.allEquipes();
     return all.filter((equipe) => equipe.championnatId === championnatId);
   });
+
+  constructor() {
+    // Réagir aux changements de matchs
+    effect(() => {
+      const currentMatchs = this.matchs();
+      if (currentMatchs.length > 0 && !this.isMobile()) {
+        this.openNextJournee();
+        setTimeout(() => {
+          this.scrollToOpenJournee();
+        }, 200);
+      }
+    });
+  }
 
   ngOnInit() {
     this.loadData();
@@ -88,47 +99,71 @@ export class MatchsComponent implements OnInit {
     return TeamUtils.getTeamLogo(teamName, this.equipes());
   }
 
-  getSortedMatchs() {
+  getMatchsByJournee() {
     const validMatches = MatchUtils.filterValidMatches(this.matchs());
-    return DateUtils.sortMatchesByDate(validMatches);
+    return MatchUtils.getJourneesSorted(validMatches);
   }
 
   formatDate(dateString: string): string {
     return DateUtils.formatDate(dateString, 'short');
   }
 
+  toggleJournee(journeeNumber: number) {
+    const currentOpen = new Set(this.openJournees());
+    if (currentOpen.has(journeeNumber)) {
+      currentOpen.delete(journeeNumber);
+      this.openJournees.set(currentOpen);
+    } else {
+      this.openJournees.set(new Set([journeeNumber]));
+      setTimeout(() => {
+        this.scrollToOpenJournee();
+      }, 100);
+    }
+  }
+
+  isJourneeOpen(journeeNumber: number): boolean {
+    return this.openJournees().has(journeeNumber);
+  }
+
+  isCresMatch(match: Match): boolean {
+    return TeamUtils.isCresMatch(match);
+  }
+
+  private openNextJournee() {
+    const nextJournee = MatchUtils.findNextJournee(this.matchs());
+    if (nextJournee) {
+      this.openJournees.set(new Set([nextJournee]));
+    }
+  }
+
+  private scrollToOpenJournee() {
+    const openJournees = this.openJournees();
+    if (openJournees.size === 0) return;
+
+    const firstOpenJournee = Array.from(openJournees)[0];
+    const element = document.getElementById(`journee-${firstOpenJournee}`);
+
+    if (element) {
+      const offset = 100;
+      const elementPosition = element.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.pageYOffset - offset;
+
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: 'smooth',
+      });
+    }
+  }
+
+  private isMobile(): boolean {
+    return window.innerWidth <= 768;
+  }
+
   onChampionnatChange(championnatId: string) {
     this.equipeFilterService.setSelectedChampionnatId(championnatId);
   }
 
-  navigateToAllMatches() {
-    this.router.navigate(['/matchs-all']);
-  }
-
-  getCresWin(match: Match): boolean | null {
-    // Si le match n'est pas terminé, retourner null
-    if (match.statut !== 'termine' ||
-        match.scoreDomicile === null ||
-        match.scoreDomicile === undefined ||
-        match.scoreExterieur === null ||
-        match.scoreExterieur === undefined) {
-      return null;
-    }
-
-    const isCresHome = TeamUtils.isCresTeam(match.equipeDomicile);
-    const isCresAway = TeamUtils.isCresTeam(match.equipeExterieur);
-
-    // Si CRES est à domicile
-    if (isCresHome) {
-      return match.scoreDomicile > match.scoreExterieur;
-    }
-
-    // Si CRES est à l'extérieur
-    if (isCresAway) {
-      return match.scoreExterieur > match.scoreDomicile;
-    }
-
-    // Cas où ce n'est pas un match du CRES (ne devrait pas arriver)
-    return null;
+  navigateToOurMatches() {
+    this.router.navigate(['/matchs']);
   }
 }

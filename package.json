@@ -10,6 +10,7 @@
     "build": "ng build",
     "build:cres": "ng build --configuration production",
     "build:fufc": "ng build --configuration fufc",
+    "build:deploy:fufc": "npm run build:fufc && cp dist/vb-rank-app/browser/index.fufc.html dist/vb-rank-app/browser/index.html && firebase use fufc && firebase deploy --only hosting",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "migrate:dev-to-prod": "npx tsx scripts/migration/migrate-dev-to-prod.ts",

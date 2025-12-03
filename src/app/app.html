@@ -13,7 +13,7 @@
   <!-- Navigation -->
   <nav class="app-nav">
     @for (item of desktopNavItems(); track item.id) {
-      <a [routerLink]="item.route" routerLinkActive="active" [class]="getNavItemClass(item.id)">
+      <a [routerLink]="item.route" [class]="getNavItemClass(item.id)" [class.active]="isNavItemActive(item.id)">
         @switch (item.id) {
           @case ('classement') {
             <svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
