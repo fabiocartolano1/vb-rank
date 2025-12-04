@@ -139,6 +139,9 @@
   white-space: nowrap;
   flex-shrink: 0;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  user-select: none;
 }
 
 .equipe-pill::before {
@@ -182,6 +185,13 @@
 
 .equipe-pill:active {
   transform: translateY(-1px) scale(0.98);
+  background: rgba(255, 255, 255, 0.1) !important;
+  opacity: 1 !important;
+}
+
+.equipe-pill.active:active {
+  background: var(--primary-color) !important;
+  opacity: 1 !important;
 }
 
 /* Navigation */
