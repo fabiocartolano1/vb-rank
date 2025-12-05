@@ -88,6 +88,7 @@
     "smart:update:all": "npx tsx scripts/run-all-smart-updates.ts",
     "smart:update:jeunes": "npx tsx scripts/volleyball/jeunes/smart-update/run-all-smart-updates.ts",
     "smart:update:adultes": "npx tsx scripts/volleyball/adultes/smart-update/run-all-smart-updates.ts",
+    "delete:system": "npx tsx scripts/maintenance/delete-system-collection.ts",
     "deploy:prod": "ng build --configuration production && firebase use prod && firebase deploy --only hosting",
     "deploy:dev": "ng build --configuration development && firebase use dev && firebase deploy --only hosting",
     "deploy:fufc": "ng build --configuration production && firebase use fufc && firebase deploy --only hosting",
